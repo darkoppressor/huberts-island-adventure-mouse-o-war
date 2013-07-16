@@ -1,0 +1,99 @@
+1.4 - 2013/7/15
+ - Updated compiler/libraries.
+ - Ported the game to Linux and OS X!
+ - Released the level editor for all 3 platforms.
+ - Open-sourced both the game and level editor.
+ - Added AI-controlled players for both multiplayer game modes.
+ - Added several new special items that grant new capabilities.
+ - The homing shot is now a special upgrade item that must be acquired.
+ - Added some secret areas to acquire the new special items.
+ - Added new stuff and areas to take advantage of the new special items.
+ - Added New Game Plus to SP Adventure. Every time you beat the game (beat all bosses and then Lighthouse), it gets harder and candy is worth more points.
+ - Added unlockable "toys" that can be purchased for candy.
+ - Difficulty was rebalanced, and now affects more things.
+ - The effect of difficulty on NPC counts was redone.
+ - Stunned NPCs now fade out after a while in both game modes. Can be turned off.
+ - Can no longer have MP players in SP modes.
+ - Friendly NPCs no longer die when the level ends.
+ - Sally now follows the player.
+ - You can no longer jump when Looking with a J-Balloon.
+ - Players should no longer ever get stuck in the ground at the bottom of slopes.
+ - You can no longer uncrouch when a solid tile is above you.
+ - Increased the camera's maximum vertical speed.
+ - NPC shots can no longer spawn inside solid tiles.
+ - Lowered the homing range for the player's homing shot.
+ - The player's homing shot now ignores targets that are friendly or behind solid tiles.
+ - Changed the main font to be more readable.
+ - Fixed the ammo box HUD icon looking weird.
+ - Rebalanced score/candy amounts
+ - The achievement sound no longer plays when a special item is collected.
+ - Added lava to the top of the volcano. Yikes!
+ - Improved the experience of the first level. Added signs, removed some enemies.
+ - Added signs to other levels explaining some things.
+ - Made bananas a little easier to see.
+ - Added a few new water music tracks that were needed due to new swimmable areas.
+ - NPCs are no longer capable of walking on water.
+ - NPC shots hitting levers no longer adds to the "Levers Shot" stat.
+ - Sound effect volumes fall off more quickly with distance.
+ - Fireworks are now affected by pausing the game.
+ - Players 2-4 default controls changed.
+ - Players other than Player 1 can now properly grab special items.
+ - Multiplayer setup info is now persistent.
+ - The "toggle various windows" keys can no longer override the buttons on the Sound Test screen.
+ - Some minor level tweaks.
+ - Fixed the Buy Game link in the demo version.
+
+1.3 - 2012/9/1
+ - Minor level tweaks.
+ - Non-mouse window navigation now skips the X button on all windows,
+ - Non-mouse window nav now defaults to button 1 instead of "no button selected."
+ - Some windows have more convenient default buttons.
+ - Switched End Game and Quit button positions.
+ - Some code cleanup.
+ - Will no longer crash if in Windows, saving in My Documents, and the "My Games" folder doesn't already exist.
+ - Increased the volume of the swimming sound effect.
+ - Swimming gear works again... ahem.
+ - Climbing players/NPCs cannot push other players/NPCs, and vice versa.
+ - The camera will now always keep up with the player, regardless of how fast they are falling.
+ - Made the loading screens slightly prettier.
+ - Changed the normal main menu background.
+ - Improved the checkbox graphics.
+ - Added a Survival success sound effect.
+ - All characters' slide sound will now play properly.
+ - Gave Sketch a better slide sound.
+ - Levels will now take up a bit less RAM when loaded up.
+ - Removed Adventure maps from Survival mode, at least for now.
+ - Added a new character: Penny!
+ - Added multiplayer capabilities to the game engine.
+ - Added two new game modes: Multiplayer Adventure and Multiplayer Survival.
+
+1.2 - 2012/7/3
+ - Some minor level tweaks.
+ - The Up key (which already read signs) now flips switches as well.
+ - The Use key has been changed to the Change Character key. As the name implies, it changes your character.
+ - Character changing has been removed from the Options window.
+ - In addition to respawning, passing through a spawn box or checkpoint flag now changes you to the selected character.
+ - The demo has been completely revamped. Less annoying/more useful info on the game, and more of the game is accessible.
+ - In-level lighting no longer reveals secret areas.
+ - Made some interesting modifications to some levels...
+ - Added Captain Yellowbeard's treasure hoard.
+ - Added Captain Bluebeard's treasure hoard.
+ - Added lots more FUN!
+ - Tweaked some NPCs.
+ - Miscellaneous code cleanup.
+ - Added Survival game mode. On that note, there are now multiple game modes.
+ - There are currently 3 regular Survival maps, plus one Adventure Survival map.
+ - Wings from J-Balloon flash when it is about to run out.
+ - Added Independence Day things.
+ - Software cursor no longer displays when all windows are closed.
+
+1.1 - 2012/6/13
+ - Fixed a static linking problem. Well, a potential problem, anyway.
+ - Updated libraries.
+ - Tweaked starting options.
+ - Added save_location.cfg. Defaults to a user-editable area. See readme.txt for more information.
+ - Harmless sea life is no longer multiplied on higher difficulties.
+ - Added tons of FUN!
+ 
+1.0 - 2012/1/27
+ - Initial release version!

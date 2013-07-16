@@ -1,25 +1,5 @@
-/*
-Copyright (C) 2013 - Cheese and Bacon Games, LLC
-
-This file is part of Hubert's Island Adventure: Mouse o' War.
-
-Hubert's Island Adventure: Mouse o' War is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Hubert's Island Adventure: Mouse o' War is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Hubert's Island Adventure: Mouse o' War. If not, see <http://www.gnu.org/licenses/>.
-
-Note that this only applies to the source code.
-The game data is NOT licensed the same as the code.
-Please see docs/content-notice.txt for details.
-*/
+/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* See the file docs/COPYING.txt for copying permission. */
 
 #include "achievement_tooltips.h"
 #include "enumerations.h"

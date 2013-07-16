@@ -1,9 +1,21 @@
+syntax: regexp
+
+^.objs/
+^data/
+^Development/
+^profiles/
+
+^Hubert-Linux-x86_64$
+^Hubert-Linux-x86$
+^Hubert-OSX-x86_64$
+
+^error_log.txt$
+^sp_survival_log.txt$
+^mp_survival_log.txt$
+^stdout.txt$
+
 syntax: glob
-glob:.objs
-glob:data
-glob:Development
-glob:profiles
-glob:*.exe
-glob:*.depend
-glob:*.cfg
-glob:*.txt
+
+*.exe
+*.depend
+*.cfg
