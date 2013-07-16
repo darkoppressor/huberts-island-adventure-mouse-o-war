@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Hubert Game" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin\Release\Hubert Game.exe" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="5" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="..\..\MinGW\include" />
+					<Add directory="..\..\SDL\include\SDL" />
+					<Add directory="..\..\DevIL\include\IL" />
+					<Add directory="..\..\SDL\SDL_image\include" />
+					<Add directory="..\..\SDL\SDL_gfx\include" />
+					<Add directory="..\..\SDL\SDL_mixer\include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lws2_32" />
+					<Add option="-lmingw32" />
+					<Add option="-lSDLmain" />
+					<Add option="-lSDL" />
+					<Add option="-mwindows" />
+					<Add option="-Wl,--stack,16777216" />
+					<Add library="..\..\SDL\lib\libSDL.dll.a" />
+					<Add library="..\..\SDL\lib\libSDLmain.a" />
+					<Add library="..\..\MinGW\lib\libopengl32.a" />
+					<Add library="..\..\MinGW\lib\libglu32.a" />
+					<Add library="..\..\DevIL\lib\DevIL.lib" />
+					<Add library="..\..\DevIL\lib\ILU.lib" />
+					<Add library="..\..\DevIL\lib\ILUT.lib" />
+					<Add library="..\..\SDL\SDL_image\lib\SDL_image.lib" />
+					<Add library="..\..\SDL\SDL_gfx\lib\libSDL_gfx.dll.a" />
+					<Add library="..\..\SDL\SDL_mixer\lib\SDL_mixer.lib" />
+					<Add directory="..\..\SDL\lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="MersenneTwister.h" />
+		<Unit filename="ai_keys.h" />
+		<Unit filename="background_layer.cpp" />
+		<Unit filename="background_layer.h" />
+		<Unit filename="collision.cpp" />
+		<Unit filename="collision.h" />
+		<Unit filename="effect_water_bubble.cpp" />
+		<Unit filename="effect_water_bubble.h" />
+		<Unit filename="effect_water_splash.cpp" />
+		<Unit filename="effect_water_splash.h" />
+		<Unit filename="fall_through_cloud.cpp" />
+		<Unit filename="font.cpp" />
+		<Unit filename="font.h" />
+		<Unit filename="fov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fov.h" />
+		<Unit filename="image.cpp" />
+		<Unit filename="image.h" />
+		<Unit filename="image_data.h" />
+		<Unit filename="item.cpp" />
+		<Unit filename="item.h" />
+		<Unit filename="item_sprites.h" />
+		<Unit filename="level.cpp" />
+		<Unit filename="level.h" />
+		<Unit filename="light_data.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
+		<Unit filename="moving_platform.cpp" />
+		<Unit filename="moving_platform.h" />
+		<Unit filename="moving_platform_waypoint.h" />
+		<Unit filename="npc.cpp" />
+		<Unit filename="npc.h" />
+		<Unit filename="npc_ai.cpp" />
+		<Unit filename="npc_data.cpp" />
+		<Unit filename="npc_data.h" />
+		<Unit filename="options.cpp" />
+		<Unit filename="options.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
+		<Unit filename="player_sprites.h" />
+		<Unit filename="player_update_fov.cpp" />
+		<Unit filename="player_worldmap.cpp" />
+		<Unit filename="positional_audio.cpp" />
+		<Unit filename="positional_audio.h" />
+		<Unit filename="quit.cpp" />
+		<Unit filename="quit.h" />
+		<Unit filename="random_number_generator.cpp" />
+		<Unit filename="random_number_generator.h" />
+		<Unit filename="render.cpp" />
+		<Unit filename="render.h" />
+		<Unit filename="shot.cpp" />
+		<Unit filename="shot.h" />
+		<Unit filename="sprite_sheets.cpp" />
+		<Unit filename="sprite_sheets.h" />
+		<Unit filename="tile.cpp" />
+		<Unit filename="tile.h" />
+		<Unit filename="tile_background.cpp" />
+		<Unit filename="tile_background.h" />
+		<Unit filename="tile_sprites.h" />
+		<Unit filename="timer.cpp" />
+		<Unit filename="timer.h" />
+		<Unit filename="trigger.cpp" />
+		<Unit filename="trigger.h" />
+		<Unit filename="update.cpp" />
+		<Unit filename="update.h" />
+		<Unit filename="window.cpp" />
+		<Unit filename="window.h" />
+		<Unit filename="world.cpp" />
+		<Unit filename="world.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,9 @@
+syntax: glob
+.objs
+data
+Development
+profiles
+*.exe
+*.depend
+*.cfg
+*.txt

@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Hubert&apos;s Island Adventure: Mouse o&apos; War" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option extended_obj_names="1" />
+		<Build>
+			<Target title="Release-Windows-x86">
+				<Option platforms="Windows;" />
+				<Option output="Hubert-Windows-x86.exe" prefix_auto="1" extension_auto="0" />
+				<Option object_output=".objs/windows-x86" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O2" />
+					<Add option="-w" />
+					<Add option="-DGAME_OS_WINDOWS" />
+					<Add directory="C:/Development/c++/MinGW/include" />
+					<Add directory="C:/Development/c++/SDL/include/SDL" />
+					<Add directory="C:/Development/c++/SDL/SDL_image/include" />
+					<Add directory="C:/Development/c++/SDL/SDL_gfx/include" />
+					<Add directory="C:/Development/c++/SDL/SDL_mixer/include" />
+					<Add directory="C:/Development/c++/glew/include/GL" />
+					<Add directory="C:/Development/c++/boost" />
+					<Add directory="C:/Development/c++/zlib/include" />
+					<Add directory="C:/Development/c++/libpng/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32" />
+					<Add option="-mwindows" />
+					<Add option="-Wl,--stack=67108864" />
+					<Add library="C:\Development\c++\SDL\lib\libSDLmain.a" />
+					<Add library="C:\Development\c++\SDL\lib\libSDL.dll.a" />
+					<Add library="C:\Development\c++\glew\lib\glew32s.lib" />
+					<Add library="C:\Development\c++\MinGW\lib\libopengl32.a" />
+					<Add library="C:\Development\c++\MinGW\lib\libglu32.a" />
+					<Add library="C:\Development\c++\SDL\SDL_image\lib\SDL_image.lib" />
+					<Add library="C:\Development\c++\SDL\SDL_gfx\lib\libSDL_gfx.a" />
+					<Add library="C:\Development\c++\SDL\SDL_mixer\lib\SDL_mixer.lib" />
+					<Add library="C:\Development\c++\boost\stage\lib\libboost_system-mt.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\libboost_filesystem-mt.a" />
+					<Add library="C:\Development\c++\libpng\lib\libpng.a" />
+				</Linker>
+			</Target>
+			<Target title="Release-Linux-x86_64">
+				<Option platforms="Unix;" />
+				<Option output="Hubert-Linux-x86_64" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output=".objs/linux-x86_64" />
+				<Option type="5" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O2" />
+					<Add option="-w" />
+					<Add option="-DGAME_OS_LINUX" />
+					<Add directory="/usr/include/" />
+					<Add directory="/usr/include/x86_64-linux-gnu/" />
+					<Add directory="/home/kevin/.codeblocks/SDL/include/" />
+					<Add directory="/home/kevin/.codeblocks/glew/include/GL/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_image/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_gfx/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_mixer/" />
+					<Add directory="/home/kevin/.codeblocks/boost/" />
+					<Add directory="/home/kevin/.codeblocks/libpng/" />
+					<Add directory="/home/kevin/.codeblocks/zlib/" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="\home\kevin\.codeblocks\SDL_image\.libs\libSDL_image.a" />
+					<Add library="\home\kevin\.codeblocks\libpng\.libs\libpng.a" />
+					<Add library="\home\kevin\.codeblocks\zlib\libz.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_gfx\.libs\libSDL_gfx.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_mixer\build\.libs\libSDL_mixer.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\kevin\.codeblocks\libogg\src\.libs\libogg.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDLmain.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDL.a" />
+					<Add library="\home\kevin\.codeblocks\glew\lib\libGLEW.a" />
+					<Add library="\usr\lib\libGL.so" />
+					<Add library="\usr\lib\libGLU.so" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_filesystem.a" />
+				</Linker>
+			</Target>
+			<Target title="Release-Linux-x86">
+				<Option platforms="Unix;" />
+				<Option output="Hubert-Linux-x86" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output=".objs/linux-x86" />
+				<Option type="5" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O2" />
+					<Add option="-w" />
+					<Add option="-DGAME_OS_LINUX" />
+					<Add directory="/usr/include/" />
+					<Add directory="/home/kevin/.codeblocks/SDL/include/" />
+					<Add directory="/home/kevin/.codeblocks/glew/include/GL/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_image/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_gfx/" />
+					<Add directory="/home/kevin/.codeblocks/SDL_mixer/" />
+					<Add directory="/home/kevin/.codeblocks/boost/" />
+					<Add directory="/home/kevin/.codeblocks/libpng/" />
+					<Add directory="/home/kevin/.codeblocks/zlib/" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="\home\kevin\.codeblocks\SDL_image\.libs\libSDL_image.a" />
+					<Add library="\home\kevin\.codeblocks\libpng\.libs\libpng.a" />
+					<Add library="\home\kevin\.codeblocks\zlib\libz.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_gfx\.libs\libSDL_gfx.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_mixer\build\.libs\libSDL_mixer.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\kevin\.codeblocks\libogg\src\.libs\libogg.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDLmain.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDL.a" />
+					<Add library="\home\kevin\.codeblocks\glew\lib\libGLEW.a" />
+					<Add library="\usr\lib\libGL.so" />
+					<Add library="\usr\lib\libGLU.so" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_system.a" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_filesystem.a" />
+				</Linker>
+			</Target>
+			<Target title="Release-OSX-x86_64">
+				<Option platforms="Mac;" />
+				<Option output="Hubert-OSX-x86_64" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output=".objs/osx-x86_64" />
+				<Option type="5" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O2" />
+					<Add option="-w" />
+					<Add option="-DGAME_OS_OSX" />
+					<Add directory="/usr/include/" />
+					<Add directory="/home/kevin/.codeblocks/glew/include/GL/" />
+					<Add directory="/home/kevin/.codeblocks/boost/" />
+					<Add directory="/home/kevin/.codeblocks/SDL/include" />
+					<Add directory="/home/kevin/.codeblocks/SDL_gfx" />
+					<Add directory="/home/kevin/.codeblocks/SDL_image" />
+					<Add directory="/home/kevin/.codeblocks/SDL_mixer" />
+					<Add directory="/home/kevin/.codeblocks/zlib" />
+					<Add directory="/home/kevin/.codeblocks/libpng" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-arch x86_64" />
+					<Add option="-mmacosx-version-min=10.6" />
+					<Add option="-framework CoreFoundation" />
+					<Add option="-framework ApplicationServices" />
+					<Add option="-framework IOKit" />
+					<Add option="-framework AppKit" />
+					<Add option="-framework Carbon" />
+					<Add option="-framework AudioUnit" />
+					<Add option="-framework AudioToolbox" />
+					<Add option="-framework OpenGL" />
+					<Add library="\home\kevin\.codeblocks\SDL_mixer\build\.libs\libSDL_mixer.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbis.a" />
+					<Add library="\home\kevin\.codeblocks\libvorbis\lib\.libs\libvorbisfile.a" />
+					<Add library="\home\kevin\.codeblocks\libogg\src\.libs\libogg.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_image\.libs\libSDL_image.a" />
+					<Add library="\home\kevin\.codeblocks\libpng\.libs\libpng.a" />
+					<Add library="\home\kevin\.codeblocks\zlib\libz.a" />
+					<Add library="\home\kevin\.codeblocks\SDL_gfx\.libs\libSDL_gfx.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDL.a" />
+					<Add library="\home\kevin\.codeblocks\SDL\build\.libs\libSDLmain.a" />
+					<Add library="\home\kevin\.codeblocks\glew\lib\libGLEW.a" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_filesystem.a" />
+					<Add library="\home\kevin\.codeblocks\boost\stage\lib\libboost_system.a" />
+				</Linker>
+			</Target>
+			<Target title="Debug-Windows-x86">
+				<Option platforms="Windows;" />
+				<Option output="Hubert-Windows-Debug-x86.exe" prefix_auto="1" extension_auto="0" />
+				<Option object_output=".objs/windows-debug-x86" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DGAME_OS_WINDOWS" />
+					<Add directory="C:/Development/c++/MinGW/include" />
+					<Add directory="C:/Development/c++/SDL/include/SDL" />
+					<Add directory="C:/Development/c++/SDL/SDL_image/include" />
+					<Add directory="C:/Development/c++/SDL/SDL_gfx/include" />
+					<Add directory="C:/Development/c++/SDL/SDL_mixer/include" />
+					<Add directory="C:/Development/c++/glew/include/GL" />
+					<Add directory="C:/Development/c++/boost" />
+					<Add directory="C:/Development/c++/zlib/include" />
+					<Add directory="C:/Development/c++/libpng/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-lmingw32" />
+					<Add option="-mwindows" />
+					<Add option="-Wl,--stack=67108864" />
+					<Add library="C:\Development\c++\SDL\lib\libSDLmain.a" />
+					<Add library="C:\Development\c++\SDL\lib\libSDL.dll.a" />
+					<Add library="C:\Development\c++\glew\lib\glew32s.lib" />
+					<Add library="C:\Development\c++\MinGW\lib\libopengl32.a" />
+					<Add library="C:\Development\c++\MinGW\lib\libglu32.a" />
+					<Add library="C:\Development\c++\SDL\SDL_image\lib\SDL_image.lib" />
+					<Add library="C:\Development\c++\SDL\SDL_gfx\lib\libSDL_gfx.a" />
+					<Add library="C:\Development\c++\SDL\SDL_mixer\lib\SDL_mixer.lib" />
+					<Add library="C:\Development\c++\boost\stage\lib\libboost_system-mt.a" />
+					<Add library="C:\Development\c++\boost\stage\lib\libboost_filesystem-mt.a" />
+					<Add library="C:\Development\c++\libpng\lib\libpng.a" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Hubert Game.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="MersenneTwister.h" />
+		<Unit filename="achievement_tooltips.cpp" />
+		<Unit filename="achievement_tooltips.h" />
+		<Unit filename="actor.cpp" />
+		<Unit filename="actor.h" />
+		<Unit filename="ai_keys.h" />
+		<Unit filename="background_layer.cpp" />
+		<Unit filename="background_layer.h" />
+		<Unit filename="booster.cpp" />
+		<Unit filename="booster.h" />
+		<Unit filename="bubble_mode.h" />
+		<Unit filename="button.cpp" />
+		<Unit filename="button.h" />
+		<Unit filename="button_events.cpp" />
+		<Unit filename="button_events.h" />
+		<Unit filename="collision.cpp" />
+		<Unit filename="collision.h" />
+		<Unit filename="coords.cpp" />
+		<Unit filename="coords.h" />
+		<Unit filename="counters.h" />
+		<Unit filename="devworld.cpp" />
+		<Unit filename="devworld.h" />
+		<Unit filename="distance.cpp" />
+		<Unit filename="distance.h" />
+		<Unit filename="door.cpp" />
+		<Unit filename="door.h" />
+		<Unit filename="effect_firework.cpp" />
+		<Unit filename="effect_firework.h" />
+		<Unit filename="effect_score_floater.cpp" />
+		<Unit filename="effect_score_floater.h" />
+		<Unit filename="effect_water_bubble.cpp" />
+		<Unit filename="effect_water_bubble.h" />
+		<Unit filename="effect_water_splash.cpp" />
+		<Unit filename="effect_water_splash.h" />
+		<Unit filename="enumerations.h" />
+		<Unit filename="font.cpp" />
+		<Unit filename="font.h" />
+		<Unit filename="fov.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fov.h" />
+		<Unit filename="game_window.cpp" />
+		<Unit filename="game_window.h" />
+		<Unit filename="holidays.cpp" />
+		<Unit filename="holidays.h" />
+		<Unit filename="hud_buttons.cpp" />
+		<Unit filename="hud_buttons.h" />
+		<Unit filename="image.cpp" />
+		<Unit filename="image.h" />
+		<Unit filename="image_data.cpp" />
+		<Unit filename="image_data.h" />
+		<Unit filename="information.cpp" />
+		<Unit filename="information.h" />
+		<Unit filename="input_data.cpp" />
+		<Unit filename="input_data.h" />
+		<Unit filename="inventory.h" />
+		<Unit filename="item.cpp" />
+		<Unit filename="item.h" />
+		<Unit filename="item_sprites.h" />
+		<Unit filename="level.cpp" />
+		<Unit filename="level.h" />
+		<Unit filename="level_survival.cpp" />
+		<Unit filename="light_data.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
+		<Unit filename="menu_background.cpp" />
+		<Unit filename="menu_background.h" />
+		<Unit filename="message_log.cpp" />
+		<Unit filename="message_log.h" />
+		<Unit filename="mirror.cpp" />
+		<Unit filename="mirror.h" />
+		<Unit filename="moving_platform.cpp" />
+		<Unit filename="moving_platform.h" />
+		<Unit filename="moving_platform_waypoint.h" />
+		<Unit filename="music.cpp" />
+		<Unit filename="music.h" />
+		<Unit filename="npc.cpp" />
+		<Unit filename="npc.h" />
+		<Unit filename="npc_ai.cpp" />
+		<Unit filename="npc_data.cpp" />
+		<Unit filename="npc_data.h" />
+		<Unit filename="npc_special_attacks.cpp" />
+		<Unit filename="options.cpp" />
+		<Unit filename="options.h" />
+		<Unit filename="overlay.cpp" />
+		<Unit filename="overlay.h" />
+		<Unit filename="path.cpp" />
+		<Unit filename="path.h" />
+		<Unit filename="path_calc.cpp" />
+		<Unit filename="path_calc.h" />
+		<Unit filename="pixels.cpp" />
+		<Unit filename="pixels.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
+		<Unit filename="player_input.cpp" />
+		<Unit filename="player_levelshot.cpp" />
+		<Unit filename="player_mp.cpp" />
+		<Unit filename="player_mp.h" />
+		<Unit filename="player_mp_ai.cpp" />
+		<Unit filename="player_mp_input.cpp" />
+		<Unit filename="player_mp_worldmap.cpp" />
+		<Unit filename="player_options.cpp" />
+		<Unit filename="player_sprites.h" />
+		<Unit filename="player_worldmap.cpp" />
+		<Unit filename="positional_audio.cpp" />
+		<Unit filename="positional_audio.h" />
+		<Unit filename="powerup_sprites.h" />
+		<Unit filename="profile.cpp" />
+		<Unit filename="profile.h" />
+		<Unit filename="profile_achievements.cpp" />
+		<Unit filename="profile_leaves_cheese.cpp" />
+		<Unit filename="profile_level_stats.cpp" />
+		<Unit filename="profile_map.cpp" />
+		<Unit filename="profile_weather_machine.cpp" />
+		<Unit filename="quit.cpp" />
+		<Unit filename="quit.h" />
+		<Unit filename="random_number_generator.cpp" />
+		<Unit filename="random_number_generator.h" />
+		<Unit filename="render.cpp" />
+		<Unit filename="render.h" />
+		<Unit filename="savepng.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="savepng.h" />
+		<Unit filename="score.cpp" />
+		<Unit filename="score.h" />
+		<Unit filename="shot.cpp" />
+		<Unit filename="shot.h" />
+		<Unit filename="shot_data.cpp" />
+		<Unit filename="shot_data.h" />
+		<Unit filename="sign.cpp" />
+		<Unit filename="sign.h" />
+		<Unit filename="sign_compare.cpp" />
+		<Unit filename="sign_compare.h" />
+		<Unit filename="slider.cpp" />
+		<Unit filename="slider.h" />
+		<Unit filename="sound.cpp" />
+		<Unit filename="sound.h" />
+		<Unit filename="sound_data.cpp" />
+		<Unit filename="sound_data.h" />
+		<Unit filename="spawner.cpp" />
+		<Unit filename="spawner.h" />
+		<Unit filename="special_info_strings.cpp" />
+		<Unit filename="special_info_strings.h" />
+		<Unit filename="spring.cpp" />
+		<Unit filename="spring.h" />
+		<Unit filename="sprite_sheets.cpp" />
+		<Unit filename="sprite_sheets.h" />
+		<Unit filename="string_stuff.cpp" />
+		<Unit filename="string_stuff.h" />
+		<Unit filename="tile.cpp" />
+		<Unit filename="tile.h" />
+		<Unit filename="tile_background.cpp" />
+		<Unit filename="tile_background.h" />
+		<Unit filename="tile_sprites.h" />
+		<Unit filename="time_string.cpp" />
+		<Unit filename="time_string.h" />
+		<Unit filename="timer.cpp" />
+		<Unit filename="timer.h" />
+		<Unit filename="tooltip.cpp" />
+		<Unit filename="tooltip.h" />
+		<Unit filename="tracer.cpp" />
+		<Unit filename="tracer.h" />
+		<Unit filename="trap.cpp" />
+		<Unit filename="trap.h" />
+		<Unit filename="trap_data.cpp" />
+		<Unit filename="trap_data.h" />
+		<Unit filename="trap_special_functions.cpp" />
+		<Unit filename="trigger.cpp" />
+		<Unit filename="trigger.h" />
+		<Unit filename="update.cpp" />
+		<Unit filename="update.h" />
+		<Unit filename="update_fov.cpp" />
+		<Unit filename="version.h" />
+		<Unit filename="window.cpp" />
+		<Unit filename="window.h" />
+		<Unit filename="window_inventory.cpp" />
+		<Unit filename="window_inventory.h" />
+		<Unit filename="window_level_info.cpp" />
+		<Unit filename="window_level_info.h" />
+		<Unit filename="window_manager.cpp" />
+		<Unit filename="window_manager.h" />
+		<Unit filename="window_map.cpp" />
+		<Unit filename="window_map.h" />
+		<Unit filename="window_message.cpp" />
+		<Unit filename="window_message.h" />
+		<Unit filename="window_setup_survival.cpp" />
+		<Unit filename="window_setup_survival.h" />
+		<Unit filename="window_shop.cpp" />
+		<Unit filename="window_shop.h" />
+		<Unit filename="window_upgrades.cpp" />
+		<Unit filename="window_upgrades.h" />
+		<Unit filename="world.cpp" />
+		<Unit filename="world.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<AutoVersioning>
+				<Scheme minor_max="100" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="50" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
