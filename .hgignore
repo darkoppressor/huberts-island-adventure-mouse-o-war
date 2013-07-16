@@ -1,9 +1,9 @@
 syntax: glob
-.objs
-data
-Development
-profiles
-*.exe
-*.depend
-*.cfg
-*.txt
+glob:.objs
+glob:data
+glob:Development
+glob:profiles
+glob:*.exe
+glob:*.depend
+glob:*.cfg
+glob:*.txt
