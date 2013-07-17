@@ -127,13 +127,13 @@ void Player::reset(){
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
         mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(-1,2,0);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_hat(i,0,8);
+        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,0,0);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_hat(i,0,1);
+        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,1,0);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_hat(i,0,2);
+        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,0,1);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_hat(i,0,4);
+        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,1,1);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
         mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,5);
         mp_keys[mp_keys.size()-1].push_back(Input_Data());
