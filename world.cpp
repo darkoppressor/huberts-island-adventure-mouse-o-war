@@ -1442,7 +1442,7 @@ void create_windows(){
     vector_windows[vector_windows.size()-1].create_information((window_width-(msg.length()*font.spacing_x))/2,y_position,"",msg,0,NO_SPECIAL_INFO);
 
     y_position+=30;
-    vector_windows[vector_windows.size()-1].create_information(310,y_position,"","",0,SPECIAL_INFO_VERSION);
+    vector_windows[vector_windows.size()-1].create_information(300,y_position,"","",0,SPECIAL_INFO_VERSION);
 
     y_position+=30;
     vector_windows[vector_windows.size()-1].create_information(276,y_position,"","",0,SPECIAL_INFO_BUILD_DATE);

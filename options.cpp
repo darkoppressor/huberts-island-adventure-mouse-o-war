@@ -9,6 +9,16 @@
 using namespace std;
 using namespace boost::algorithm;
 
+Version_Series::Version_Series(int get_major_1,int get_minor_1,int get_micro_1,int get_major_2,int get_minor_2,int get_micro_2){
+    major_1=get_major_1;
+    minor_1=get_minor_1;
+    micro_1=get_micro_1;
+
+    major_2=get_major_2;
+    minor_2=get_minor_2;
+    micro_2=get_micro_2;
+}
+
 bool load_current_profile(){
     ifstream load;
     string file_to_load=profile.get_home_directory()+"profiles/current_profile.cfg";
@@ -66,39 +76,50 @@ bool save_current_profile(){
     return true;
 }
 
-int compare_versions(string current_version,string version){
-    vector<string> cv_strings;
-    boost::algorithm::split(cv_strings,current_version,is_any_of("."),token_compress_on);
-
-    vector<string> v_strings;
-    boost::algorithm::split(v_strings,version,is_any_of("."),token_compress_on);
-
-    int cv_major=atoi(cv_strings[0].c_str());
-    int cv_minor=atoi(cv_strings[1].c_str());
-
-    int v_major=atoi(v_strings[0].c_str());
-    int v_minor=atoi(v_strings[1].c_str());
-
-    if(cv_major==v_major){
-        if(cv_minor==v_minor){
-            return 0;
+int options_version_compare(int major_1,int minor_1,int micro_1,int major_2,int minor_2,int micro_2){
+    if(major_1==major_2){
+        if(minor_1==minor_2){
+            if(micro_1==micro_2){
+                return 0;
+            }
+            else if(micro_1<micro_2){
+                return -1;
+            }
+            else if(micro_1>micro_2){
+                return 1;
+            }
         }
-        else if(cv_minor<v_minor){
+        else if(minor_1<minor_2){
             return -1;
         }
-        else if(cv_minor>v_minor){
+        else if(minor_1>minor_2){
             return 1;
         }
     }
-    else if(cv_major<v_major){
+    else if(major_1<major_2){
         return -1;
     }
-    else if(cv_major>v_major){
+    else if(major_1>major_2){
         return 1;
     }
 }
 
-bool options_version_same(string name_to_check){
+int options_which_version_series(vector<Version_Series>* version_series,int major,int minor,int micro){
+    for(int i=0;i<version_series->size();i++){
+        if(options_version_compare(major,minor,micro,version_series->at(i).major_1,version_series->at(i).minor_1,version_series->at(i).micro_1)>=0 &&
+           options_version_compare(major,minor,micro,version_series->at(i).major_2,version_series->at(i).minor_2,version_series->at(i).micro_2)<=0){
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+bool options_version_compatible(string name_to_check){
+    int current_major=Version::MAJOR;
+    int current_minor=Version::MINOR;
+    int current_micro=Version::MICRO;
+
     ifstream load;
     string file_to_load=profile.get_home_directory()+"profiles/";
     file_to_load+=name_to_check;
@@ -106,66 +127,48 @@ bool options_version_same(string name_to_check){
     load.open(file_to_load.c_str(),ifstream::in);
 
     string version="";
-    string current_version="";
-    ss.clear();ss.str("");ss<<AutoVersion::MAJOR;ss<<".";ss<<AutoVersion::MINOR;current_version=ss.str();
-
-    bool profile_invalid=false;
 
     if(load!=NULL){
         load>>version;
 
-        int version_result=compare_versions(current_version,version);
-
-        //If this profile was created with an older version of the game.
-        if(version_result==1){
-            int profile_series_1=compare_versions(version,"1.1");
-            int game_series_1=compare_versions(current_version,"1.1");
-
-            int profile_series_2=compare_versions(version,"1.2");
-            int game_series_2=compare_versions(current_version,"1.2");
-
-            int profile_series_3=compare_versions(version,"1.3");
-            int game_series_3=compare_versions(current_version,"1.3");
-
-            int profile_series_4=compare_versions(version,"1.4");
-            int game_series_4=compare_versions(current_version,"1.4");
-
-            //If both the profile and the game are within the same series of versions, they are compatible.
-            //Different series are not compatible.
-
-            //Series 1 (1.0 - 1.1).
-            if(profile_series_1<=0 && game_series_1<=0){
-            }
-            //Series 2 (1.2 - 1.2).
-            else if(profile_series_1==1 && game_series_1==1 &&
-                    profile_series_2<=0 && game_series_2<=0){
-            }
-            //Series 3 (1.3 - 1.3).
-            else if(profile_series_1==1 && game_series_1==1 &&
-                    profile_series_2==1 && game_series_2==1 &&
-                    profile_series_3<=0 && game_series_3<=0){
-            }
-            //Series 4 (1.4 - 1.4).
-            else if(profile_series_1==1 && game_series_1==1 &&
-                    profile_series_2==1 && game_series_2==1 &&
-                    profile_series_3==1 && game_series_3==1 &&
-                    profile_series_4<=0 && game_series_4<=0){
-            }
-            else{
-                profile_invalid=true;
-            }
-        }
-        //If this profile was created with a newer version of the game.
-        else if(version_result==-1){
-            profile_invalid=true;
-        }
-
         load.close();
         load.clear();
     }
+    else{
+        update_error_log("Failed to load profile version!");
 
-    if(profile_invalid){
-        update_error_log("Version mismatch! The profile '"+name_to_check+"' was started with version "+version+". Current version is "+current_version+".");
+        return false;
+    }
+
+    int major=0;
+    int minor=0;
+    int micro=0;
+
+    vector<string> version_strings;
+    split(version_strings,version,is_any_of("."));
+
+    major=strtol(version_strings[0].c_str(),NULL,0);
+    minor=strtol(version_strings[1].c_str(),NULL,0);
+    if(version_strings.size()>2){
+       micro=strtol(version_strings[2].c_str(),NULL,0);
+    }
+    else{
+        micro=0;
+    }
+
+    //Version series are defined by a start version and an end version.
+    //The start version must be less than or equal to the end version.
+    vector<Version_Series> version_series;
+
+    version_series.push_back(Version_Series(1,0,0,1,1,0));
+    version_series.push_back(Version_Series(1,2,0,1,2,0));
+    version_series.push_back(Version_Series(1,3,0,1,3,0));
+    version_series.push_back(Version_Series(1,4,0,1,4,0));
+
+    if(options_which_version_series(&version_series,major,minor,micro)!=options_which_version_series(&version_series,current_major,current_minor,current_micro)){
+        string error_message="Version incompatibility! The profile '"+name_to_check+"' was started with version "+player.num_to_string(major)+"."+player.num_to_string(minor)+"."+player.num_to_string(micro)+".";
+        error_message+=" Current version is "+player.num_to_string(current_major)+"."+player.num_to_string(current_minor)+"."+player.num_to_string(current_micro)+".";
+        update_error_log(error_message);
 
         return false;
     }
@@ -180,7 +183,7 @@ bool options_load(){
     }
     //If there is a profile.
     else{
-        if(!options_version_same(player.name)){
+        if(!options_version_compatible(player.name)){
             return false;
         }
         else{
@@ -312,7 +315,7 @@ bool options_save(){
         save.open(save_name.c_str());
 
         string current_version="";
-        ss.clear();ss.str("");ss<<AutoVersion::MAJOR;ss<<".";ss<<AutoVersion::MINOR;current_version=ss.str();
+        ss.clear();ss.str("");ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;current_version=ss.str();
 
         if(save!=NULL){
             save<<current_version;

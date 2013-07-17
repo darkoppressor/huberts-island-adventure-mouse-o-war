@@ -4,13 +4,8 @@ All rights reserved.
 All data files related to this software program
 are the copyrighted work of Cheese and Bacon Games, LLC.
 
-Simply put, the game is composed of two parts: source code and data.
-The source code is licensed separately from the game data,
-and may be redistributed (see COPYING.txt)
-Everything aside from the source code is considered the game's data.
-The data is the copyrighted work of Cheese and Bacon Games, LLC, and should not be redistributed.
-
-To legitimately obtain a copy of the data, please buy a copy of the game.
+The remainder of this document basically just says "if the game explodes, we are not responsible."
+It applies solely to the game's data files. For information about the source code, see COPYING.txt
 
 0. Definitions.
 

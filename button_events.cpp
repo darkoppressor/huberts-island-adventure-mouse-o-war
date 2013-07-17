@@ -952,7 +952,7 @@ void button_event_quit(Window* parent_window,int special_data){
 }
 
 void button_event_buy_game(Window* parent_window,int special_data){
-    string buy_url="http://cheeseandbacon.org/huberts-island/";
+    string buy_url="http://cheeseandbacon.org/huberts-island/buy.php";
 
     #ifdef GAME_OS_WINDOWS
     ShellExecute(NULL,"open",buy_url.c_str(),NULL,NULL,SW_SHOWNORMAL);

@@ -240,11 +240,11 @@ special_info_return_data set_special_info_string(short special_info){
         break;
 
     case SPECIAL_INFO_VERSION:
-        ss.clear();ss.str("");ss<<"  Version: ";ss<<AutoVersion::MAJOR;ss<<".";ss<<AutoVersion::MINOR;ss<<" ";ss<<AutoVersion::STATUS;text=ss.str();
+        ss.clear();ss.str("");ss<<"  Version: ";ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;ss<<" ";ss<<Version::STATUS;text=ss.str();
         break;
 
     case SPECIAL_INFO_BUILD_DATE:
-        ss.clear();ss.str("");ss<<"Build date: ";ss<<AutoVersion::MONTH;ss<<"-";ss<<AutoVersion::DATE;ss<<"-";ss<<AutoVersion::YEAR;text=ss.str();
+        ss.clear();ss.str("");ss<<"Build date: ";ss<<Version::YEAR;ss<<"-";ss<<Version::MONTH;ss<<"-";ss<<Version::DAY;text=ss.str();
         break;
 
     case SPECIAL_INFO_MP_PLAYER_TEXT_0:

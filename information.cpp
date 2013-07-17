@@ -5,7 +5,6 @@
 #include "render.h"
 #include "world.h"
 #include "collision.h"
-#include "version.h"
 #include "special_info_strings.h"
 #include "holidays.h"
 

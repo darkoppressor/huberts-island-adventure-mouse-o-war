@@ -4634,7 +4634,7 @@ void Player::survival_end_game(bool won){
     survival_complete=true;
 
     string current_version="";
-    ss.clear();ss.str("");ss<<AutoVersion::MAJOR;ss<<".";ss<<AutoVersion::MINOR;current_version=ss.str();
+    ss.clear();ss.str("");ss<<"Version: ";ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;current_version=ss.str();
 
     string log_message="\nProfile: "+name;
     log_message+="\nVersion: "+current_version;

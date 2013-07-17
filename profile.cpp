@@ -158,7 +158,7 @@ void Profile::delete_profile(int profile_to_delete){
             button_event_open_window_create_profile(NULL,0);
         }
         else{
-            if(options_version_same(profile_list[0])){
+            if(options_version_compatible(profile_list[0])){
                 //Set the profile name.
                 player.name=profile_list[0];
 
@@ -189,7 +189,7 @@ void Profile::delete_profile(int profile_to_delete){
 
 void Profile::select_profile(int profile_to_select){
     if(player.name!=profile_list[profile_to_select]){
-        if(options_version_same(profile_list[profile_to_select])){
+        if(options_version_compatible(profile_list[profile_to_select])){
             version_mismatch=false;
 
             //If a game was already in progress, save the current profile before loading the new one.

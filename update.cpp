@@ -834,7 +834,7 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         //As long as the intro is not in progress.
         if(player.game_beginning_cutscene==0){
             //Display the game version number.
-            ss.clear();ss.str("");ss<<"Version: ";ss<<AutoVersion::MAJOR;ss<<".";ss<<AutoVersion::MINOR;ss<<" ";ss<<AutoVersion::STATUS;ss<<"\xA";msg=ss.str();
+            ss.clear();ss.str("");ss<<"Version: ";ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;ss<<" ";ss<<Version::STATUS;ss<<"\xA";msg=ss.str();
             font.show(0+2,575+2,msg,COLOR_BLACK);
             font.show(0,575,msg,return_gui_color(holiday,3));
         }
