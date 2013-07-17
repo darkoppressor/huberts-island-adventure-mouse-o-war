@@ -17,5 +17,7 @@ syntax: regexp
 syntax: glob
 
 *.exe
+*.cscope_file_list
 *.depend
 *.cfg
+*.save
