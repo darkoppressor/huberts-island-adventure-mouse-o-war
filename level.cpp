@@ -1605,7 +1605,7 @@ void Level::load_level_adventure(){
                     if(x>=0 && x<=(level_x/TILE_SIZE)-1 && y>=0 && y<=(level_y/TILE_SIZE)-1){
                         bool near_spawn=false;
                         for(int items=0;items<vector_items.size();items++){
-                            if((vector_items[items].type==ITEM_SPAWNPOINT || vector_items[items].type==ITEM_CHECKPOINT) &&
+                            if((vector_items[items].type==ITEM_SPAWNPOINT || vector_items[items].type==ITEM_CHECKPOINT || vector_items[items].type==ITEM_ENDPOINT) &&
                                abs(vector_items[items].x-x*TILE_SIZE)<spawn_protection && abs(vector_items[items].y-y*TILE_SIZE)<spawn_protection){
                                 near_spawn=true;
 
@@ -1681,7 +1681,7 @@ void Level::load_level_adventure(){
                                 }
 
                                 if(!invalid_tile){
-                                    if(y+npc_height<=(level_y/TILE_SIZE)-1 && tile_array[x][y+npc_height].solidity!=TILE_SOLIDITY_PASSABLE){
+                                    if(y+npc_height<=(level_y/TILE_SIZE)-1 && tile_array[x][y+npc_height].solidity!=TILE_SOLIDITY_PASSABLE && tile_array[x][y+npc_height].slope==180){
                                         location_valid=true;
                                     }
                                 }
@@ -1718,10 +1718,8 @@ void Level::load_level_adventure(){
                 break;
             }
         }
-    }
 
-    //Set all boss traps' boss pointers.
-    if(boss_index!=-1){
+        //Set all boss traps' boss pointers.
         for(int i=0;i<vector_traps.size();i++){
             if(vector_traps[i].BOSS){
                 vector_traps[i].boss_index=boss_index;

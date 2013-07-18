@@ -46,7 +46,7 @@ class Item{
 
     public:
     //The contructor takes starting coordinates and a movement direction.
-    Item(double get_x,double get_y,bool get_IN_AIR,short get_type,int get_goal_level_to_load,bool get_goal_secret,int min_move=10,int max_move=20,int min_jump=20,int max_jump=40,bool can_start_falling=false,short get_counter_vacuum=0);
+    Item(double get_x,double get_y,bool get_IN_AIR,short get_type,int get_goal_level_to_load,bool get_goal_secret,int min_move=10,int max_move=20,int min_jump=20,int max_jump=40,bool can_start_falling=false,short get_counter_vacuum=0,int get_score_bonus=0);
 
     void set_color();
 
@@ -64,6 +64,8 @@ class Item{
 
     //Animate the sprite.
     void animate();
+
+    SDL_Rect* get_texture_clip(bool survival_spawn);
 
     //Render the sprite.
     void render(bool mirrored=false,bool survival_spawn=false);
@@ -105,6 +107,9 @@ class Item{
 
     //If non-zero, the item cannot be vacuumed.
     short counter_cannot_be_vacuumed;
+
+    //A percentage bonus to the score this item is worth.
+    int score_bonus;
 };
 
 #endif

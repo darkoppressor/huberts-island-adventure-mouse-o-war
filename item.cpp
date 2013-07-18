@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Item::Item(double get_x,double get_y,bool get_IN_AIR,short get_type,int get_goal_level_to_load,bool get_goal_secret,int min_move,int max_move,int min_jump,int max_jump,bool can_start_falling,short get_counter_vacuum){
+Item::Item(double get_x,double get_y,bool get_IN_AIR,short get_type,int get_goal_level_to_load,bool get_goal_secret,int min_move,int max_move,int min_jump,int max_jump,bool can_start_falling,short get_counter_vacuum,int get_score_bonus){
     int random=random_range(0,1);
     if(random==0){
         move_state=LEFT;
@@ -37,6 +37,8 @@ Item::Item(double get_x,double get_y,bool get_IN_AIR,short get_type,int get_goal
     IN_AIR=get_IN_AIR;
 
     counter_cannot_be_vacuumed=get_counter_vacuum;
+
+    score_bonus=get_score_bonus;
 
     if(can_start_falling){
         random=random_range(0,99);
@@ -1031,6 +1033,120 @@ void Item::animate(){
     }
 }
 
+SDL_Rect* Item::get_texture_clip(bool survival_spawn){
+    if(type==ITEM_LEAF){
+        return &sprites_item_leaf[frame];
+    }
+    else if(type==ITEM_CHEESE){
+        return &sprites_item_cheese[frame];
+    }
+    else if(type==ITEM_AMMO){
+        return &sprites_item_ammo[frame];
+    }
+    else if(type==ITEM_SPAWNPOINT){
+        if(survival_spawn){
+            if(player.game_mode==GAME_MODE_SP_ADVENTURE || player.game_mode==GAME_MODE_MP_ADVENTURE){
+                return &sprites_item_spawnpoint[frame];
+            }
+            else if(player.game_mode==GAME_MODE_SP_SURVIVAL || player.game_mode==GAME_MODE_MP_SURVIVAL){
+                if(player.survival_escape){
+                    return &sprites_survival_spawn[frame];
+                }
+                else{
+                    return &sprites_survival_spawn[0];
+                }
+            }
+        }
+    }
+    else if(type==ITEM_CHECKPOINT){
+        return &sprites_item_checkpoint[frame];
+    }
+    else if(type==ITEM_ENDPOINT){
+        if(!goal_secret){
+            return &sprites_item_endpoint[frame];
+        }
+        else{
+            return &sprites_item_endpoint_secret[frame];
+        }
+    }
+    else if(type==ITEM_SWIMMING_GEAR){
+        return &sprites_item_swimming_gear[frame];
+    }
+    else if(type==ITEM_KEY_RED){
+        return &sprites_item_key_red[frame];
+    }
+    else if(type==ITEM_KEY_BLUE){
+        return &sprites_item_key_blue[frame];
+    }
+    else if(type==ITEM_KEY_GREEN){
+        return &sprites_item_key_green[frame];
+    }
+    else if(type==ITEM_KEY_YELLOW){
+        return &sprites_item_key_yellow[frame];
+    }
+    else if(type==ITEM_KEY_ORANGE){
+        return &sprites_item_key_orange[frame];
+    }
+    else if(type==ITEM_KEY_PURPLE){
+        return &sprites_item_key_purple[frame];
+    }
+    else if(type==ITEM_TOWEL){
+        return &sprites_item_towel[frame];
+    }
+    else if(type==ITEM_KEY_GRAY){
+        return &sprites_item_key_gray[frame];
+    }
+    else if(type==ITEM_KEY_BROWN){
+        return &sprites_item_key_brown[frame];
+    }
+    else if(type==ITEM_KEY_BLACK){
+        return &sprites_item_key_black[frame];
+    }
+    else if(type==ITEM_KEY_PINK){
+        return &sprites_item_key_pink[frame];
+    }
+    else if(type==ITEM_KEY_CYAN){
+        return &sprites_item_key_cyan[frame];
+    }
+    else if(type==ITEM_SINK){
+        return &sprites_item_sink[frame];
+    }
+    else if(type==ITEM_J_BALLOON){
+        return &sprites_item_j_balloon[frame];
+    }
+    else if(type==ITEM_AMMO_BARREL){
+        return &sprites_item_ammo_barrel[frame];
+    }
+    else if(type==ITEM_CANDY){
+        if(color!=COLOR_BLACK){
+            return &sprites_item_candy[frame];
+        }
+        else{
+            return &sprites_item_candy_black[frame];
+        }
+    }
+    else if(type==ITEM_SUIT_DEADLY_WATER){
+        return &sprites_item_suit_deadly_water[frame];
+    }
+    else if(type==ITEM_SUIT_SHARP){
+        return &sprites_item_suit_sharp[frame];
+    }
+    else if(type==ITEM_SUIT_BANANA){
+        return &sprites_item_suit_banana[frame];
+    }
+    else if(type==ITEM_SHOT_HOMING){
+        return &sprites_item_shot_homing[frame];
+    }
+    else if(type==ITEM_TRANSLATOR){
+        return &sprites_item_translator[frame];
+    }
+    else if(type==ITEM_J_WING){
+        return &sprites_item_j_wing[frame];
+    }
+
+    return 0;
+}
+
 void Item::render(bool mirrored,bool survival_spawn){
     //If the item exists, render it.
     if(exists){
@@ -1053,113 +1169,113 @@ void Item::render(bool mirrored,bool survival_spawn){
             //If the player is in a level.
             else{
                 if(type==ITEM_LEAF){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_leaf[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_CHEESE){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_cheese[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_AMMO){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_ammo[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_SPAWNPOINT){
                     if(survival_spawn){
                         if(player.game_mode==GAME_MODE_SP_ADVENTURE || player.game_mode==GAME_MODE_MP_ADVENTURE){
-                            render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.sprite_sheet_level_items,&sprites_item_spawnpoint[frame],1.0,1.0,1.0,0.0,color);
+                            render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.sprite_sheet_level_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                         }
                         else if(player.game_mode==GAME_MODE_SP_SURVIVAL || player.game_mode==GAME_MODE_MP_SURVIVAL){
                             if(player.survival_escape){
-                                render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.survival_spawn,&sprites_survival_spawn[frame],1.0,1.0,1.0,0.0,color);
+                                render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.survival_spawn,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                             }
                             else{
-                                render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.survival_spawn,&sprites_survival_spawn[0],1.0,1.0,1.0,0.0,color);
+                                render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-32-(int)player.camera_y),image.survival_spawn,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                             }
                         }
                     }
                 }
                 else if(type==ITEM_CHECKPOINT){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,&sprites_item_checkpoint[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_ENDPOINT){
                     if(!goal_secret){
-                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,&sprites_item_endpoint[frame],1.0,1.0,1.0,0.0,color);
+                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                     }
                     else{
-                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,&sprites_item_endpoint_secret[frame],1.0,1.0,1.0,0.0,color);
+                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_level_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                     }
                 }
                 else if(type==ITEM_SWIMMING_GEAR){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_swimming_gear[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_RED){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_red[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_BLUE){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_blue[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_GREEN){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_green[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_YELLOW){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_yellow[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_ORANGE){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_orange[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_PURPLE){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_purple[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_TOWEL){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_towel[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_GRAY){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_gray[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_BROWN){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_brown[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_BLACK){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_black[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_PINK){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_pink[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_KEY_CYAN){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_key_cyan[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_SINK){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_sink[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_J_BALLOON){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_j_balloon[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_AMMO_BARREL){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_ammo_barrel[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_CANDY){
                     if(color!=COLOR_BLACK){
-                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_candy[frame],1.0,1.0,1.0,0.0,color);
+                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                     }
                     else{
-                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_candy_black[frame]);
+                        render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn));
                     }
                 }
                 else if(type==ITEM_SUIT_DEADLY_WATER){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_suit_deadly_water[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_SUIT_SHARP){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_suit_sharp[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_SUIT_BANANA){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_suit_banana[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_SHOT_HOMING){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_shot_homing[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_TRANSLATOR){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_translator[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
                 else if(type==ITEM_J_WING){
-                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,&sprites_item_j_wing[frame],1.0,1.0,1.0,0.0,color);
+                    render_sprite((int)((int)render_x-(int)player.camera_x),(int)((int)render_y-(int)player.camera_y),image.sprite_sheet_items,get_texture_clip(survival_spawn),1.0,1.0,1.0,0.0,color);
                 }
             }
         }

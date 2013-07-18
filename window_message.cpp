@@ -70,6 +70,11 @@ void Window_Message::turn_off(){
                 player.start_game();
             }
         }
+        else if(player.new_game_plus_notification){
+            player.new_game_plus_notification=false;
+
+            set_message("","New Game + "+player.num_to_roman_numeral(player.new_game_plus)+"!");
+        }
     }
     else if(player.game_mode==GAME_MODE_MP_ADVENTURE){
         if(player.game_beginning_cutscene>0){

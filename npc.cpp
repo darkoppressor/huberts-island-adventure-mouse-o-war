@@ -59,6 +59,8 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
     tophat_adjust_x=0.0;
     tophat_adjust_y=0.0;
 
+    starts_dead=false;
+
     //Movement:
     move_state=0;
     run_speed=0.0;
@@ -586,6 +588,8 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
         wears_tophat=true;
         tophat_when_dead=true;
 
+        starts_dead=true;
+
         can_be_duplicated=false;
 
         //Physics:
@@ -594,6 +598,8 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
     }
     //Fish on ice harmless
     else if(type==NPC_FISH_ON_ICE_HARMLESS){
+        starts_dead=true;
+
         can_be_duplicated=false;
 
         //Physics:
@@ -2977,12 +2983,18 @@ void Npc::handle_death(bool override_invulnerability){
                 if(health<=0){
                     standard_death();
 
-                    int number_of_items=100+(int)ceil(100.0*(double)player.new_game_plus*0.5);
+                    int number_of_items=100+(player.new_game_plus*100);
                     if(player.get_upgrade_state("candy_drop")){
-                        number_of_items+=100;
+                        number_of_items*=2;
                     }
+                    if(number_of_items>2000){
+                        number_of_items=2000;
+                    }
+
+                    int score_bonus=100+ceil(pow(player.new_game_plus*10,1.5));
+
                     for(int i=0;i<number_of_items;i++){
-                        vector_items.push_back(Item(x+(w-16)/2.0,y+(h-16)/2.0,true,ITEM_CANDY,0,false,1,100,1,175,true,15));
+                        vector_items.push_back(Item(x+(w-16)/2.0,y+(h-16)/2.0,true,ITEM_CANDY,0,false,1,100,1,175,true,15,score_bonus));
                     }
 
                     new_shots.push_back(new_shot_data(x+(w-128)/2.0,y+(h-128)/2.0,0.0,SHOT_BOSS_DEFEATED,false));
@@ -3102,9 +3114,12 @@ void Npc::handle_death(bool override_invulnerability){
                         }
                     }
                     else{
-                        int random=random_range(1,3);
+                        int random=0;
                         if(player.get_upgrade_state("candy_drop")){
-                            random*=2;
+                            random=random_range(6,12);
+                        }
+                        else{
+                            random=random_range(1,3);
                         }
 
                         for(int i=0;i<random;i++){

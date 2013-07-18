@@ -31,6 +31,7 @@
  - Improved the experience of the first level. Added signs, removed some enemies.
  - Added signs to other levels explaining some things.
  - Made bananas a little easier to see.
+ - Collectibles that you haven't gotten yet now show up on the map.
  - Added a few new water music tracks that were needed due to new swimmable areas.
  - NPCs are no longer capable of walking on water.
  - NPC shots hitting levers no longer adds to the "Levers Shot" stat.
@@ -39,6 +40,8 @@
  - Players 2-4 default controls changed.
  - Players other than Player 1 can now properly grab special items.
  - Multiplayer setup info is now persistent.
+ - Switching to Hubert no longer resets special item states.
+ - Can no longer begin climbing while looking.
  - The "toggle various windows" keys can no longer override the buttons on the Sound Test screen.
  - Some minor level tweaks.
  - Fixed the Buy Game link in the demo version.

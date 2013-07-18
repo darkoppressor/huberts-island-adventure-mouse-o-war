@@ -434,6 +434,8 @@ void Window_Map::load_map_data(){
         viewable_map_data.clear();
         viewable_map_data.resize(level_x/TILE_SIZE,vector<map_data>(level_y/TILE_SIZE));
 
+        viewable_items.clear();
+
         //Load the map seen data from the map save file.
 
         load_path=profile.get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/map.blazesave";
@@ -515,6 +517,72 @@ void Window_Map::load_map_data(){
                 load.close();
                 load.clear();
             }
+
+            //If the current sub level is 0, meaning "load the main level."
+            if(current_viewable_sub_level==0){
+                load_path="data/levels/"+current_level+"/items.blazelevel";
+            }
+            //If there is a current sub level to load instead of the main one.
+            else{
+                load_path="data/levels/"+current_level+"/"+current_sub_level+"/items.blazelevel";
+            }
+            load.open(load_path.c_str(),ifstream::in);
+
+            if(load!=NULL){
+                short type=0;
+                double x=0.0;
+                double y=0.0;
+                int goal_level_to_load=0;
+                bool goal_secret=false;
+
+                while(!load.eof()){
+                    type=30000;
+                    x=0.0;
+                    y=0.0;
+                    goal_level_to_load=0;
+                    goal_secret=false;
+
+                    load >> type;
+                    load >> x;
+                    load >> y;
+                    load >> goal_level_to_load;
+                    load >> goal_secret;
+
+                    if(type!=30000){
+                        viewable_items.push_back(Item(x,y,false,type,goal_level_to_load,goal_secret));
+                    }
+                }
+
+                load.close();
+                load.clear();
+            }
+
+            //Load the item seen data from the item save file.
+
+            load_path=profile.get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
+            load.open(load_path.c_str(),ifstream::in);
+
+            if(load!=NULL){
+                bool collected=false;
+
+                for(int i=0;i<viewable_items.size();i++){
+                    //If the item is of a collectable type.
+                    if(profile.is_item_collectable(viewable_items[i].type)){
+                        load>>collected;
+                        if(collected){
+                            viewable_items[i].exists=false;
+                        }
+                    }
+                    else{
+                        if(viewable_items[i].type!=ITEM_SPAWNPOINT && viewable_items[i].type!=ITEM_CHECKPOINT && viewable_items[i].type!=ITEM_ENDPOINT){
+                            viewable_items[i].exists=false;
+                        }
+                    }
+                }
+
+                load.close();
+                load.clear();
+            }
         }
     }
 }
@@ -563,6 +631,50 @@ void Window_Map::display_map(){
                     }
                     else{
                         render_rectangle((int)((int)int_x*16-(int)map_camera_x),35+(int)((int)int_y*16-(int)map_camera_y),16,16,1.0,COLOR_BLACK);
+                    }
+                }
+            }
+        }
+
+        if(!player.is_level_worldmap(current_viewable_level)){
+            for(int i=0;i<viewable_items.size();i++){
+                if(viewable_items[i].exists){
+                    int current_x=(int)((int)viewable_items[i].x/TILE_SIZE);
+                    int current_y=(int)((int)viewable_items[i].y/TILE_SIZE);
+
+                    int check_x_start=current_x-4;
+                    int check_x_end=current_x+4;
+                    int check_y_start=current_y-4;
+                    int check_y_end=current_y+4;
+
+                    bool touching_seen_tile=false;
+
+                    for(int int_y=check_y_start;int_y<=check_y_end && !touching_seen_tile;int_y++){
+                        for(int int_x=check_x_start;int_x<=check_x_end && !touching_seen_tile;int_x++){
+                            if(int_x>=0 && int_x<=(level_x/TILE_SIZE)-1 && int_y>=0 && int_y<=(level_y/TILE_SIZE)-1){
+                                if(viewable_map_data[int_x][int_y].seen && collision_check(viewable_items[i].x,viewable_items[i].y,viewable_items[i].w,viewable_items[i].h,int_x*TILE_SIZE,int_y*TILE_SIZE,TILE_SIZE,TILE_SIZE)){
+                                    touching_seen_tile=true;
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(touching_seen_tile){
+                        if((int)(viewable_items[i].x/2-map_camera_x)>=x+10 && (int)(viewable_items[i].x/2+viewable_items[i].w/2-map_camera_x)<=x+10+map_camera_w && 35+(int)(viewable_items[i].y/2-map_camera_y)>=y+35 && 35+(int)(viewable_items[i].y/2+viewable_items[i].h/2-map_camera_y)<=y+35+map_camera_h){
+                            image_data item_image=image.sprite_sheet_items;
+                            if(viewable_items[i].type==ITEM_SPAWNPOINT || viewable_items[i].type==ITEM_CHECKPOINT || viewable_items[i].type==ITEM_ENDPOINT){
+                                item_image=image.sprite_sheet_level_items;
+                            }
+
+                            int y_adjust=0;
+                            if(viewable_items[i].type==ITEM_SPAWNPOINT){
+                                y_adjust=-32;
+                            }
+
+                            render_sprite((int)((int)viewable_items[i].x/2-(int)map_camera_x),35+(int)(((int)viewable_items[i].y+y_adjust)/2-(int)map_camera_y),item_image,viewable_items[i].get_texture_clip(true),1.0,0.5,0.5,0.0,viewable_items[i].color);
+                        }
                     }
                 }
             }

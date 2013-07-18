@@ -161,8 +161,6 @@ void Player_Mp::load_data(){
 
     update_character();
 
-    check_special_items();
-
     decision_type=AI_DECISION_NONE;
     counter_decision_cooldown_revive=0;
 
@@ -354,6 +352,8 @@ void Player_Mp::update_character(){
         swim_acceleration=0.3375;
         swim_friction=swim_acceleration;
     }
+
+    check_special_items();
 }
 
 void Player_Mp::move(){
@@ -1257,7 +1257,7 @@ void Player_Mp::handle_events(bool being_pushed_up){
                         }
 
                         else if(vector_items[i].type==ITEM_CANDY){
-                            player.gain_score(player.return_candy_score(),vector_items[i].x+vector_items[i].w/2.0,vector_items[i].y);
+                            player.gain_score(player.return_candy_score(vector_items[i].score_bonus),vector_items[i].x+vector_items[i].w/2.0,vector_items[i].y);
 
                             play_positional_sound(sound_system.item_collect_candy,x,y);
                         }

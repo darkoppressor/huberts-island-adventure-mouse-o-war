@@ -1207,7 +1207,8 @@ void Shot::handle_events(){
                         }
 
                         //If the tile is a solid-only-on-top tile, and the shot is moving downwards.
-                        else if(type!=SHOT_FRUIT && (level.tile_array[int_x][int_y].solidity==TILE_SOLIDITY_CLOUD || level.tile_array[int_x][int_y].special==TILE_SPECIAL_CLIMBABLE_TOP) && moving_down()){
+                        else if(type!=SHOT_FRUIT && !player_shot && (level.tile_array[int_x][int_y].solidity==TILE_SOLIDITY_CLOUD || level.tile_array[int_x][int_y].special==TILE_SPECIAL_CLIMBABLE_TOP) &&
+                                moving_down()){
                             //We check the whole shot against the whole tile.
                             //xxxxxx
                             //xxxxxx

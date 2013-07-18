@@ -382,20 +382,30 @@ void events(){
                     i--;
                 }
                 else{
-                    if(!vector_npcs[i].exists){
+                    if(!vector_npcs[i].exists && !vector_npcs[i].starts_dead){
                         vector_npcs[i].counter_fade--;
                     }
                 }
             }
 
             if(npc_erased){
-                if(player.boss_index!=-1){
-                    for(int i=0;i<vector_npcs.size();i++){
-                        if(vector_npcs[i].BOSS){
-                            player.boss_index=i;
-                            break;
-                        }
+                int boss_index=-1;
+
+                for(int i=0;i<vector_npcs.size();i++){
+                    if(vector_npcs[i].BOSS){
+                        boss_index=i;
+                        break;
                     }
+                }
+
+                for(int i=0;i<vector_traps.size();i++){
+                    if(vector_traps[i].BOSS){
+                        vector_traps[i].boss_index=boss_index;
+                    }
+                }
+
+                if(player.boss_index!=-1){
+                    player.boss_index=boss_index;
                 }
             }
         }
@@ -424,10 +434,10 @@ void events(){
 
 //Handle animations.
 void animation(){
+    player.update_menu_background();
+
     //If no game is in progress.
     if(!player.game_in_progress){
-        player.update_menu_background();
-
         //Animate the overlays.
         player.animate_overlays();
     }
@@ -828,11 +838,15 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
             font.show((main_window.SCREEN_WIDTH-71)/2+2,(main_window.SCREEN_HEIGHT-16)/2+2,"Paused",COLOR_BLACK);
             font.show((main_window.SCREEN_WIDTH-71)/2,(main_window.SCREEN_HEIGHT-16)/2,"Paused",return_gui_color(holiday,3));
         }
+
+        if(!player.hide_gui && !level.return_title_pause() && ((player.pause && window_manager.which_window_open()==-1) || (window_manager.which_window_open()!=-1 && window_manager.which_window_open()!=WHICH_WINDOW_MESSAGE))){
+            player.render_menu_pretties();
+        }
     }
-    //If a game is not in progress.
-    else{
-        //As long as the intro is not in progress.
-        if(player.game_beginning_cutscene==0){
+
+    if(!player.hide_gui){
+        if((player.game_in_progress && !level.return_title_pause() && ((player.pause && window_manager.which_window_open()==-1) || (window_manager.which_window_open()!=-1 && window_manager.which_window_open()!=WHICH_WINDOW_MESSAGE))) ||
+           (!player.game_in_progress && player.game_beginning_cutscene==0)){
             //Display the game version number.
             ss.clear();ss.str("");ss<<"Version: ";ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;ss<<" ";ss<<Version::STATUS;ss<<"\xA";msg=ss.str();
             font.show(0+2,575+2,msg,COLOR_BLACK);
@@ -1070,9 +1084,9 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
 
     //Display development stuff.
     if(player.option_dev){
-        ss.clear();ss.str("");ss<<player.boss_index;ss<<"\xA";msg=ss.str();
+        ///ss.clear();ss.str("");ss<<player.boss_index;ss<<"\xA";msg=ss.str();
         ///ss.clear();ss.str("");ss<<compare_versions("1.0","1.1");ss<<"\xA";msg=ss.str();
-        font.show(450,0,msg,COLOR_RED);
+        ///font.show(450,0,msg,COLOR_RED);
     }
 
     //Render the software mouse cursor.

@@ -517,6 +517,9 @@ class Npc: public Actor{
     double tophat_adjust_x;
     double tophat_adjust_y;
 
+    //If true, this NPC will never fade out.
+    bool starts_dead;
+
     //Frame speeds.
     short frame_speed_walk;
     short frame_speed_special_attack;

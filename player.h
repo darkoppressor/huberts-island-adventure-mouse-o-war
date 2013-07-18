@@ -157,6 +157,8 @@ class Player: public Actor{
 
     void update_window_caption(int frame_rate,double ms_per_frame,int logic_frame_rate);
 
+    void render_menu_pretties();
+
     //Render the background.
     void render_background();
 
@@ -217,7 +219,7 @@ class Player: public Actor{
     int return_ammo_barrel_amount();
 
     //Returns the amount a piece of candy will give you.
-    uint64_t return_candy_score();
+    uint64_t return_candy_score(int score_bonus);
 
     //Returns the current phase of the moon.
     short return_moon_phase();
@@ -851,6 +853,8 @@ class Player: public Actor{
 
     std::vector<std::string> shop_upgrades;
     std::map<std::string,bool> upgrades;
+
+    bool new_game_plus_notification;
 };
 
 #endif

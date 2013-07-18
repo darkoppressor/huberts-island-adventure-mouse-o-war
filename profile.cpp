@@ -634,6 +634,15 @@ bool Profile::load_level_data(){
                                     else if(vector_items[i].type==ITEM_CHEESE){
                                         player.current_level_cheese++;
                                     }
+
+                                    int candy_width=vector_items[i].w/ITEM_W;
+                                    int candy_height=vector_items[i].h/ITEM_H;
+
+                                    for(int x=0;x<candy_width;x++){
+                                        for(int y=0;y<candy_height;y++){
+                                            vector_items.push_back(Item(vector_items[i].x+x*ITEM_W,vector_items[i].y+y*ITEM_H,false,ITEM_CANDY,0,false));
+                                        }
+                                    }
                                 }
                             }
                         }

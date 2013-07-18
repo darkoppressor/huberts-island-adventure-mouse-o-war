@@ -39,13 +39,13 @@ void Player_Mp::handle_command_event(short command){
                 //If all the conditions for a jump are met.
                 if(!fell_through_cloud && (counter_jump_mode>0 || (extra_jumps>0 && ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)) ||
                                            ((!IN_AIR || (IN_AIR && counter_jump_mercy>0)) && !jump_state && ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)))){
-                    counter_jump_mercy=0;
-
-                    if(extra_jumps>0 && IN_AIR){
+                    if(extra_jumps>0 && IN_AIR && counter_jump_mercy==0){
                         if(!player.get_upgrade_state("infinite_jumps")){
                             extra_jumps--;
                         }
                     }
+
+                    counter_jump_mercy=0;
 
                     if(CLIMBING){
                         CLIMBING=false;

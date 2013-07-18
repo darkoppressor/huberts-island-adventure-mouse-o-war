@@ -1156,7 +1156,7 @@ void Actor::finish_events(){
         ///
     }
 
-    if(SWIMMING){
+    if(SWIMMING || CLIMBING){
         extra_jumps=get_extra_jumps_max();
     }
 

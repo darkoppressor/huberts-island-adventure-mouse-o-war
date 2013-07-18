@@ -307,6 +307,8 @@ void Player::reset(){
     mp_adventure_started=false;
     mp_adventure_ending=false;
 
+    new_game_plus_notification=false;
+
     reset_mp_players();
 
     mp_level_data_items_collected.clear();
@@ -548,6 +550,9 @@ void Player::beat_level(){
             new_game_plus++;
 
             if(game_mode==GAME_MODE_SP_ADVENTURE){
+                //Convert ammo to score.
+                gain_score(ammo*2,-1.0,-1.0,false);
+
                 //Reset player ammo.
                 ammo=STARTING_AMMO;
 
@@ -575,6 +580,8 @@ void Player::beat_level(){
 
                 profile.save_inventory();
                 profile.save_boss_states();
+
+                new_game_plus_notification=true;
             }
             else if(game_mode==GAME_MODE_MP_ADVENTURE){
                 mp_adventure_ending=true;
@@ -758,8 +765,6 @@ void Player::load_data(){
     set_firework_rate();
 
     update_character();
-
-    check_special_items();
 }
 
 void Player::check_special_items(){
@@ -940,6 +945,8 @@ void Player::update_character(){
         swim_acceleration=0.3375;
         swim_friction=swim_acceleration;
     }
+
+    check_special_items();
 }
 
 void Player::toggle_pause(bool get_pause){
@@ -2143,7 +2150,7 @@ void Player::handle_events(bool being_pushed_up){
                         }
 
                         else if(vector_items[i].type==ITEM_CANDY){
-                            gain_score(return_candy_score(),vector_items[i].x+vector_items[i].w/2.0,vector_items[i].y);
+                            gain_score(return_candy_score(vector_items[i].score_bonus),vector_items[i].x+vector_items[i].w/2.0,vector_items[i].y);
 
                             play_positional_sound(sound_system.item_collect_candy,x,y);
                         }
@@ -2934,48 +2941,15 @@ void Player::update_window_caption(int frame_rate,double ms_per_frame,int logic_
     SDL_WM_SetCaption(msg.c_str(),msg.c_str());
 }
 
-void Player::render_background(){
-    if(game_in_progress){
-        render_texture(0,0,image.background_static);
+void Player::render_menu_pretties(){
+    short moon_phase=return_moon_phase();
 
-        if(level.background_layers.size()<=1){
-            if(!on_worldmap()){
-                for(int i=0;i<vector_effect_firework.size();i++){
-                    vector_effect_firework[i].render();
-                }
-            }
-        }
-
-        //Render the scrolling background layer(s).
-        for(int i=0;i<level.background_layers.size();i++){
-            level.background_layers[i].render(i);
-
-            if(i==1){
-                if(!on_worldmap()){
-                    for(int i=0;i<vector_effect_firework.size();i++){
-                        vector_effect_firework[i].render();
-                    }
-                }
-            }
-        }
-    }
-    else if(!game_in_progress && game_beginning_cutscene==0){
-        render_texture(0,0,image.menu_background_0);
-        for(int i=0;i<menu_backgrounds.size();i++){
-            menu_backgrounds[i].render(i);
-        }
-
+    if(!game_in_progress){
         double opacity=render_time_overlay();
         opacity+=opacity/8.0;
         if(opacity>1.0){
             opacity=1.0;
         }
-
-        for(int i=0;i<vector_effect_firework.size();i++){
-            vector_effect_firework[i].render();
-        }
-
-        render_foreground();
 
         //Determine the date and time.
         time_t now;
@@ -2984,7 +2958,6 @@ void Player::render_background(){
         tm_now=localtime(&now);
 
         //Display the sun or moon.
-        short moon_phase=return_moon_phase();
         if(is_night()){
             render_rectangle(main_window.SCREEN_WIDTH-sprites_moon[moon_phase].w-15-15,0,sprites_moon[moon_phase].w+30,sprites_moon[moon_phase].h+30,1.0,COLOR_BLUE_OCEAN);
             render_rectangle(main_window.SCREEN_WIDTH-sprites_moon[moon_phase].w-15-13,2,sprites_moon[moon_phase].w+26,sprites_moon[moon_phase].h+26,opacity,COLOR_BLACK);
@@ -3018,20 +2991,22 @@ void Player::render_background(){
         msg=main_menu_special;
         font.show(15+2,15+sprites_moon[moon_phase].h+20+2,msg,COLOR_BLACK);
         font.show(15,15+sprites_moon[moon_phase].h+20,msg,main_menu_special_color);
+    }
 
-        short colors[6];
-        colors[0]=COLOR_RED;
-        colors[1]=COLOR_YELLOW_FULL;
-        colors[2]=COLOR_BLUE;
-        colors[3]=COLOR_GREEN;
-        colors[4]=COLOR_ORANGE_FULL;
-        colors[5]=COLOR_PURPLE_FULL;
+    short colors[6];
+    colors[0]=COLOR_RED;
+    colors[1]=COLOR_YELLOW_FULL;
+    colors[2]=COLOR_BLUE;
+    colors[3]=COLOR_GREEN;
+    colors[4]=COLOR_ORANGE_FULL;
+    colors[5]=COLOR_PURPLE_FULL;
 
-        string colored_message="";
-        int msg_color=0;
+    string colored_message="";
+    int msg_color=0;
 
-        //Display the game title.
-        if(menu_title_font){
+    //Display the game title.
+    if(menu_title_font){
+        if(!game_in_progress){
             colored_message="Hubert's Island Adventure:";
             for(int i=0;i<colored_message.length();i++){
                 font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,15+4,colored_message.substr(i,1),COLOR_BLACK);
@@ -3069,20 +3044,22 @@ void Player::render_background(){
                     msg_color=0;
                 }
             }
+        }
 
-            if(new_game_plus>0){
-                msg_color=0;
-                colored_message="New Game + "+num_to_roman_numeral(new_game_plus)+"!";
-                for(int i=0;i<colored_message.length();i++){
-                    font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x)+2,15+sprites_moon[moon_phase].h+20+font.spacing_y*4+2,colored_message.substr(i,1),COLOR_BLACK);
-                    font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x),15+sprites_moon[moon_phase].h+20+font.spacing_y*4,colored_message.substr(i,1),colors[msg_color]);
-                    if(colored_message.substr(i,1)!=" " && ++msg_color>5){
-                        msg_color=0;
-                    }
+        if(new_game_plus>0){
+            msg_color=0;
+            colored_message="New Game + "+num_to_roman_numeral(new_game_plus)+"!";
+            for(int i=0;i<colored_message.length();i++){
+                font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x)+2,15+sprites_moon[moon_phase].h+20+font.spacing_y*4+2,colored_message.substr(i,1),COLOR_BLACK);
+                font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x),15+sprites_moon[moon_phase].h+20+font.spacing_y*4,colored_message.substr(i,1),colors[msg_color]);
+                if(colored_message.substr(i,1)!=" " && ++msg_color>5){
+                    msg_color=0;
                 }
             }
         }
-        else{
+    }
+    else{
+        if(!game_in_progress){
             colored_message="Hubert's Island Adventure:";
             for(int i=0;i<colored_message.length();i++){
                 font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,15+4,colored_message.substr(i,1),COLOR_BLACK);
@@ -3122,20 +3099,61 @@ void Player::render_background(){
                     msg_color=0;
                 }
             }
+        }
 
-            if(new_game_plus>0){
-                msg_color=0;
-                msg_color++;
-                colored_message="New Game + "+num_to_roman_numeral(new_game_plus)+"!";
-                for(int i=0;i<colored_message.length();i++){
-                    font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x)+2,15+sprites_moon[moon_phase].h+20+font.spacing_y*4+2,colored_message.substr(i,1),COLOR_BLACK);
-                    font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x),15+sprites_moon[moon_phase].h+20+font.spacing_y*4,colored_message.substr(i,1),colors[msg_color]);
-                    if(colored_message.substr(i,1)!=" " && ++msg_color>5){
-                        msg_color=0;
+        if(new_game_plus>0){
+            msg_color=0;
+            msg_color++;
+            colored_message="New Game + "+num_to_roman_numeral(new_game_plus)+"!";
+            for(int i=0;i<colored_message.length();i++){
+                font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x)+2,15+sprites_moon[moon_phase].h+20+font.spacing_y*4+2,colored_message.substr(i,1),COLOR_BLACK);
+                font.show((main_window.SCREEN_WIDTH-colored_message.length()*font.spacing_x)*0.95+(i*font.spacing_x),15+sprites_moon[moon_phase].h+20+font.spacing_y*4,colored_message.substr(i,1),colors[msg_color]);
+                if(colored_message.substr(i,1)!=" " && ++msg_color>5){
+                    msg_color=0;
+                }
+            }
+        }
+    }
+}
+
+void Player::render_background(){
+    if(game_in_progress){
+        render_texture(0,0,image.background_static);
+
+        if(level.background_layers.size()<=1){
+            if(!on_worldmap()){
+                for(int i=0;i<vector_effect_firework.size();i++){
+                    vector_effect_firework[i].render();
+                }
+            }
+        }
+
+        //Render the scrolling background layer(s).
+        for(int i=0;i<level.background_layers.size();i++){
+            level.background_layers[i].render(i);
+
+            if(i==1){
+                if(!on_worldmap()){
+                    for(int i=0;i<vector_effect_firework.size();i++){
+                        vector_effect_firework[i].render();
                     }
                 }
             }
         }
+    }
+    else if(!game_in_progress && game_beginning_cutscene==0){
+        render_texture(0,0,image.menu_background_0);
+        for(int i=0;i<menu_backgrounds.size();i++){
+            menu_backgrounds[i].render(i);
+        }
+
+        for(int i=0;i<vector_effect_firework.size();i++){
+            vector_effect_firework[i].render();
+        }
+
+        render_foreground();
+
+        render_menu_pretties();
     }
     else if(!game_in_progress && game_beginning_cutscene!=0){
         render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,COLOR_BLACK);
@@ -3553,66 +3571,68 @@ void Player::update_menu_background(){
         menu_title_font=!menu_title_font;
     }
 
-    menu_background_counter_x+=random_range(1,2);
-    menu_background_counter_y+=random_range(1,2);
+    if(!game_in_progress){
+        menu_background_counter_x+=random_range(1,2);
+        menu_background_counter_y+=random_range(1,2);
 
-    if(menu_background_counter_x>=menu_background_counter_max_x){
-        menu_background_counter_x=0;
-        menu_background_counter_max_x=random_range(60,210);
-        menu_speed_x=5.0/random_range(1,5);
+        if(menu_background_counter_x>=menu_background_counter_max_x){
+            menu_background_counter_x=0;
+            menu_background_counter_max_x=random_range(60,210);
+            menu_speed_x=5.0/random_range(1,5);
 
-        int random=random_range(0,2);
-        if(menu_background_y==NONE){
-            random=random_range(1,2);
+            int random=random_range(0,2);
+            if(menu_background_y==NONE){
+                random=random_range(1,2);
+            }
+            if(random==0){
+                menu_background_x=NONE;
+            }
+            else if(random==1){
+                menu_background_x=LEFT;
+            }
+            else if(random==2){
+                menu_background_x=RIGHT;
+            }
         }
-        if(random==0){
-            menu_background_x=NONE;
-        }
-        else if(random==1){
-            menu_background_x=LEFT;
-        }
-        else if(random==2){
-            menu_background_x=RIGHT;
-        }
-    }
-    if(menu_background_counter_y>=menu_background_counter_max_y){
-        menu_background_counter_y=0;
-        menu_background_counter_max_y=random_range(60,210);
-        menu_speed_y=5.0/random_range(1,5);
+        if(menu_background_counter_y>=menu_background_counter_max_y){
+            menu_background_counter_y=0;
+            menu_background_counter_max_y=random_range(60,210);
+            menu_speed_y=5.0/random_range(1,5);
 
-        int random=random_range(0,2);
-        if(menu_background_x==NONE){
-            random=random_range(1,2);
+            int random=random_range(0,2);
+            if(menu_background_x==NONE){
+                random=random_range(1,2);
+            }
+            if(random==0){
+                menu_background_y=NONE;
+            }
+            else if(random==1){
+                menu_background_y=UP;
+            }
+            else if(random==2){
+                menu_background_y=DOWN;
+            }
         }
-        if(random==0){
-            menu_background_y=NONE;
-        }
-        else if(random==1){
-            menu_background_y=UP;
-        }
-        else if(random==2){
-            menu_background_y=DOWN;
-        }
-    }
 
-    double fake_delta_x=0.0;
-    double fake_delta_y=0.0;
+        double fake_delta_x=0.0;
+        double fake_delta_y=0.0;
 
-    if(menu_background_x==LEFT){
-        fake_delta_x=-menu_speed_x;
-    }
-    else if(menu_background_x==RIGHT){
-        fake_delta_x=menu_speed_x;
-    }
-    if(menu_background_y==UP){
-        fake_delta_y=-menu_speed_y;
-    }
-    else if(menu_background_y==DOWN){
-        fake_delta_y=menu_speed_y;
-    }
+        if(menu_background_x==LEFT){
+            fake_delta_x=-menu_speed_x;
+        }
+        else if(menu_background_x==RIGHT){
+            fake_delta_x=menu_speed_x;
+        }
+        if(menu_background_y==UP){
+            fake_delta_y=-menu_speed_y;
+        }
+        else if(menu_background_y==DOWN){
+            fake_delta_y=menu_speed_y;
+        }
 
-    for(int i=0;i<menu_backgrounds.size();i++){
-        menu_backgrounds[i].update(fake_delta_x,fake_delta_y);
+        for(int i=0;i<menu_backgrounds.size();i++){
+            menu_backgrounds[i].update(fake_delta_x,fake_delta_y);
+        }
     }
 }
 
@@ -4054,15 +4074,25 @@ string Player::name_inventory_item(short item_type){
 void Player::gain_score(uint64_t score_to_gain,double x_location,double y_location,bool show_floater){
     if(game_mode==GAME_MODE_SP_ADVENTURE || game_mode==GAME_MODE_MP_ADVENTURE){
         //Add the points to the player's score.
-        score+=score_to_gain;
+        if(score+score_to_gain<=numeric_limits<uint64_t>::max()){
+            score+=score_to_gain;
+        }
+        else{
+            score=numeric_limits<uint64_t>::max();
+        }
     }
     else if(game_mode==GAME_MODE_SP_SURVIVAL || game_mode==GAME_MODE_MP_SURVIVAL){
-        survival_score+=score_to_gain;
+        if(survival_score+score_to_gain<=numeric_limits<uint64_t>::max()){
+            survival_score+=score_to_gain;
+        }
+        else{
+            survival_score=numeric_limits<uint64_t>::max();
+        }
     }
 
     //As long as the elements of the vector do not exceed the limit.
     if(vector_effect_score_floater.size()<option_effect_limit){
-        if(show_floater){
+        if(score_to_gain>0 && show_floater){
             vector_effect_score_floater.push_back(Effect_Score_Floater(score_to_gain,x_location,y_location));
         }
     }
@@ -4273,7 +4303,7 @@ int Player::return_ammo_barrel_amount(){
     return amount;
 }
 
-uint64_t Player::return_candy_score(){
+uint64_t Player::return_candy_score(int score_bonus){
     uint64_t amount=SCORES_ITEMS[ITEM_CANDY];
 
     if(game_mode==GAME_MODE_SP_SURVIVAL || game_mode==GAME_MODE_MP_SURVIVAL){
@@ -4299,6 +4329,8 @@ uint64_t Player::return_candy_score(){
         if(get_upgrade_state("candy_amount_3")){
             amount+=ceil((double)base_amount*0.75);
         }
+
+        amount+=ceil((double)amount*(double)score_bonus*0.01);
     }
 
     return amount;
@@ -4423,8 +4455,8 @@ void Player::set_firework_rate(bool game_beaten_message){
         }
     }
 
-    if(fireworks_rate>5){
-        fireworks_rate=5;
+    if(fireworks_rate>3){
+        fireworks_rate=3;
     }
 }
 
@@ -5175,13 +5207,13 @@ string Player::get_upgrade_description(string upgrade){
         return "Boosts the amount of points you gain per candy by 75%!";
     }
     else if(upgrade=="candy_drop"){
-        return "Doubles the candy drop rate from baddies!";
+        return "Increases the candy drop rate from baddies!";
     }
     else if(upgrade=="candy_vac"){
         return "Doubles the range of your candy vacuum!";
     }
     else if(upgrade=="ammo_amount"){
-        return "Boosts the amount of ammo you gain from boxes and barrels by 25%!";
+        return "Boosts the amount of ammo you gain by 25%!";
     }
     else{
         return "None";
@@ -5190,40 +5222,40 @@ string Player::get_upgrade_description(string upgrade){
 
 uint64_t Player::get_upgrade_cost(string upgrade){
     if(upgrade=="monkeys"){
-        return 640000;
+        return 32000;
     }
     else if(upgrade=="infinite_jumps"){
-        return 1152000;
+        return 128000;
     }
     /**else if(upgrade=="tiny_baddies"){
-        return 768000;
+        return 38400;
     }*/
     else if(upgrade=="player_shot_noclip"){
-        return 1024000;
+        return 89600;
     }
     else if(upgrade=="xray_specs"){
-        return 896000;
+        return 48000;
     }
     else if(upgrade=="tophats"){
-        return 512000;
+        return 25600;
     }
     else if(upgrade=="candy_amount_1"){
-        return 768000;
+        return 38400;
     }
     else if(upgrade=="candy_amount_2"){
-        return 1024000;
+        return 89600;
     }
     else if(upgrade=="candy_amount_3"){
-        return 1280000;
+        return 160000;
     }
     else if(upgrade=="candy_drop"){
-        return 896000;
+        return 48000;
     }
     else if(upgrade=="candy_vac"){
-        return 640000;
+        return 32000;
     }
     else if(upgrade=="ammo_amount"){
-        return 768000;
+        return 38400;
     }
     else{
         return 0;

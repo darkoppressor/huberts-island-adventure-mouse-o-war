@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "image_data.h"
+#include "item.h"
 
 class Window_Map: public Window{
     private:
@@ -34,6 +35,8 @@ class Window_Map: public Window{
     };
     //The map data that has been loaded for viewing.
     std::vector< std::vector<map_data> > viewable_map_data;
+
+    std::vector<Item> viewable_items;
 
     public:
 
