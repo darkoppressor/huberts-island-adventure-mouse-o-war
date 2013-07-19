@@ -1,4 +1,4 @@
-1.4 - 2013/7/19
+1.4.0 - 2013/7/19
  - Updated compiler/libraries.
  - Ported the game to Linux and OS X!
  - Released the level editor for all 3 platforms.
@@ -47,7 +47,7 @@
  - Some minor level tweaks.
  - Fixed the Buy Game link in the demo version.
 
-1.3 - 2012/9/1
+1.3.0 - 2012/9/1
  - Minor level tweaks.
  - Non-mouse window navigation now skips the X button on all windows,
  - Non-mouse window nav now defaults to button 1 instead of "no button selected."
@@ -71,7 +71,7 @@
  - Added multiplayer capabilities to the game engine.
  - Added two new game modes: Multiplayer Adventure and Multiplayer Survival.
 
-1.2 - 2012/7/3
+1.2.0 - 2012/7/3
  - Some minor level tweaks.
  - The Up key (which already read signs) now flips switches as well.
  - The Use key has been changed to the Change Character key. As the name implies, it changes your character.
@@ -91,7 +91,7 @@
  - Added Independence Day things.
  - Software cursor no longer displays when all windows are closed.
 
-1.1 - 2012/6/13
+1.1.0 - 2012/6/13
  - Fixed a static linking problem. Well, a potential problem, anyway.
  - Updated libraries.
  - Tweaked starting options.
@@ -99,5 +99,5 @@
  - Harmless sea life is no longer multiplied on higher difficulties.
  - Added tons of FUN!
  
-1.0 - 2012/1/27
+1.0.0 - 2012/1/27
  - Initial release version!
