@@ -375,6 +375,15 @@ void Player::handle_command_event(short command){
                 }
             }
         }
+
+
+        if(!pause && game_in_progress && game_mode_is_multiplayer() && !on_worldmap() && all_humans_dead()){
+            for(int i=0;i<mp_players.size();i++){
+                if(!mp_players[i].DYING && !mp_players[i].bubble_mode){
+                    mp_players[i].handle_death(mp_players[i].x,mp_players[i].y,mp_players[i].w,mp_players[i].h,true);
+                }
+            }
+        }
         break;
 
     case COMMAND_CHANGE_CHARACTER:

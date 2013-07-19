@@ -1,4 +1,4 @@
-1.4 - 2013/7/15
+1.4 - 2013/7/19
  - Updated compiler/libraries.
  - Ported the game to Linux and OS X!
  - Released the level editor for all 3 platforms.
@@ -39,6 +39,7 @@
  - Fireworks are now affected by pausing the game.
  - Players 2-4 default controls changed.
  - Players other than Player 1 can now properly grab special items.
+ - If all human players are dead in multiplayer, Player 1 can press shoot to kill all the bots.
  - Multiplayer setup info is now persistent.
  - Switching to Hubert no longer resets special item states.
  - Can no longer begin climbing while looking.

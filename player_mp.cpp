@@ -356,6 +356,23 @@ void Player_Mp::update_character(){
     check_special_items();
 }
 
+void Player_Mp::put_in_bubble(){
+    bubble_move_x=run_speed;
+    if(IN_AIR){
+        bubble_move_y=air_velocity;
+    }
+    else{
+        bubble_move_y=0.0;
+    }
+    mp_reset(x,y);
+    bubble_mode=true;
+
+    //Prevent the constant bubble forming sound if we are moving the camera around with dev controls.
+    if(player.cam_state==CAM_STICKY){
+        play_positional_sound(sound_system.player_bubble_form,x,y);
+    }
+}
+
 void Player_Mp::move(){
     bool events_handled=false;
     bool started_frame_on_ground=false;
@@ -363,20 +380,8 @@ void Player_Mp::move(){
     if(!bubble_mode){
         if(player.game_mode_is_multiplayer()){
             if(!DYING && which_mp_player!=player.cam_focused_index() && !collision_check(x,y,w,h,player.camera_x,player.camera_y,player.camera_w,player.camera_h)){
-                bubble_move_x=run_speed;
-                if(IN_AIR){
-                    bubble_move_y=air_velocity;
-                }
-                else{
-                    bubble_move_y=0.0;
-                }
-                mp_reset(x,y);
-                bubble_mode=true;
+                put_in_bubble();
 
-                //Prevent the constant bubble forming sound if we are moving the camera around with dev controls.
-                if(player.cam_state==CAM_STICKY){
-                    play_positional_sound(sound_system.player_bubble_form);
-                }
                 return;
             }
         }

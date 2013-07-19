@@ -127,6 +127,8 @@ class Player: public Actor{
 
     void handle_tracers();
 
+    void put_in_bubble();
+
     //Move the player.
     void move();
 
@@ -359,6 +361,9 @@ class Player: public Actor{
     //Returns true if the current game mode is multiplayer.
     //Returns false if the current game mode is singleplayer.
     bool game_mode_is_multiplayer();
+
+    //Returns true if all human-controlled players are dead.
+    bool all_humans_dead();
 
     //Returns true if all players are dead or in bubble mode.
     //Returns false if some players are alive.

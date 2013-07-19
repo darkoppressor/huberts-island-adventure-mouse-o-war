@@ -396,6 +396,8 @@ void Player::start_game(){
             survival_score=0;
             survival_escape=false;
             survival_complete=false;
+
+            new_game_plus=0;
         }
 
         //Load and prepare the player data.
@@ -1036,6 +1038,23 @@ void Player::handle_tracers(){
     }
 }
 
+void Player::put_in_bubble(){
+    bubble_move_x=run_speed;
+    if(IN_AIR){
+        bubble_move_y=air_velocity;
+    }
+    else{
+        bubble_move_y=0.0;
+    }
+    mp_reset(x,y);
+    bubble_mode=true;
+
+    //Prevent the constant bubble forming sound if we are moving the camera around with dev controls.
+    if(cam_state==CAM_STICKY){
+        play_positional_sound(sound_system.player_bubble_form,x,y);
+    }
+}
+
 void Player::move(){
     bool events_handled=false;
     bool started_frame_on_ground=false;
@@ -1139,20 +1158,8 @@ void Player::move(){
 
         if(game_mode_is_multiplayer()){
             if(!DYING && which_mp_player!=cam_focused_index() && !collision_check(x,y,w,h,camera_x,camera_y,camera_w,camera_h)){
-                bubble_move_x=run_speed;
-                if(IN_AIR){
-                    bubble_move_y=air_velocity;
-                }
-                else{
-                    bubble_move_y=0.0;
-                }
-                mp_reset(x,y);
-                bubble_mode=true;
+                put_in_bubble();
 
-                //Prevent the constant bubble forming sound if we are moving the camera around with dev controls.
-                if(cam_state==CAM_STICKY){
-                    play_positional_sound(sound_system.player_bubble_form);
-                }
                 return;
             }
         }
@@ -4739,6 +4746,23 @@ bool Player::game_mode_is_multiplayer(){
     return multiplayer;
 }
 
+bool Player::all_humans_dead(){
+    bool all_dead=true;
+
+    if(!DYING){
+        all_dead=false;
+    }
+
+    for(int i=0;i<mp_players.size();i++){
+        if(!mp_players[i].ai_controlled && !mp_players[i].DYING){
+            all_dead=false;
+            break;
+        }
+    }
+
+    return all_dead;
+}
+
 bool Player::all_players_dead(){
     bool all_dead=true;
 
@@ -5038,6 +5062,15 @@ void Player::mp_load_level_data(){
                                 }
                                 else if(vector_items[i].type==ITEM_CHEESE){
                                     current_level_cheese++;
+                                }
+
+                                int candy_width=vector_items[i].w/ITEM_W;
+                                int candy_height=vector_items[i].h/ITEM_H;
+
+                                for(int x=0;x<candy_width;x++){
+                                    for(int y=0;y<candy_height;y++){
+                                        vector_items.push_back(Item(vector_items[i].x+x*ITEM_W,vector_items[i].y+y*ITEM_H,false,ITEM_CANDY,0,false));
+                                    }
                                 }
                             }
                         }

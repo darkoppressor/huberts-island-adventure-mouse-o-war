@@ -9,7 +9,7 @@ namespace Version{
 	//Build date
 	static const char YEAR[]="2013";
 	static const char MONTH[]="07";
-	static const char DAY[]="17";
+	static const char DAY[]="19";
 
 	//Version
 	static const int MAJOR=1;

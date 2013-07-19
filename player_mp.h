@@ -130,6 +130,8 @@ public:
     void crouch_start();
     void crouch_stop();
 
+    void put_in_bubble();
+
     //Move the player.
     void move();
 

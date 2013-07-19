@@ -854,7 +854,6 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         }
     }
 
-    //If the game is in progress.
     if(!player.hide_gui && player.game_in_progress){
         if(!player.game_mode_is_multiplayer()){
             render_sprite(15-5+2,10+2,image.sprite_sheet_items,&sprites_item_ammo[0],1.0,1.0,1.0,0.0,COLOR_BLACK);
@@ -932,6 +931,20 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
                 render_texture(344+48+ITEM_W+player_box_offset,10,image.ammo_box);
                 render_texture(352+48+ITEM_W+7+player_box_offset+2,18+2,*player.return_character_box_image(),1.0,COLOR_BLACK);
                 render_texture(352+48+ITEM_W+7+player_box_offset,18,*player.return_character_box_image());
+            }
+            else{
+                if(!player.pause && player.all_humans_dead()){
+                    string tooltip_text="";
+
+                    if(player.game_mode==GAME_MODE_MP_ADVENTURE){
+                        tooltip_text="Player 1: Press 'shoot' to force a respawn.";
+                    }
+                    else if(player.game_mode==GAME_MODE_MP_SURVIVAL){
+                        tooltip_text="Player 1: Press 'shoot' to end the game.";
+                    }
+
+                    tooltip_hint.setup(tooltip_text,(player.camera_w-tooltip_text.length()*12)/2.0,40);
+                }
             }
 
             if(player.game_mode==GAME_MODE_SP_ADVENTURE || player.game_mode==GAME_MODE_MP_ADVENTURE){
