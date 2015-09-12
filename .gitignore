@@ -9,6 +9,8 @@ profiles/**
 /*Windows-x86.exe
 /*OSX-x86_64
 
+/*global_options.cfg
+
 /*error_log.txt
 /*sp_survival_log.txt
 /*mp_survival_log.txt
@@ -17,5 +19,4 @@ profiles/**
 /*.dll
 /*.depend
 /*.cscope_file_list
-/*.cfg
 /*.save
