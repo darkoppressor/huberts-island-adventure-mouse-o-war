@@ -82,7 +82,7 @@ the lighting tiles larger in global_options.cfg.
 
 There are 4 different playable characters in the game:
 1. Hubert, being the eponymous hero of this game, is the default character.
-He is essentially a balance between the other 2 characters.
+He is essentially a balance between Slime-O and Sketch.
 
 2. Slime-O is heavier and slower than Hubert. He can come to a stop more easily, jump
 a little higher, and runs a little slower than Hubert. He is an excellent choice
