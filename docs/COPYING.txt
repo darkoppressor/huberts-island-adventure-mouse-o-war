@@ -11,6 +11,8 @@ Everything aside from the source code is considered the game's data.
 The data is the copyrighted work of Cheese and Bacon Games, LLC, and should not be redistributed.
 
 To legitimately obtain a copy of the data, please buy a copy of the game.
+At the time of this writing, the game can be legally obtained at:
+http://cheeseandbacon.org/hubert/
 
 The remainder of this document refers solely to the game's source code:
 
