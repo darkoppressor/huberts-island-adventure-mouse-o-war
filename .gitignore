@@ -20,3 +20,5 @@ profiles/**
 /*.depend
 /*.cscope_file_list
 /*.save
+
+*Thumbs.db
