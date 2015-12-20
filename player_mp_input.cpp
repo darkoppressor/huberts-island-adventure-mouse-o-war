@@ -603,6 +603,8 @@ void Player_Mp::handle_input_states(){
 }
 
 bool Player_Mp::command_state(short command){
+    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+
     Sint16 axis_value=0;
     Uint8 hat_value=SDL_HAT_CENTERED;
     short ball_direction=NONE;
@@ -615,14 +617,14 @@ bool Player_Mp::command_state(short command){
 
     if(!player.on_worldmap()){
         //If this command's bound input is a keyboard key, and the key is being pressed.
-        if(keys[command].type==INPUT_TYPE_KEYBOARD && player.keystates[keys[command].key]){
+        if(keys[command].type==INPUT_TYPE_KEYBOARD && keystates[keys[command].key]){
             return true;
         }
 
         //Check all available joysticks for input.
-        for(int i=0;i<number_of_joysticks;i++){
+        for(int i=0;i<joystick.size();i++){
             //As long as this joystick is opened properly, and is the joystick associated with this command.
-            if(SDL_JoystickOpened(i) && joystick[i].joy!=NULL && i==keys[command].which_joystick){
+            if(SDL_JoystickGetAttached(joystick[i].joy) && i==keys[command].which_joystick){
                 //If this command's bound input is a joystick button, and the button is being pressed.
                 if(keys[command].type==INPUT_TYPE_JOYSTICK_BUTTON && SDL_JoystickGetButton(joystick[i].joy,keys[command].joy_button)){
                     return true;
@@ -718,22 +720,28 @@ void Player_Mp::handle_input_events(){
         if(allow_input_event){
             //Look through all commands, and see if any should be triggered by this input event.
             for(int i=0;i<keys.size();i++){
+                SDL_Joystick* joystick_ptr=0;
+
+                if(keys[i].which_joystick<joystick.size()){
+                    joystick_ptr=joystick[keys[i].which_joystick].joy;
+                }
+
                 //If the input type is a keyboard keypress, and the event is a keyboard keypress.
                 if(keys[i].type==INPUT_TYPE_KEYBOARD && event.type==SDL_KEYDOWN){
-                    if(event.key.keysym.sym==keys[i].key){
+                    if(event.key.keysym.scancode==keys[i].key){
                         handle_command_event(i);
                         return;
                     }
                 }
                 //If the input type is a joystick button press, and the event is a joystick button press, and the event joystick is the command's bound joystick.
-                else if(keys[i].type==INPUT_TYPE_JOYSTICK_BUTTON && event.type==SDL_JOYBUTTONDOWN && event.jbutton.which==keys[i].which_joystick){
+                else if(keys[i].type==INPUT_TYPE_JOYSTICK_BUTTON && event.type==SDL_JOYBUTTONDOWN && event.jbutton.which==SDL_JoystickInstanceID(joystick_ptr)){
                     if(event.jbutton.button==keys[i].joy_button){
                         handle_command_event(i);
                         return;
                     }
                 }
                 //If the input type is a joystick axis motion, and the event is a joystick axis motion, and the event joystick is the command's bound joystick.
-                else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==keys[i].which_joystick){
+                else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==SDL_JoystickInstanceID(joystick_ptr)){
                     if(event.jaxis.axis==keys[i].joy_axis){
                         if(!keys[i].joy_axis_direction && event.jaxis.value<JOYSTICK_NEUTRAL_NEGATIVE){
                             handle_command_event(i);
@@ -746,7 +754,7 @@ void Player_Mp::handle_input_events(){
                     }
                 }
                 //If the input type is a joystick hat motion, and the event is a joystick hat motion, and the event joystick is the command's bound joystick.
-                else if(keys[i].type==INPUT_TYPE_JOYSTICK_HAT && event.type==SDL_JOYHATMOTION && event.jhat.which==keys[i].which_joystick){
+                else if(keys[i].type==INPUT_TYPE_JOYSTICK_HAT && event.type==SDL_JOYHATMOTION && event.jhat.which==SDL_JoystickInstanceID(joystick_ptr)){
                     if(event.jhat.hat==keys[i].joy_hat){
                         if(keys[i].joy_hat_direction==event.jhat.value){
                             handle_command_event(i);
@@ -755,7 +763,7 @@ void Player_Mp::handle_input_events(){
                     }
                 }
                 //If the input type is a joystick ball motion, and the event is a joystick ball motion, and the event joystick is the command's bound joystick.
-                else if(keys[i].type==INPUT_TYPE_JOYSTICK_BALL && event.type==SDL_JOYBALLMOTION && event.jball.which==keys[i].which_joystick){
+                else if(keys[i].type==INPUT_TYPE_JOYSTICK_BALL && event.type==SDL_JOYBALLMOTION && event.jball.which==SDL_JoystickInstanceID(joystick_ptr)){
                     if(event.jball.ball==keys[i].joy_ball){
                         short ball_direction=NONE;
 

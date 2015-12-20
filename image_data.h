@@ -8,14 +8,10 @@
 
 #include <string>
 
-#define GLEW_STATIC
-#include <glew.h>
-
 class image_data{
-    private:
-    public:
-    GLuint texture;
-    SDL_Surface* surface;
+public:
+
+    SDL_Texture* texture;
     double w;
     double h;
 

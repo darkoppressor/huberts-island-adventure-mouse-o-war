@@ -6,12 +6,12 @@
 
 using namespace std;
 
-Input_Data::Input_Data(SDLKey get_key){
+Input_Data::Input_Data(SDL_Scancode get_key){
     type=INPUT_TYPE_KEYBOARD;
 
     key=get_key;
 
-    which_joystick=NULL;
+    which_joystick=0;
 
     joy_button=NULL;
 
@@ -31,9 +31,9 @@ Input_Data::Input_Data(SDLKey get_key){
 Input_Data::Input_Data(){
     type=INPUT_TYPE_KEYBOARD;
 
-    key=SDLK_FIRST;
+    key=SDL_SCANCODE_UNKNOWN;
 
-    which_joystick=NULL;
+    which_joystick=0;
 
     joy_button=NULL;
 
@@ -53,7 +53,7 @@ Input_Data::Input_Data(){
 void Input_Data::set_joy_button(Uint8 get_joystick,Uint8 get_joy_button){
     type=INPUT_TYPE_JOYSTICK_BUTTON;
 
-    key=SDLK_FIRST;
+    key=SDL_SCANCODE_UNKNOWN;
 
     which_joystick=get_joystick;
 
@@ -75,7 +75,7 @@ void Input_Data::set_joy_button(Uint8 get_joystick,Uint8 get_joy_button){
 void Input_Data::set_joy_axis(Uint8 get_joystick,Uint8 get_joy_axis,bool get_joy_axis_direction){
     type=INPUT_TYPE_JOYSTICK_AXIS;
 
-    key=SDLK_FIRST;
+    key=SDL_SCANCODE_UNKNOWN;
 
     which_joystick=get_joystick;
 
@@ -97,7 +97,7 @@ void Input_Data::set_joy_axis(Uint8 get_joystick,Uint8 get_joy_axis,bool get_joy
 void Input_Data::set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_hat_direction){
     type=INPUT_TYPE_JOYSTICK_HAT;
 
-    key=SDLK_FIRST;
+    key=SDL_SCANCODE_UNKNOWN;
 
     which_joystick=get_joystick;
 
@@ -119,7 +119,7 @@ void Input_Data::set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_
 void Input_Data::set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_joy_ball_direction){
     type=INPUT_TYPE_JOYSTICK_BALL;
 
-    key=SDLK_FIRST;
+    key=SDL_SCANCODE_UNKNOWN;
 
     which_joystick=get_joystick;
 
@@ -136,4 +136,18 @@ void Input_Data::set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_jo
     joy_ball=get_joy_ball;
 
     joy_ball_direction=get_joy_ball_direction;
+}
+
+Uint8 Input_Data::joy_instance_to_index(SDL_JoystickID instance_id){
+    Uint8 index=0;
+
+    for(int i=0;i<joystick.size();i++){
+        if(SDL_JoystickInstanceID(joystick[i].joy)==instance_id){
+            index=i;
+
+            break;
+        }
+    }
+
+    return index;
 }

@@ -6,7 +6,6 @@
 #include "message_log.h"
 
 #include <fstream>
-#include <boost/filesystem.hpp>
 
 using namespace std;
 

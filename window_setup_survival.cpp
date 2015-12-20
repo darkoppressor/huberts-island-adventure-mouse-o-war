@@ -9,8 +9,7 @@
 #include "render.h"
 #include "collision.h"
 #include "quit.h"
-
-#include <boost/filesystem.hpp>
+#include "file_io.h"
 
 using namespace std;
 
@@ -93,12 +92,10 @@ void Window_Setup_Survival::setup(bool multiplayer){
     }
 
     //Look through all of the levels in the directory.
-    for(boost::filesystem::directory_iterator it("data/levels/survival");it!=boost::filesystem::directory_iterator();it++){
-        //Determine the file's file name.
-        string file_name=it->path().filename().string();
+    for(File_IO_Directory_Iterator it("data/levels/survival");it.evaluate();it.iterate()){
+        if(it.is_directory()){
+            string file_name=it.get_file_name();
 
-        //If the file is a directory.
-        if(boost::filesystem::is_directory(it->path())){
             levels.push_back(file_name);
         }
     }
@@ -115,9 +112,7 @@ void Window_Setup_Survival::setup(bool multiplayer){
 void Window_Setup_Survival::handle_input_events(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         switch(event.type){
             case SDL_QUIT:
@@ -147,12 +142,15 @@ void Window_Setup_Survival::handle_input_events(){
                         mouse_offset_y=mouse_y-y;
                     }
                 }
-                else if(event.button.button==SDL_BUTTON_WHEELDOWN){
+                break;
+
+            case SDL_MOUSEWHEEL:
+                if(event.wheel.y<0){
                     if(level_list_display_position<levels.size()-1){
                         level_list_display_position++;
                     }
                 }
-                else if(event.button.button==SDL_BUTTON_WHEELUP){
+                else if(event.wheel.y>0){
                     if(level_list_display_position>0){
                         level_list_display_position--;
                     }
@@ -242,9 +240,7 @@ void Window_Setup_Survival::render(){
 
                 //If the mouse is over this item, highlight it.
                 int mouse_x,mouse_y;
-                SDL_GetMouseState(&mouse_x,&mouse_y);
-                mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-                mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+                main_window.get_mouse_state(&mouse_x,&mouse_y);
 
                 if(i==level_list_selection){
                     selected=true;

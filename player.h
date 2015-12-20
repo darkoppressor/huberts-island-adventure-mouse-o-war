@@ -80,9 +80,6 @@ class Player: public Actor{
     //Is the player crouching?
     bool CROUCHING;
 
-    //We will use this to hold the keystates, which will be given to us by SDL.
-    Uint8 *keystates;
-
     Player();
 
     void reset();
@@ -102,9 +99,6 @@ class Player: public Actor{
 
     //Prepare to check for input.
     void prepare_for_input();
-
-    //Input here is handled at all times.
-    void handle_input_states_always();
 
     //Input here is handled any time the game is in progress, even if it is paused.
     void handle_input_states_during_play();
@@ -574,11 +568,11 @@ class Player: public Actor{
     short option_character;
 
     //Global options:
-    bool option_renderer;
-    bool option_fullscreen_mode;
-    short option_screen_width;
-    short option_screen_height;
+    std::string option_fullscreen_mode;
+    int option_screen_width;
+    int option_screen_height;
     bool option_fullscreen;
+    int option_display_number;
     int option_lighting_tile_size;
     short option_npc_fade_adventure;
     short option_npc_fade_survival;

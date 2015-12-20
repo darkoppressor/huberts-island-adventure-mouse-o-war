@@ -179,9 +179,7 @@ void Window_Message::set_message(string get_title,string message,short font_type
 void Window_Message::handle_input_states(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         //If the window is moving, center it on the mouse's current position - the offsets.
         if(moving){

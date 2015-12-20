@@ -23,9 +23,6 @@
 using namespace std;
 
 Player::Player(){
-    //Start the keystates variable as NULL.
-    keystates=NULL;
-
     timer_update_achievements.start();
 
     timer_save_data.start();
@@ -54,11 +51,11 @@ void Player::reset(){
     option_hints=true;
     option_character=CHARACTER_HUBERT;
 
-    option_renderer=RENDERER_HARDWARE;
-    option_fullscreen_mode=FULLSCREEN_MODE_STANDARD;
+    option_fullscreen_mode="windowed";
     option_screen_width=DEFAULT_SCREEN_WIDTH;
     option_screen_height=DEFAULT_SCREEN_HEIGHT;
     option_fullscreen=false;
+    option_display_number=-1;
     option_lighting_tile_size=24;
     option_npc_fade_adventure=30;
     option_npc_fade_survival=15;
@@ -99,20 +96,20 @@ void Player::reset(){
 
     //Note that commands must be setup here in the same order as command identifiers are setup in the enum in enumerations.h.
     keys.clear();
-    keys.push_back(Input_Data(SDLK_F10));
-    keys.push_back(Input_Data(SDLK_i));
-    keys.push_back(Input_Data(SDLK_m));
-    keys.push_back(Input_Data(SDLK_F5));
-    keys.push_back(Input_Data(SDLK_LEFT));
-    keys.push_back(Input_Data(SDLK_UP));
-    keys.push_back(Input_Data(SDLK_RIGHT));
-    keys.push_back(Input_Data(SDLK_DOWN));
-    keys.push_back(Input_Data(SDLK_l));
-    keys.push_back(Input_Data(SDLK_RCTRL));
-    keys.push_back(Input_Data(SDLK_SPACE));
-    keys.push_back(Input_Data(SDLK_RSHIFT));
-    keys.push_back(Input_Data(SDLK_PAUSE));
-    keys.push_back(Input_Data(SDLK_SLASH));
+    keys.push_back(Input_Data(SDL_SCANCODE_F10));
+    keys.push_back(Input_Data(SDL_SCANCODE_I));
+    keys.push_back(Input_Data(SDL_SCANCODE_M));
+    keys.push_back(Input_Data(SDL_SCANCODE_F5));
+    keys.push_back(Input_Data(SDL_SCANCODE_LEFT));
+    keys.push_back(Input_Data(SDL_SCANCODE_UP));
+    keys.push_back(Input_Data(SDL_SCANCODE_RIGHT));
+    keys.push_back(Input_Data(SDL_SCANCODE_DOWN));
+    keys.push_back(Input_Data(SDL_SCANCODE_L));
+    keys.push_back(Input_Data(SDL_SCANCODE_RCTRL));
+    keys.push_back(Input_Data(SDL_SCANCODE_SPACE));
+    keys.push_back(Input_Data(SDL_SCANCODE_RSHIFT));
+    keys.push_back(Input_Data(SDL_SCANCODE_PAUSE));
+    keys.push_back(Input_Data(SDL_SCANCODE_SLASH));
 
     mp_keys.clear();
     for(int i=0;i<3;i++){
@@ -2915,11 +2912,12 @@ void Player::update_window_caption(int frame_rate,double ms_per_frame,int logic_
         msg="Hubert's Island Adventure: Mouse o' War";
     }
 
+    //I commented this out as part of the removal of the profile system
     //If a profile exists.
-    if(name!="\x1F"){
+    /**if(name!="\x1F"){
         msg+=" - ";
         msg+=name;
-    }
+    }*/
 
     if(option_fps){
         ss.clear();ss.str("");ss<<"   FPS: ";ss<<frame_rate;msg+=ss.str();
@@ -2945,7 +2943,7 @@ void Player::update_window_caption(int frame_rate,double ms_per_frame,int logic_
         msg+=" Noclip!";
     }
 
-    SDL_WM_SetCaption(msg.c_str(),msg.c_str());
+    SDL_SetWindowTitle(main_window.screen,msg.c_str());
 }
 
 void Player::render_menu_pretties(){
@@ -3220,12 +3218,6 @@ void Player::render_time_overlay_fancy(){
     int check_y_start=camera_current_y;
     int check_y_end=camera_current_y+(int)((int)camera_h/LIGHTING_TILE_SIZE)+2;
 
-    //Number subtracted from width and height of lighting rectangles.
-    int render_mode_sub=0;
-    if(option_renderer==RENDERER_SOFTWARE){
-        render_mode_sub=1;
-    }
-
     //Keeps track of whether each on-screen lighting tile has had its lighting
     //rectangle rendered yet.
     bool tile_lit[check_x_end-check_x_start][check_y_end-check_y_start];
@@ -3311,7 +3303,7 @@ void Player::render_time_overlay_fancy(){
                                 tile_lit[int_x+1-check_x_start][int_y+1-check_y_start]=true;
                             }
 
-                            render_rectangle((int)(tile_x-(int)camera_x),(int)(tile_y-(int)camera_y),LIGHTING_TILE_SIZE*dimension_mod-render_mode_sub,LIGHTING_TILE_SIZE*dimension_mod-render_mode_sub,opacity_actual,COLOR_BLACK);
+                            render_rectangle((int)(tile_x-(int)camera_x),(int)(tile_y-(int)camera_y),LIGHTING_TILE_SIZE*dimension_mod,LIGHTING_TILE_SIZE*dimension_mod,opacity_actual,COLOR_BLACK);
                         }
                     }
                     else{
@@ -3337,7 +3329,7 @@ void Player::render_time_overlay_fancy(){
                             }
 
                             Light_Data blended=level.blend_light(dimness,color_name_to_doubles(COLOR_BLACK),light_opacity,light_data[int_x][int_y].color);
-                            render_rectangle((int)(tile_x-(int)camera_x),(int)(tile_y-(int)camera_y),LIGHTING_TILE_SIZE*dimension_mod-render_mode_sub,LIGHTING_TILE_SIZE*dimension_mod-render_mode_sub,blended.light_intensity,blended.color);
+                            render_rectangle((int)(tile_x-(int)camera_x),(int)(tile_y-(int)camera_y),LIGHTING_TILE_SIZE*dimension_mod,LIGHTING_TILE_SIZE*dimension_mod,blended.light_intensity,blended.color);
                         }
                     }
                 }

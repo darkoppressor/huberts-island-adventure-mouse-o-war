@@ -11,8 +11,6 @@
 class Window_Map: public Window{
     private:
 
-    Uint8 *keystates;
-
     short cam_state;
 
     short camera_speed;

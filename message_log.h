@@ -6,7 +6,7 @@
 
 #include <string>
 
-void update_error_log(std::string message);
+void update_error_log(std::string message,bool allow_save=true);
 
 void update_survival_log(std::string message,bool multiplayer);
 

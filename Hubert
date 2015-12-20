@@ -40,8 +40,6 @@ elif [ "${CHEESIE_UNAME}" = "Darwin" ]; then
 	    export DYLD_LIBRARY_PATH=./osx-x86_64:$DYLD_LIBRARY_PATH
 	    exec ./"${CHEESIE_GAME_NAME}"-OSX-x86_64 "$@"
 	else
-	    echo "${CHEESIE_GAME_NAME}: Using OS X x86 version."
-	    export DYLD_LIBRARY_PATH=./osx-x86:$DYLD_LIBRARY_PATH
-	    exec ./"${CHEESIE_GAME_NAME}"-OSX-x86 "$@"
+	    echo "${CHEESIE_GAME_NAME}: Error: ${CHEESIE_ARCH} is not a supported architecture."
 	fi
 fi

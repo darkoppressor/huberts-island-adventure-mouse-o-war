@@ -13,7 +13,6 @@
 #include "score.h"
 
 #include <SDL.h>
-#include <SDL_gfxPrimitives.h>
 
 using namespace std;
 
@@ -142,12 +141,7 @@ void input(){
     }
     //If the game is paused and is in progress.
     else if(player.pause && player.game_in_progress){
-        player.handle_input_states_always();
         player.handle_input_states_during_play();
-    }
-    //If the game is not in progress.
-    else if(!player.game_in_progress){
-        player.handle_input_states_always();
     }
 }
 
@@ -555,25 +549,9 @@ void camera(int frame_rate,double ms_per_frame,int logic_frame_rate){
 }
 
 void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        if(main_window.fbo_mode){
-            glPushAttrib(GL_VIEWPORT_BIT);
-            glViewport(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
-            glBindTexture(GL_TEXTURE_2D,0);
-            image.current_texture=0;
-            glBindFramebuffer(GL_FRAMEBUFFER,main_window.fbo);
-        }
-
-        //As long as the current level is not DevWorld.
-        if(player.current_level!=2){
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        //As long as the current level is not DevWorld.
-        if(player.current_level!=2){
-            ///render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,COLOR_BLACK);
-        }
+    //As long as the current level is not DevWorld.
+    if(player.current_level!=2){
+        main_window.clear_renderer(Color(0,0,0,255));
     }
 
     player.render_background();
@@ -1085,13 +1063,15 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         tooltip.render();
     }
 
-    /**ss.clear();ss.str("");ss<<"Number of joysticks: ";ss<<SDL_NumJoysticks();ss<<"\xA";msg=ss.str();
-    if(SDL_NumJoysticks()>0 && SDL_JoystickOpened(0)){
-        ss.clear();ss.str("");ss<<"Joystick 0's name: ";ss<<SDL_JoystickName(0);ss<<"\xA";msg+=ss.str();
-        ss.clear();ss.str("");ss<<"Number of axes: ";ss<<SDL_JoystickNumAxes(joystick[0].joy);ss<<"\xA";msg+=ss.str();
-        ss.clear();ss.str("");ss<<"Number of buttons: ";ss<<SDL_JoystickNumButtons(joystick[0].joy);ss<<"\xA";msg+=ss.str();
-        ss.clear();ss.str("");ss<<"Number of balls: ";ss<<SDL_JoystickNumBalls(joystick[0].joy);ss<<"\xA";msg+=ss.str();
-        ss.clear();ss.str("");ss<<"Number of hats: ";ss<<SDL_JoystickNumHats(joystick[0].joy);ss<<"\xA";msg+=ss.str();
+    /**ss.clear();ss.str("");ss<<"Number of joysticks: ";ss<<joystick.size();ss<<"\xA";msg=ss.str();
+    for(int i=0;i<joystick.size();i++){
+        if(SDL_JoystickGetAttached(joystick[i].joy)){
+            ss.clear();ss.str("");ss<<"Joystick "<<i<<"'s name: ";ss<<SDL_JoystickName(joystick[i].joy);ss<<"\xA";msg+=ss.str();
+            ss.clear();ss.str("");ss<<"Number of axes: ";ss<<SDL_JoystickNumAxes(joystick[i].joy);ss<<"\xA";msg+=ss.str();
+            ss.clear();ss.str("");ss<<"Number of buttons: ";ss<<SDL_JoystickNumButtons(joystick[i].joy);ss<<"\xA";msg+=ss.str();
+            ss.clear();ss.str("");ss<<"Number of balls: ";ss<<SDL_JoystickNumBalls(joystick[i].joy);ss<<"\xA";msg+=ss.str();
+            ss.clear();ss.str("");ss<<"Number of hats: ";ss<<SDL_JoystickNumHats(joystick[i].joy);ss<<"\xA\xA";msg+=ss.str();
+        }
     }
     font.show(0,0,msg,COLOR_RED);*/
 
@@ -1106,67 +1086,29 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
     if(!player.option_hardware_cursor && (window_manager.which_window_open()!=-1 || player.cam_state!=CAM_STICKY)){
         int mouse_x=0;
         int mouse_y=0;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
         render_texture(mouse_x,mouse_y,image.cursor);
     }
 
-    if(player.option_renderer==RENDERER_HARDWARE){
-        if(main_window.fbo_mode){
-            glBindFramebuffer(GL_FRAMEBUFFER,0);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glPopAttrib();
-            render_fbo_texture();
-        }
-
-        //Swap the buffers, updating the screen.
-        SDL_GL_SwapBuffers();
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        SDL_Flip(main_window.screen);
-    }
+    main_window.render_present();
 }
 
 void render_loading_screen(double percentage,int level_loading){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        if(main_window.fbo_mode){
-            glPushAttrib(GL_VIEWPORT_BIT);
-            glViewport(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT);
-            glBindTexture(GL_TEXTURE_2D,0);
-            image.current_texture=0;
-            glBindFramebuffer(GL_FRAMEBUFFER,main_window.fbo);
-        }
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_rectangle(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,COLOR_BLACK);
-    }
+    if(main_window.is_initialized()){
+        main_window.clear_renderer(Color(0,0,0,255));
 
-    render_texture(0,0,image.loading_screen_main,0.25);
-    render_texture((main_window.SCREEN_WIDTH-image.logo_hubert.w)/2.0,30,image.logo_hubert);
+        render_texture(0,0,image.loading_screen_main,0.25);
+        render_texture((main_window.SCREEN_WIDTH-image.logo_hubert.w)/2.0,30,image.logo_hubert);
 
-    double bar_width=240.0*percentage;
-    double max_bar_width=240.0*1.0;
-    render_rectangle(main_window.SCREEN_WIDTH/2.0-120-2,main_window.SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,COLOR_BLACK);
-    render_rectangle(main_window.SCREEN_WIDTH/2.0-120,main_window.SCREEN_HEIGHT-75,bar_width,30,1.0,return_gui_color(holiday,5));
+        double bar_width=240.0*percentage;
+        double max_bar_width=240.0*1.0;
+        render_rectangle(main_window.SCREEN_WIDTH/2.0-120-2,main_window.SCREEN_HEIGHT-75-2,max_bar_width+4,30+4,1.0,COLOR_BLACK);
+        render_rectangle(main_window.SCREEN_WIDTH/2.0-120,main_window.SCREEN_HEIGHT-75,bar_width,30,1.0,return_gui_color(holiday,5));
 
-    ss.clear();ss.str("");ss<<(int)(percentage*100.0);ss<<"%";msg=ss.str();
-    font.show(main_window.SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font.spacing_x)/2.0+2,main_window.SCREEN_HEIGHT-75+font.spacing_y/4.0+2,msg,COLOR_BLACK);
-    font.show(main_window.SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font.spacing_x)/2.0,main_window.SCREEN_HEIGHT-75+font.spacing_y/4.0,msg,return_gui_color(holiday,6));
+        ss.clear();ss.str("");ss<<(int)(percentage*100.0);ss<<"%";msg=ss.str();
+        font.show(main_window.SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font.spacing_x)/2.0+2,main_window.SCREEN_HEIGHT-75+font.spacing_y/4.0+2,msg,COLOR_BLACK);
+        font.show(main_window.SCREEN_WIDTH/2.0-120+(max_bar_width-msg.length()*font.spacing_x)/2.0,main_window.SCREEN_HEIGHT-75+font.spacing_y/4.0,msg,return_gui_color(holiday,6));
 
-    if(player.option_renderer==RENDERER_HARDWARE){
-        if(main_window.fbo_mode){
-            glBindFramebuffer(GL_FRAMEBUFFER,0);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glPopAttrib();
-            render_fbo_texture();
-        }
-
-        //Swap the buffers, updating the screen.
-        SDL_GL_SwapBuffers();
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        SDL_Flip(main_window.screen);
+        main_window.render_present();
     }
 }

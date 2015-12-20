@@ -55,7 +55,7 @@ class Profile{
     void select_profile(int profile_to_select);
 
     //Create the profile currently represented by creating_profile (a string).
-    void create_profile();
+    void create_profile(bool creating_default=false);
 
     //Returns true if the passed profile already exists.
     //Returns false if it does not exist.

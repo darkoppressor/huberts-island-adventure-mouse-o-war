@@ -9,7 +9,7 @@
 class Input_Data{
     private:
     public:
-    Input_Data(SDLKey get_key);
+    Input_Data(SDL_Scancode get_key);
     Input_Data();
 
     void set_joy_button(Uint8 get_joystick,Uint8 get_joy_button);
@@ -17,8 +17,10 @@ class Input_Data{
     void set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_hat_direction);
     void set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_joy_ball_direction);
 
+    static Uint8 joy_instance_to_index(SDL_JoystickID instance_id);
+
     short type;
-    SDLKey key;
+    SDL_Scancode key;
     Uint8 which_joystick;
     Uint8 joy_button;
     Uint8 joy_axis;

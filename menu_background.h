@@ -4,9 +4,6 @@
 #ifndef menu_background_h
 #define menu_background_h
 
-#define GLEW_STATIC
-#include <glew.h>
-
 class Menu_Background{
     private:
     public:

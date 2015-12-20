@@ -10,9 +10,6 @@
 #include <SDL.h>
 #include <string>
 
-#define GLEW_STATIC
-#include <glew.h>
-
 class BitmapFont{
     private:
     //The font surface.

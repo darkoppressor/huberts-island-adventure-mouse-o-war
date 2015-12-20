@@ -5,6 +5,7 @@
 #include "world.h"
 #include "version.h"
 #include "message_log.h"
+#include "file_io.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -37,7 +38,6 @@ bool load_current_profile(){
         load.clear();
     }
     else{
-        //Save options to options.cfg.
         if(!save_current_profile()){
             return false;
         }
@@ -164,6 +164,7 @@ bool options_version_compatible(string name_to_check){
     version_series.push_back(Version_Series(1,2,0,1,2,0));
     version_series.push_back(Version_Series(1,3,0,1,3,0));
     version_series.push_back(Version_Series(1,4,0,1,4,0));
+    version_series.push_back(Version_Series(1,5,0,1,5,0));
 
     if(options_which_version_series(&version_series,major,minor,micro)!=options_which_version_series(&version_series,current_major,current_minor,current_micro)){
         string error_message="Version incompatibility! The profile '"+name_to_check+"' was started with version "+player.num_to_string(major)+"."+player.num_to_string(minor)+"."+player.num_to_string(micro)+".";
@@ -239,7 +240,7 @@ bool options_load(){
                     load>>joy_ball_direction;
 
                     player.keys[i].type=type;
-                    player.keys[i].key=(SDLKey)key;
+                    player.keys[i].key=(SDL_Scancode)key;
                     player.keys[i].which_joystick=(Uint8)which_joystick;
                     player.keys[i].joy_button=(Uint8)joy_button;
                     player.keys[i].joy_axis=(Uint8)joy_axis;
@@ -264,7 +265,7 @@ bool options_load(){
                         load>>joy_ball_direction;
 
                         player.mp_keys[i][n].type=type;
-                        player.mp_keys[i][n].key=(SDLKey)key;
+                        player.mp_keys[i][n].key=(SDL_Scancode)key;
                         player.mp_keys[i][n].which_joystick=(Uint8)which_joystick;
                         player.mp_keys[i][n].joy_button=(Uint8)joy_button;
                         player.mp_keys[i][n].joy_axis=(Uint8)joy_axis;
@@ -425,11 +426,11 @@ bool global_options_load(){
 
             //The option strings used in the file.
 
-            string str_renderer="renderer:";
             string str_fullscreen_mode="fullscreen mode:";
             string str_screen_width="screen width:";
             string str_screen_height="screen height:";
             string str_fullscreen="fullscreen:";
+            string str_display_number="display_number:";
             string str_lighting_tile_size="lighting tile size:";
             string str_npc_fade_adventure="npc fade time adventure:";
             string str_npc_fade_survival="npc fade time survival:";
@@ -455,19 +456,12 @@ bool global_options_load(){
 
             //Load data based on the line.
 
-            //Renderer
-            else if(!multi_line_comment && icontains(line,str_renderer)){
-                //Clear the data name.
-                line.erase(0,str_renderer.length());
-
-                player.option_renderer=(bool)atoi(line.c_str());
-            }
             //Fullscreen mode
             else if(!multi_line_comment && icontains(line,str_fullscreen_mode)){
                 //Clear the data name.
                 line.erase(0,str_fullscreen_mode.length());
 
-                player.option_fullscreen_mode=(bool)atoi(line.c_str());
+                player.option_fullscreen_mode=line;
             }
             //Screen width
             else if(!multi_line_comment && icontains(line,str_screen_width)){
@@ -489,6 +483,13 @@ bool global_options_load(){
                 line.erase(0,str_fullscreen.length());
 
                 player.option_fullscreen=(bool)atoi(line.c_str());
+            }
+            //Display number
+            else if(!multi_line_comment && icontains(line,str_display_number)){
+                //Clear the data name.
+                line.erase(0,str_display_number.length());
+
+                player.option_display_number=atoi(line.c_str());
             }
             //Lighting tile size
             else if(!multi_line_comment && icontains(line,str_lighting_tile_size)){
@@ -534,19 +535,19 @@ bool global_options_save(){
     save.open(save_name.c_str());
 
     if(save!=NULL){
-        save<<"//Sets which renderer to use.\n//0 - Software renderer. Uses SDL.\n//1 - Hardware renderer. Uses SDL+OpenGL.\n//Default: 1"<<"\n";
-        save<<"renderer:"<<player.option_renderer<<"\n\n";
-
-        save<<"//Sets the fullscreen mode to use. Only applies to the hardware renderer.\n//Note that this does not toggle between fullscreen and windowed.It sets the method of making the window fullscreen.\n";
-        save<<"//0 - Standard. Attempts to make the window fullscreen.\n//1 - Windowed. The window remains windowed, but is stretched to the screen dimensions, and the titlebar is removed.\n//Default: 0"<<"\n";
+        save<<"//Sets the fullscreen mode to use.\n//Note that this does not toggle between fullscreen and windowed. It sets the method of making the window fullscreen.\n";
+        save<<"//standard - Attempts to make the window fullscreen.\n//windowed - The window remains windowed, but is stretched to the screen dimensions, and the titlebar is removed.\n//desktop - attempts to match the desktop mode.\n//Default: windowed"<<"\n";
         save<<"fullscreen mode:"<<player.option_fullscreen_mode<<"\n\n";
 
-        save<<"//Sets the dimensions of the window. Only applies to the hardware renderer.\n//Default: 800x600"<<"\n";
+        save<<"//Sets the dimensions of the window.\n//Default: 800x600"<<"\n";
         save<<"screen width:"<<player.option_screen_width<<"\n";
         save<<"screen height:"<<player.option_screen_height<<"\n\n";
 
         save<<"//Sets the fullscreen status of the game window.\n//0 - Windowed.\n//1 - Fullscreen.\n//Default: 0"<<"\n";
         save<<"fullscreen:"<<player.option_fullscreen<<"\n\n";
+
+        save<<"//The display number that the game's window should be placed on.\n//Default: 0"<<"\n";
+        save<<"display_number:"<<player.option_display_number<<"\n\n";
 
         save<<"//Sets the resolution of the lighting tiles.\n//Size should be a multiple of 2.\n";
         save<<"//Smaller sizes will cause lighting to be smoother, but may lead to significant performance loss.\n";
@@ -570,11 +571,9 @@ bool global_options_save(){
 }
 
 bool save_location_load(){
-    ifstream load;
-    string file_to_load="save_location.cfg";
-    load.open(file_to_load.c_str(),ifstream::in);
+    File_IO_Load load("save_location.cfg");
 
-    if(load!=NULL){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.
@@ -586,7 +585,7 @@ bool save_location_load(){
             string str_save_location="save location:";
 
             //Grab the next line of the file.
-            getline(load,line);
+            load.getline(&line);
 
             //Clear initial whitespace from the line.
             trim(line);
@@ -616,7 +615,6 @@ bool save_location_load(){
         }
 
         load.close();
-        load.clear();
     }
     else{
         if(!save_location_save()){

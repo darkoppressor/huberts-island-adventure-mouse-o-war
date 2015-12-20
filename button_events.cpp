@@ -475,20 +475,20 @@ void button_event_option_hardware_cursor(Window* parent_window,int special_data)
 
 void button_event_default_keys_keyboard(Window* parent_window,int special_data){
     player.keys.clear();
-    player.keys.push_back(Input_Data(SDLK_F10));
-    player.keys.push_back(Input_Data(SDLK_i));
-    player.keys.push_back(Input_Data(SDLK_m));
-    player.keys.push_back(Input_Data(SDLK_F5));
-    player.keys.push_back(Input_Data(SDLK_LEFT));
-    player.keys.push_back(Input_Data(SDLK_UP));
-    player.keys.push_back(Input_Data(SDLK_RIGHT));
-    player.keys.push_back(Input_Data(SDLK_DOWN));
-    player.keys.push_back(Input_Data(SDLK_l));
-    player.keys.push_back(Input_Data(SDLK_RCTRL));
-    player.keys.push_back(Input_Data(SDLK_SPACE));
-    player.keys.push_back(Input_Data(SDLK_RSHIFT));
-    player.keys.push_back(Input_Data(SDLK_PAUSE));
-    player.keys.push_back(Input_Data(SDLK_SLASH));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_F10));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_I));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_M));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_F5));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_LEFT));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_UP));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_RIGHT));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_DOWN));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_L));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_RCTRL));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_SPACE));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_RSHIFT));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_PAUSE));
+    player.keys.push_back(Input_Data(SDL_SCANCODE_SLASH));
 
     options_save();
 }
@@ -501,16 +501,16 @@ void button_event_default_keys_1_keyboard(Window* parent_window,int special_data
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_a));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_w));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_d));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_s));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_A));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_W));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_D));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_S));
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_e));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_c));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_E));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_C));
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_q));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_Q));
 
     options_save();
 }
@@ -523,16 +523,16 @@ void button_event_default_keys_2_keyboard(Window* parent_window,int special_data
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_h));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_u));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_k));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_j));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_H));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_U));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_K));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_J));
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_g));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_b));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_G));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_B));
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_y));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_Y));
 
     options_save();
 }
@@ -545,16 +545,16 @@ void button_event_default_keys_3_keyboard(Window* parent_window,int special_data
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP1));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP5));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP3));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP2));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_1));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_5));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_3));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_2));
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP4));
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP0));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_4));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_0));
     player.mp_keys[player_index].push_back(Input_Data());
     player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDLK_KP6));
+    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_6));
 
     options_save();
 }

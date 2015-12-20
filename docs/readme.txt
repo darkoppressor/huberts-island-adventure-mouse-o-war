@@ -1,10 +1,10 @@
 You hold in your hands (or on your hard drive) a fresh, delicious copy of
 				Hubert's Island Adventure: Mouse o' War.
-				
-							   Version: 1.4.0
-				
+
+							   Version: 1.5.0
+
 To ensure you have the latest version of the game, see this link: http://cheeseandbacon.org/huberts-island/updates.php
-			
+
 For Windows, simply run the .exe file.
 
 For OS X, simply run the application.
@@ -12,12 +12,12 @@ For OS X, simply run the application.
 For Linux, do './Hubert', or './Hubert-Demo' for the demo version.
 This will select the proper architecture and run the corresponding binary.
 You might need to do 'chmod +x Hubert*' first, to make the launcher script and binary(s) executable.
-			
+
 Hopefully, just running the binary will get you going. If not, here are some tips
 that might get the game working for you:
 
 					Tips for getting the game running:
-					
+
 In the game folder, there should be a file called save_location.cfg.
 It determines where all of the game's user data, such as save files and screenshots, are stored.
 In Local mode, it saves everything in the game directory.
@@ -28,12 +28,6 @@ everything contained.
 In the user data folder, there should be a file called global_options.cfg.
 If it isn't there, just run the game once to generate a new one.
 The options stored in this file apply to the whole game, for all profiles.
-
-While the game prefers that you have a relatively recent video card,
-it is capable of running in a "software mode" that doesn't need any video card at all.
-Note that software mode is not officially supported
-and is just a fallback, but it might help out in a pinch!
-The first option in global_options.cfg toggles between the two renderers.
 
 There are a few other settings in global_options.cfg that you might want to look at.
 Comments in the file should explain what each setting does.
@@ -112,9 +106,9 @@ The Achievements screen shows a variety of accomplishments, and whether you have
 achieved them yet or not.
 
 						Fun Facts:
-						
+
 You usually get candy for stunning baddies and beating levels, but every so often you will get ammo instead.
-						
+
 Undead NPCs are faster at night, and even faster at midnight.
 
 Undead NPCs don't have reflections.

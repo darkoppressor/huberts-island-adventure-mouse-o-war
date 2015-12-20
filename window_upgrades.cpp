@@ -9,8 +9,6 @@
 #include "collision.h"
 #include "quit.h"
 
-#include <boost/filesystem.hpp>
-
 using namespace std;
 
 Window_Upgrades::Window_Upgrades(short get_x,short get_y,short get_w,short get_h,string get_title){
@@ -68,9 +66,7 @@ void Window_Upgrades::setup(){
 void Window_Upgrades::handle_input_events(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         switch(event.type){
             case SDL_QUIT:
@@ -100,12 +96,15 @@ void Window_Upgrades::handle_input_events(){
                         mouse_offset_y=mouse_y-y;
                     }
                 }
-                else if(event.button.button==SDL_BUTTON_WHEELDOWN){
+                break;
+
+            case SDL_MOUSEWHEEL:
+                if(event.wheel.y<0){
                     if(upgrade_list_display_position<upgrades.size()-1){
                         upgrade_list_display_position++;
                     }
                 }
-                else if(event.button.button==SDL_BUTTON_WHEELUP){
+                else if(event.wheel.y>0){
                     if(upgrade_list_display_position>0){
                         upgrade_list_display_position--;
                     }
@@ -207,9 +206,7 @@ void Window_Upgrades::render(){
 
                 //If the mouse is over this item, highlight it.
                 int mouse_x,mouse_y;
-                SDL_GetMouseState(&mouse_x,&mouse_y);
-                mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-                mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+                main_window.get_mouse_state(&mouse_x,&mouse_y);
 
                 if(i==upgrade_list_selection){
                     selected=true;

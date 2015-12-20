@@ -334,12 +334,12 @@ void Player::check_for_command_set(){
 
             case SDL_KEYDOWN:
                 //Here I can place any keys that should not be available for binding.
-                if(event.key.keysym.sym==SDLK_ESCAPE){
+                if(event.key.keysym.scancode==SDL_SCANCODE_ESCAPE || event.key.keysym.scancode==SDL_SCANCODE_AC_BACK || event.key.keysym.scancode==SDL_SCANCODE_MENU){
                 }
                 //Otherwise, assign the new key to the command.
                 else{
                     key_to_check.type=INPUT_TYPE_KEYBOARD;
-                    key_to_check.key=event.key.keysym.sym;
+                    key_to_check.key=event.key.keysym.scancode;
 
                     //If the key is not already bound to a command.
                     if(!check_key(key_to_check)){
@@ -360,7 +360,7 @@ void Player::check_for_command_set(){
 
             case SDL_JOYBUTTONDOWN:
                 key_to_check.type=INPUT_TYPE_JOYSTICK_BUTTON;
-                key_to_check.which_joystick=event.jbutton.which;
+                key_to_check.which_joystick=Input_Data::joy_instance_to_index(event.jbutton.which);
                 key_to_check.joy_button=event.jbutton.button;
 
                 //If the joystick button is not already bound to a command.
@@ -385,7 +385,7 @@ void Player::check_for_command_set(){
                 //If the axis is outside the neutral zone and held to the negative direction.
                 if(event.jaxis.value<JOYSTICK_NEUTRAL_NEGATIVE){
                     key_to_check.type=INPUT_TYPE_JOYSTICK_AXIS;
-                    key_to_check.which_joystick=event.jaxis.which;
+                    key_to_check.which_joystick=Input_Data::joy_instance_to_index(event.jaxis.which);
                     key_to_check.joy_axis=event.jaxis.axis;
                     key_to_check.joy_axis_direction=false;
 
@@ -411,7 +411,7 @@ void Player::check_for_command_set(){
                 //If the axis is outside the neutral zone and held to the positive direction.
                 else if(event.jaxis.value>JOYSTICK_NEUTRAL_POSITIVE){
                     key_to_check.type=INPUT_TYPE_JOYSTICK_AXIS;
-                    key_to_check.which_joystick=event.jaxis.which;
+                    key_to_check.which_joystick=Input_Data::joy_instance_to_index(event.jaxis.which);
                     key_to_check.joy_axis=event.jaxis.axis;
                     key_to_check.joy_axis_direction=true;
 
@@ -440,7 +440,7 @@ void Player::check_for_command_set(){
                 //If the hat is not centered.
                 if(event.jhat.value!=SDL_HAT_CENTERED){
                     key_to_check.type=INPUT_TYPE_JOYSTICK_HAT;
-                    key_to_check.which_joystick=event.jhat.which;
+                    key_to_check.which_joystick=Input_Data::joy_instance_to_index(event.jhat.which);
                     key_to_check.joy_hat=event.jhat.hat;
                     key_to_check.joy_hat_direction=event.jhat.value;
 
@@ -467,7 +467,7 @@ void Player::check_for_command_set(){
 
             case SDL_JOYBALLMOTION:
                 key_to_check.type=INPUT_TYPE_JOYSTICK_BALL;
-                key_to_check.which_joystick=event.jball.which;
+                key_to_check.which_joystick=Input_Data::joy_instance_to_index(event.jball.which);
                 key_to_check.joy_ball=event.jball.ball;
                 ///I don't know if this is correct.
                 ///I am assuming that on the x-axis, negative relative motion means left and positive relative motion means right.

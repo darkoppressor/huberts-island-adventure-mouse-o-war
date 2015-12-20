@@ -7,13 +7,11 @@
 #include "options.h"
 #include "quit.h"
 #include "button_events.h"
+#include "message_log.h"
 
 using namespace std;
 
 void Player::prepare_for_input(){
-    //Get the SDL keystates and store them in the keystates variable for evaluation.
-    keystates=SDL_GetKeyState(NULL);
-
     crouching_at_frame_start=CROUCHING;
 
     set_solid_above();
@@ -562,8 +560,6 @@ void Player::crouch_stop(){
 }
 
 void Player::handle_input_states(){
-    handle_input_states_always();
-
     handle_input_states_during_play();
 
     //If the player is alive.
@@ -939,221 +935,70 @@ void Player::handle_input_states(){
     }
 }
 
-void Player::handle_input_states_always(){
-    //Toggle fullscreen.
-    if((keystates[SDLK_LALT] || keystates[SDLK_RALT]) && keystates[SDLK_RETURN]){
-        toggle_fullscreen();
-
-        if(keystates[SDLK_LALT]){
-            keystates[SDLK_LALT]=NULL;
-        }
-        if(keystates[SDLK_RALT]){
-            keystates[SDLK_RALT]=NULL;
-        }
-        keystates[SDLK_RETURN]=NULL;
-    }
-
-    //Quit the game.
-    if((keystates[SDLK_LALT] || keystates[SDLK_RALT]) && keystates[SDLK_F4]){
-        quit_game();
-
-        if(keystates[SDLK_LALT]){
-            keystates[SDLK_LALT]=NULL;
-        }
-        if(keystates[SDLK_RALT]){
-            keystates[SDLK_RALT]=NULL;
-        }
-        keystates[SDLK_F4]=NULL;
-    }
-
-    //Toggle main menu.
-    if(keystates[SDLK_ESCAPE]){
-        //If the escape key is pressed, stop setting the command.
-        if(command_to_set!=-1){
-            command_to_set=-1;
-        }
-        //If the game is in progress.
-        else if(game_in_progress && command_to_set==-1){
-            handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
-        }
-        //If the game is not in progress and there is not command being set.
-        else if(!game_in_progress && command_to_set==-1){
-            //Close all windows.
-            window_manager.close_windows(0);
-
-            //If a profile exists.
-            if(player.name!="\x1F"){
-                vector_windows[WINDOW_MAIN_MENU].turn_on();
-
-                window_manager.set_main_menu_current_button();
-            }
-            //If no profile exists.
-            else{
-                //Keep the Create Profile window open.
-                vector_windows[WINDOW_CREATE_PROFILE].turn_on();
-            }
-        }
-
-        keystates[SDLK_ESCAPE]=NULL;
-    }
-
-    //Toggle dev mode.
-    if(keystates[SDLK_d] && keystates[SDLK_e] && keystates[SDLK_v]){
-        option_dev=!option_dev;
-        options_save();
-
-        keystates[SDLK_d]=NULL;
-        keystates[SDLK_e]=NULL;
-        keystates[SDLK_v]=NULL;
-    }
-
-    if(window_manager.which_window_open()==WHICH_WINDOW_OTHER+WINDOW_SOUND_TEST){
-        int music_keys[12];
-        music_keys[0]=SDLK_q;
-        music_keys[1]=SDLK_w;
-        music_keys[2]=SDLK_e;
-        music_keys[3]=SDLK_r;
-        music_keys[4]=SDLK_t;
-        music_keys[5]=SDLK_y;
-        music_keys[6]=SDLK_u;
-        music_keys[7]=SDLK_i;
-        music_keys[8]=SDLK_o;
-        music_keys[9]=SDLK_p;
-        music_keys[10]=SDLK_LEFTBRACKET;
-        music_keys[11]=SDLK_RIGHTBRACKET;
-
-        for(int i=0;i<12;i++){
-            if(keystates[music_keys[i]]){
-                current_button=i+1;
-                vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_down();
-                vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_up(&vector_windows[WINDOW_SOUND_TEST]);
-                vector_windows[WINDOW_SOUND_TEST].buttons[current_button].reset_clicked();
-                keystates[music_keys[i]]=NULL;
-            }
-        }
-    }
-}
-
 void Player::handle_input_states_during_play(){
+    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+
     //If the player is alive and developer mode is on.
     if(option_dev){
         //******************//
         // Camera controls: //
         //******************//
 
-        //If numpad 0 is pressed, toggle the camera's stickiness and play the appropriate sound.
-        if(keystates[SDLK_KP0]){
-            if(cam_state==CAM_STICKY){
-                cam_state=NONE;
-                play_positional_sound(sound_system.camera_unlock);
-            }
-            else{
-                //Reset the look offsets.
-                look_offset_x=0;
-                look_offset_y=0;
-                LOOKING=false;
-
-                camera_trap_x=x;
-                if(!on_worldmap()){
-                    camera_trap_y=y+h-CAMERA_TRAP_H;
-                }
-                else{
-                    camera_trap_y=y+h-CAMERA_TRAP_WORLDMAP_H;
-                }
-
-                cam_state=CAM_STICKY;
-                play_positional_sound(sound_system.camera_lock);
-            }
-
-            //Once the toggle camera stickiness key has been hit, the player must release it for it to function again.
-            keystates[SDLK_KP0]=NULL;
-        }
-
-        if(keystates[SDLK_KP7] && cam_state!=CAM_STICKY){
-            if(camera_speed==24){
-                camera_speed=96;
-            }
-            else{
-                camera_speed=24;
-            }
-
-            keystates[SDLK_KP7]=NULL;
-        }
-
         //If the camera is unsticky, check for camera inputs.
         if(cam_state!=CAM_STICKY){
             //Handle camera directional keys being pressed.
-            if(keystates[SDLK_KP1]){
+            if(keystates[SDL_SCANCODE_KP_1]){
                 cam_state=LEFT;
             }
-            if(keystates[SDLK_KP5]){
+            if(keystates[SDL_SCANCODE_KP_5]){
                 cam_state=UP;
             }
-            if(keystates[SDLK_KP3]){
+            if(keystates[SDL_SCANCODE_KP_3]){
                 cam_state=RIGHT;
             }
-            if(keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_2]){
                 cam_state=DOWN;
             }
 
             //Handle multiple camera directional keys being pressed at once.
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP5]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5]){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDLK_KP5] && keystates[SDLK_KP3]){
+            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3]){
                 cam_state=RIGHT_UP;
             }
-            if(keystates[SDLK_KP3] && keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
                 cam_state=RIGHT_DOWN;
             }
-            if(keystates[SDLK_KP2] && keystates[SDLK_KP1]){
+            if(keystates[SDL_SCANCODE_KP_2] && keystates[SDL_SCANCODE_KP_1]){
                 cam_state=LEFT_DOWN;
             }
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP3]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_3]){
                 cam_state=LEFT;
             }
-            if(keystates[SDLK_KP5] && keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_2]){
                 cam_state=UP;
             }
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP5] && keystates[SDLK_KP3]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3]){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP2] && keystates[SDLK_KP3]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_2] && keystates[SDL_SCANCODE_KP_3]){
                 cam_state=LEFT_DOWN;
             }
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP5] && keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_2]){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDLK_KP5] && keystates[SDLK_KP3] && keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
                 cam_state=RIGHT_UP;
             }
-            if(keystates[SDLK_KP1] && keystates[SDLK_KP5] && keystates[SDLK_KP3] && keystates[SDLK_KP2]){
+            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
                 cam_state=LEFT_UP;
             }
 
             //If no camera directional keys are pressed, stop the camera.
-            if(!keystates[SDLK_KP1] && !keystates[SDLK_KP5] && !keystates[SDLK_KP3] && !keystates[SDLK_KP2]){
+            if(!keystates[SDL_SCANCODE_KP_1] && !keystates[SDL_SCANCODE_KP_5] && !keystates[SDL_SCANCODE_KP_3] && !keystates[SDL_SCANCODE_KP_2]){
                 cam_state=0;
             }
-        }
-    }
-
-    if(game_in_progress && (keystates[SDLK_RALT] || keystates[SDLK_LALT]) && keystates[SDLK_z]){
-        hide_gui=!hide_gui;
-
-        keystates[SDLK_RALT]=NULL;
-        keystates[SDLK_LALT]=NULL;
-        keystates[SDLK_z]=NULL;
-    }
-
-    if(game_in_progress && game_mode==GAME_MODE_SP_ADVENTURE){
-        if(keystates[SDLK_b] && keystates[SDLK_a] && keystates[SDLK_t]){
-            ammo+=99;
-            profile.save_inventory();
-
-            keystates[SDLK_b]=NULL;
-            keystates[SDLK_a]=NULL;
-            keystates[SDLK_t]=NULL;
         }
     }
 
@@ -1162,252 +1007,22 @@ void Player::handle_input_states_during_play(){
     ///******************///
 
     //If developer mode is enabled and the dev key is pressed.
-    if(option_dev && keystates[SDLK_F1]){
-        if(keystates[SDLK_l]){
-            levelshot();
-
-            keystates[SDLK_l]=NULL;
-        }
-
-        if(keystates[SDLK_q]){
+    if(option_dev && keystates[SDL_SCANCODE_F1]){
+        if(keystates[SDL_SCANCODE_Q]){
             vector_items.push_back(Item(x+(w-sprites_item_candy[0].w)/2.0,y-sprites_item_candy[0].h,true,random_range(ITEM_CANDY,ITEM_CANDY),0,false,40,80,80,160,false,60));
 
             for(int i=0;i<mp_players.size();i++){
                 vector_items.push_back(Item(mp_players[i].x+(mp_players[i].w-sprites_item_candy[0].w)/2.0,mp_players[i].y-sprites_item_candy[0].h,true,random_range(ITEM_CANDY,ITEM_CANDY),0,false,40,80,80,160,false,60));
             }
         }
-
-        if(keystates[SDLK_a]){
-            ammo+=99999;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].ammo+=99999;
-            }
-
-            score+=999999;
-
-            for(short i=ITEM_SWIMMING_GEAR;i<ITEM_END;i++){
-                if(i!=ITEM_J_BALLOON && i!=ITEM_AMMO_BARREL && i!=ITEM_CANDY){
-                    if(!check_inventory(i)){
-                        //Find the next available inventory slot.
-                        short next_available_slot=next_available_inventory_slot();
-
-                        //If there is a free inventory slot.
-                        if(next_available_slot!=-1){
-                            inventory.push_back(inventory_item());
-
-                            inventory[inventory.size()-1].type=i;
-
-                            inventory[inventory.size()-1].slot=next_available_slot;
-
-                            inventory[inventory.size()-1].name=name_inventory_item(i);
-
-                            //Create an inventory item notification slider.
-                            sliders.push_back(Slider(i,false));
-
-                            if(i==ITEM_SWIMMING_GEAR){
-                                oxygen=oxygen_max_capacity;
-                                for(int mps=0;mps<mp_players.size();mps++){
-                                    mp_players[mps].oxygen=mp_players[mps].oxygen_max_capacity;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            check_special_items();
-            for(int mps=0;mps<mp_players.size();mps++){
-                mp_players[mps].check_special_items();
-            }
-
-            keystates[SDLK_a]=NULL;
-        }
-
-        short npc_type=0;
-
-        if(keystates[SDLK_c]){
-            npc_type=NPC_COW;
-            keystates[SDLK_c]=NULL;
-        }
-        if(keystates[SDLK_b]){
-            npc_type=NPC_BOUNCING_BALL;
-            keystates[SDLK_b]=NULL;
-        }
-        if(keystates[SDLK_w]){
-            npc_type=NPC_SALLY;
-            keystates[SDLK_w]=NULL;
-        }
-        if(keystates[SDLK_v]){
-            npc_type=NPC_MECHSUIT_MOUSE;
-            keystates[SDLK_v]=NULL;
-        }
-        if(keystates[SDLK_r]){
-            npc_type=NPC_REPLICATOR;
-            keystates[SDLK_r]=NULL;
-        }
-
-        if(npc_type!=0){
-            for(short i=0;i<1;i++){
-                vector_npcs.push_back(Npc(x,y,npc_type));
-            }
-        }
-
-        if(keystates[SDLK_g]){
-            invulnerable=!invulnerable;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].invulnerable=!mp_players[i].invulnerable;
-            }
-
-            keystates[SDLK_g]=NULL;
-        }
-
-        if(keystates[SDLK_t]){
-            show_tracers=!show_tracers;
-
-            keystates[SDLK_t]=NULL;
-        }
-
-        if(keystates[SDLK_p]){
-            show_paths=!show_paths;
-
-            keystates[SDLK_p]=NULL;
-        }
-
-        if(keystates[SDLK_j]){
-            cheat_jump=!cheat_jump;
-
-            keystates[SDLK_j]=NULL;
-        }
-
-        if(keystates[SDLK_n]){
-            cheat_noclip=!cheat_noclip;
-            IN_AIR=true;
-            air_velocity=0;
-
-            keystates[SDLK_n]=NULL;
-        }
-
-        if(keystates[SDLK_e] && game_mode==GAME_MODE_SP_ADVENTURE && !on_worldmap()){
-            //Make sure these aren't 0, since if they were, the game would mistakenly think the player
-            //beat the level without shooting or killing.
-            special_count_shots_this_level=1;
-            special_count_kills_this_level=1;
-
-            player.boss_end();
-
-            profile.save_level_data();
-            previous_level=current_level;
-            previous_sub_level=current_sub_level;
-            current_level=current_worldmap;
-            current_checkpoint=-1;
-            load_data();
-            level.load_level();
-
-            keystates[SDLK_e]=NULL;
-
-            //Skip the rest of this function, as we are now on a different level.
-            return;
-        }
-
-        /**if(keystates[SDLK_r] && game_mode==GAME_MODE_SP_ADVENTURE && on_worldmap()){
-            world_x[current_level]=x;
-            world_y[current_level]=y;
-            profile.save_level_data();
-            previous_level=current_level;
-            previous_sub_level=current_sub_level;
-            current_level=fabs(100);
-            current_sub_level=0;
-            //Until current_checkpoint is not equal to -1, the player will respawn at the spawn point.
-            player.current_checkpoint=-1;
-            if(on_worldmap()){
-                current_worldmap=current_level;
-            }
-            load_data();
-            level.generate_level();
-
-            keystates[SDLK_r]=NULL;
-
-            //Skip the rest of this function, as we are now on a different level.
-            return;
-        }*/
-
-        if(keystates[SDLK_d] && !on_worldmap()){
-            handle_death(x,y,w,h,true);
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].handle_death(mp_players[i].x,mp_players[i].y,mp_players[i].w,mp_players[i].h,true);
-            }
-
-            keystates[SDLK_d]=NULL;
-        }
-
-        if(keystates[SDLK_k]){
-            for(int i=0;i<vector_npcs.size();i++){
-                vector_npcs[i].handle_death(true);
-            }
-            for(int i=0;i<vector_traps.size();i++){
-                vector_traps[i].active=false;
-                vector_traps[i].dangerous=false;
-            }
-
-            keystates[SDLK_k]=NULL;
-        }
-
-        if(keystates[SDLK_s]){
-            if(UPDATE_RATE==DEFAULT_UPDATE_RATE){
-                UPDATE_RATE=DEFAULT_UPDATE_RATE/2.4;
-            }
-            else if(UPDATE_RATE==DEFAULT_UPDATE_RATE/2.4){
-                UPDATE_RATE=DEFAULT_UPDATE_RATE/4.0;
-            }
-            else{
-                UPDATE_RATE=DEFAULT_UPDATE_RATE;
-            }
-            SKIP_TICKS=1000.0/UPDATE_RATE;
-
-            keystates[SDLK_s]=NULL;
-        }
-
-        /**if(keystates[SDLK_RIGHT] && !on_worldmap()){
-            x+=32.0;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].x+=32.0;
-            }
-
-            keystates[SDLK_RIGHT]=NULL;
-        }
-        else if(keystates[SDLK_LEFT] && !on_worldmap()){
-            x-=32.0;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].x-=32.0;
-            }
-
-            keystates[SDLK_LEFT]=NULL;
-        }
-        else if(keystates[SDLK_UP] && !on_worldmap()){
-            y-=32.0;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].y-=32.0;
-            }
-
-            keystates[SDLK_UP]=NULL;
-        }
-        else if(keystates[SDLK_DOWN] && !on_worldmap()){
-            y+=32.0;
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].y+=32.0;
-            }
-
-            keystates[SDLK_DOWN]=NULL;
-        }*/
     }
 
     //If developer mode is enabled.
     if(option_dev){
         int mouse_x=0;
         int mouse_y=0;
-        if(!pause && SDL_GetMouseState(&mouse_x,&mouse_y)&SDL_BUTTON(SDL_BUTTON_LEFT)){
-            mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-            mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        if(!pause && SDL_GetMouseState(0,0)&SDL_BUTTON(SDL_BUTTON_LEFT)){
+            main_window.get_mouse_state(&mouse_x,&mouse_y);
             x=(int)(mouse_x+camera_x);
             y=(int)(mouse_y+camera_y);
             air_velocity=0;
@@ -1426,6 +1041,8 @@ void Player::handle_input_states_during_play(){
 }
 
 bool Player::command_state(short command){
+    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+
     Sint16 axis_value=0;
     Uint8 hat_value=SDL_HAT_CENTERED;
     short ball_direction=NONE;
@@ -1438,9 +1055,9 @@ bool Player::command_state(short command){
     }
 
     //Check all available joysticks for input.
-    for(int i=0;i<number_of_joysticks;i++){
+    for(int i=0;i<joystick.size();i++){
         //As long as this joystick is opened properly, and is the joystick associated with this command.
-        if(SDL_JoystickOpened(i) && joystick[i].joy!=NULL && i==keys[command].which_joystick){
+        if(SDL_JoystickGetAttached(joystick[i].joy) && i==keys[command].which_joystick){
             //If this command's bound input is a joystick button, and the button is being pressed.
             if(keys[command].type==INPUT_TYPE_JOYSTICK_BUTTON && SDL_JoystickGetButton(joystick[i].joy,keys[command].joy_button)){
                 return true;
@@ -1521,7 +1138,7 @@ string Player::command_bound_input(short command,short player_index){
     if(player_index==-1){
         //If this command's bound input is a keyboard key.
         if(keys[command].type==INPUT_TYPE_KEYBOARD){
-            ss.clear();ss.str("");ss<<SDL_GetKeyName(keys[command].key);string_to_return=ss.str();
+            ss.clear();ss.str("");ss<<SDL_GetScancodeName(keys[command].key);string_to_return=ss.str();
         }
         //If this command's bound input is a joystick button.
         else if(keys[command].type==INPUT_TYPE_JOYSTICK_BUTTON){
@@ -1591,7 +1208,7 @@ string Player::command_bound_input(short command,short player_index){
     else{
         //If this command's bound input is a keyboard key.
         if(mp_keys[player_index][command].type==INPUT_TYPE_KEYBOARD){
-            ss.clear();ss.str("");ss<<SDL_GetKeyName(mp_keys[player_index][command].key);string_to_return=ss.str();
+            ss.clear();ss.str("");ss<<SDL_GetScancodeName(mp_keys[player_index][command].key);string_to_return=ss.str();
         }
         //If this command's bound input is a joystick button.
         else if(mp_keys[player_index][command].type==INPUT_TYPE_JOYSTICK_BUTTON){
@@ -1663,8 +1280,115 @@ string Player::command_bound_input(short command,short player_index){
 }
 
 void Player::handle_input_events(){
+    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+
     if(event.type==SDL_QUIT){
         quit_game();
+
+        return;
+    }
+    else if(event.type==SDL_JOYDEVICEADDED){
+        SDL_Joystick* joystick_ptr=0;
+
+        if((joystick_ptr=SDL_JoystickOpen(event.jdevice.which))!=0){
+            joystick.push_back(joy_stick());
+            joystick.back().joy=joystick_ptr;
+        }
+        else{
+            update_error_log("Joystick detected, but not supported by the game controller interface.");
+        }
+
+        return;
+    }
+    else if(event.type==SDL_JOYDEVICEREMOVED){
+        for(int i=0;i<joystick.size();i++){
+            if(SDL_JoystickInstanceID(joystick[i].joy)==event.jdevice.which){
+                if(SDL_JoystickGetAttached(joystick[i].joy)){
+                    SDL_JoystickClose(joystick[i].joy);
+                }
+
+                joystick.erase(joystick.begin()+i);
+
+                break;
+            }
+        }
+
+        return;
+    }
+
+    //Toggle main menu.
+    else if(event.type==SDL_KEYDOWN){
+        if(event.key.keysym.scancode==SDL_SCANCODE_ESCAPE){
+            //If the escape key is pressed, stop setting the command.
+            if(command_to_set!=-1){
+                command_to_set=-1;
+            }
+            //If the game is in progress.
+            else if(game_in_progress && command_to_set==-1){
+                handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
+            }
+            //If the game is not in progress and there is not command being set.
+            else if(!game_in_progress && command_to_set==-1){
+                //Close all windows.
+                window_manager.close_windows(0);
+
+                //If a profile exists.
+                if(player.name!="\x1F"){
+                    vector_windows[WINDOW_MAIN_MENU].turn_on();
+
+                    window_manager.set_main_menu_current_button();
+                }
+                //If no profile exists.
+                else{
+                    //Keep the Create Profile window open.
+                    vector_windows[WINDOW_CREATE_PROFILE].turn_on();
+                }
+            }
+        }
+        else if(event.key.keysym.scancode==SDL_SCANCODE_AC_BACK){
+            //If the game is in progress.
+            if(game_in_progress && command_to_set==-1){
+                if(window_manager.which_window_open()!=-1){
+                    window_manager.close_windows(0);
+                }
+                else{
+                    quit_game();
+                }
+            }
+            //If the game is not in progress and there is not command being set.
+            else if(!game_in_progress && command_to_set==-1){
+                quit_game();
+            }
+        }
+        else if(event.key.keysym.scancode==SDL_SCANCODE_MENU){
+            //If the game is in progress.
+            if(game_in_progress && command_to_set==-1){
+                if(window_manager.which_window_open()!=-1){
+                    window_manager.close_windows(0);
+                }
+                else{
+                    handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
+                }
+            }
+            //If the game is not in progress and there is not command being set.
+            else if(!game_in_progress && command_to_set==-1){
+                //Close all windows.
+                window_manager.close_windows(0);
+
+                //If a profile exists.
+                if(player.name!="\x1F"){
+                    vector_windows[WINDOW_MAIN_MENU].turn_on();
+
+                    window_manager.set_main_menu_current_button();
+                }
+                //If no profile exists.
+                else{
+                    //Keep the Create Profile window open.
+                    vector_windows[WINDOW_CREATE_PROFILE].turn_on();
+                }
+            }
+        }
+
         return;
     }
 
@@ -1675,52 +1399,34 @@ void Player::handle_input_events(){
         allow_input_event=false;
     }
 
-    //If we are on the sound test window, and the key is a music key.
-    if(window_manager.which_window_open()==WHICH_WINDOW_OTHER+WINDOW_SOUND_TEST){
-        int music_keys[12];
-        music_keys[0]=SDLK_q;
-        music_keys[1]=SDLK_w;
-        music_keys[2]=SDLK_e;
-        music_keys[3]=SDLK_r;
-        music_keys[4]=SDLK_t;
-        music_keys[5]=SDLK_y;
-        music_keys[6]=SDLK_u;
-        music_keys[7]=SDLK_i;
-        music_keys[8]=SDLK_o;
-        music_keys[9]=SDLK_p;
-        music_keys[10]=SDLK_LEFTBRACKET;
-        music_keys[11]=SDLK_RIGHTBRACKET;
-
-        for(int i=0;i<12;i++){
-            if(event.type==SDL_KEYDOWN && event.key.keysym.sym==music_keys[i]){
-                allow_input_event=false;
-                break;
-            }
-        }
-    }
-
     check_for_command_set();
 
     //As long as the player's input events are not being blocked.
     if(allow_input_event){
         //Look through all commands, and see if any should be triggered by this input event.
         for(int i=0;i<keys.size();i++){
+            SDL_Joystick* joystick_ptr=0;
+
+            if(keys[i].which_joystick<joystick.size()){
+                joystick_ptr=joystick[keys[i].which_joystick].joy;
+            }
+
             //If the input type is a keyboard keypress, and the event is a keyboard keypress.
             if(keys[i].type==INPUT_TYPE_KEYBOARD && event.type==SDL_KEYDOWN){
-                if(event.key.keysym.sym==keys[i].key){
+                if(event.key.keysym.scancode==keys[i].key){
                     handle_command_event(i);
                     return;
                 }
             }
             //If the input type is a joystick button press, and the event is a joystick button press, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BUTTON && event.type==SDL_JOYBUTTONDOWN && event.jbutton.which==keys[i].which_joystick){
+            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BUTTON && event.type==SDL_JOYBUTTONDOWN && event.jbutton.which==SDL_JoystickInstanceID(joystick_ptr)){
                 if(event.jbutton.button==keys[i].joy_button){
                     handle_command_event(i);
                     return;
                 }
             }
             //If the input type is a joystick axis motion, and the event is a joystick axis motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==keys[i].which_joystick){
+            else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==SDL_JoystickInstanceID(joystick_ptr)){
                 if(event.jaxis.axis==keys[i].joy_axis){
                     if(!keys[i].joy_axis_direction && event.jaxis.value<JOYSTICK_NEUTRAL_NEGATIVE){
                         handle_command_event(i);
@@ -1733,7 +1439,7 @@ void Player::handle_input_events(){
                 }
             }
             //If the input type is a joystick hat motion, and the event is a joystick hat motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_HAT && event.type==SDL_JOYHATMOTION && event.jhat.which==keys[i].which_joystick){
+            else if(keys[i].type==INPUT_TYPE_JOYSTICK_HAT && event.type==SDL_JOYHATMOTION && event.jhat.which==SDL_JoystickInstanceID(joystick_ptr)){
                 if(event.jhat.hat==keys[i].joy_hat){
                     if(keys[i].joy_hat_direction==event.jhat.value){
                         handle_command_event(i);
@@ -1742,7 +1448,7 @@ void Player::handle_input_events(){
                 }
             }
             //If the input type is a joystick ball motion, and the event is a joystick ball motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BALL && event.type==SDL_JOYBALLMOTION && event.jball.which==keys[i].which_joystick){
+            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BALL && event.type==SDL_JOYBALLMOTION && event.jball.which==SDL_JoystickInstanceID(joystick_ptr)){
                 if(event.jball.ball==keys[i].joy_ball){
                     short ball_direction=NONE;
 
@@ -1778,6 +1484,356 @@ void Player::handle_input_events(){
                         return;
                     }
                 }
+            }
+        }
+
+        if(event.type==SDL_KEYDOWN){
+            //Toggle fullscreen.
+            if((keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_RETURN){
+                toggle_fullscreen();
+
+                return;
+            }
+
+            //Quit the game.
+            if((keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_F4){
+                quit_game();
+
+                return;
+            }
+
+            //Toggle dev mode.
+            if((keystates[SDL_SCANCODE_D] && keystates[SDL_SCANCODE_E] && event.key.keysym.scancode==SDL_SCANCODE_V) ||
+               (keystates[SDL_SCANCODE_D] && keystates[SDL_SCANCODE_V] && event.key.keysym.scancode==SDL_SCANCODE_E) ||
+               (keystates[SDL_SCANCODE_V] && keystates[SDL_SCANCODE_E] && event.key.keysym.scancode==SDL_SCANCODE_D)){
+                option_dev=!option_dev;
+                options_save();
+
+                return;
+            }
+
+            if(window_manager.which_window_open()==WHICH_WINDOW_OTHER+WINDOW_SOUND_TEST){
+                int music_keys[12];
+                music_keys[0]=SDL_SCANCODE_Q;
+                music_keys[1]=SDL_SCANCODE_W;
+                music_keys[2]=SDL_SCANCODE_E;
+                music_keys[3]=SDL_SCANCODE_R;
+                music_keys[4]=SDL_SCANCODE_T;
+                music_keys[5]=SDL_SCANCODE_Y;
+                music_keys[6]=SDL_SCANCODE_U;
+                music_keys[7]=SDL_SCANCODE_I;
+                music_keys[8]=SDL_SCANCODE_O;
+                music_keys[9]=SDL_SCANCODE_P;
+                music_keys[10]=SDL_SCANCODE_LEFTBRACKET;
+                music_keys[11]=SDL_SCANCODE_RIGHTBRACKET;
+
+                for(int i=0;i<12;i++){
+                    if(event.key.keysym.scancode==music_keys[i]){
+                        current_button=i+1;
+                        vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_down();
+                        vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_up(&vector_windows[WINDOW_SOUND_TEST]);
+                        vector_windows[WINDOW_SOUND_TEST].buttons[current_button].reset_clicked();
+
+                        return;
+                    }
+                }
+            }
+
+            if(player.game_in_progress){
+                //If the player is alive and developer mode is on.
+                if(option_dev){
+                    //******************//
+                    // Camera controls: //
+                    //******************//
+
+                    //If numpad 0 is pressed, toggle the camera's stickiness and play the appropriate sound.
+                    if(event.key.keysym.scancode==SDL_SCANCODE_KP_0){
+                        if(cam_state==CAM_STICKY){
+                            cam_state=NONE;
+                            play_positional_sound(sound_system.camera_unlock);
+                        }
+                        else{
+                            //Reset the look offsets.
+                            look_offset_x=0;
+                            look_offset_y=0;
+                            LOOKING=false;
+
+                            camera_trap_x=x;
+                            if(!on_worldmap()){
+                                camera_trap_y=y+h-CAMERA_TRAP_H;
+                            }
+                            else{
+                                camera_trap_y=y+h-CAMERA_TRAP_WORLDMAP_H;
+                            }
+
+                            cam_state=CAM_STICKY;
+                            play_positional_sound(sound_system.camera_lock);
+                        }
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_KP_7 && cam_state!=CAM_STICKY){
+                        if(camera_speed==24){
+                            camera_speed=96;
+                        }
+                        else{
+                            camera_speed=24;
+                        }
+
+                        return;
+                    }
+                }
+
+                if((keystates[SDL_SCANCODE_RALT] || keystates[SDL_SCANCODE_LALT]) && event.key.keysym.scancode==SDL_SCANCODE_Z){
+                    hide_gui=!hide_gui;
+
+                    return;
+                }
+
+                if(game_mode==GAME_MODE_SP_ADVENTURE){
+                    if((keystates[SDL_SCANCODE_B] && keystates[SDL_SCANCODE_A] && event.key.keysym.scancode==SDL_SCANCODE_T) ||
+                       (keystates[SDL_SCANCODE_B] && keystates[SDL_SCANCODE_T] && event.key.keysym.scancode==SDL_SCANCODE_A) ||
+                       (keystates[SDL_SCANCODE_T] && keystates[SDL_SCANCODE_A] && event.key.keysym.scancode==SDL_SCANCODE_B)){
+                        ammo+=99;
+                        profile.save_inventory();
+
+                        return;
+                    }
+                }
+
+                ///******************///
+                /// Debug/Test Code. ///
+                ///******************///
+
+                //If developer mode is enabled and the dev key is pressed.
+                if(option_dev && keystates[SDL_SCANCODE_F1]){
+                    if(event.key.keysym.scancode==SDL_SCANCODE_L){
+                        levelshot();
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_A){
+                        ammo+=99999;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].ammo+=99999;
+                        }
+
+                        score+=999999;
+
+                        for(short i=ITEM_SWIMMING_GEAR;i<ITEM_END;i++){
+                            if(i!=ITEM_J_BALLOON && i!=ITEM_AMMO_BARREL && i!=ITEM_CANDY){
+                                if(!check_inventory(i)){
+                                    //Find the next available inventory slot.
+                                    short next_available_slot=next_available_inventory_slot();
+
+                                    //If there is a free inventory slot.
+                                    if(next_available_slot!=-1){
+                                        inventory.push_back(inventory_item());
+
+                                        inventory[inventory.size()-1].type=i;
+
+                                        inventory[inventory.size()-1].slot=next_available_slot;
+
+                                        inventory[inventory.size()-1].name=name_inventory_item(i);
+
+                                        //Create an inventory item notification slider.
+                                        sliders.push_back(Slider(i,false));
+
+                                        if(i==ITEM_SWIMMING_GEAR){
+                                            oxygen=oxygen_max_capacity;
+                                            for(int mps=0;mps<mp_players.size();mps++){
+                                                mp_players[mps].oxygen=mp_players[mps].oxygen_max_capacity;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        check_special_items();
+                        for(int mps=0;mps<mp_players.size();mps++){
+                            mp_players[mps].check_special_items();
+                        }
+
+                        return;
+                    }
+
+                    short npc_type=0;
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_C){
+                        npc_type=NPC_COW;
+                    }
+                    if(event.key.keysym.scancode==SDL_SCANCODE_B){
+                        npc_type=NPC_BOUNCING_BALL;
+                    }
+                    if(event.key.keysym.scancode==SDL_SCANCODE_W){
+                        npc_type=NPC_SALLY;
+                    }
+                    if(event.key.keysym.scancode==SDL_SCANCODE_V){
+                        npc_type=NPC_MECHSUIT_MOUSE;
+                    }
+                    if(event.key.keysym.scancode==SDL_SCANCODE_R){
+                        npc_type=NPC_REPLICATOR;
+                    }
+
+                    if(npc_type!=0){
+                        for(short i=0;i<1;i++){
+                            vector_npcs.push_back(Npc(x,y,npc_type));
+                        }
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_G){
+                        invulnerable=!invulnerable;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].invulnerable=!mp_players[i].invulnerable;
+                        }
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_T){
+                        show_tracers=!show_tracers;
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_P){
+                        show_paths=!show_paths;
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_J){
+                        cheat_jump=!cheat_jump;
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_N){
+                        cheat_noclip=!cheat_noclip;
+                        IN_AIR=true;
+                        air_velocity=0;
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_E && game_mode==GAME_MODE_SP_ADVENTURE && !on_worldmap()){
+                        //Make sure these aren't 0, since if they were, the game would mistakenly think the player
+                        //beat the level without shooting or killing.
+                        special_count_shots_this_level=1;
+                        special_count_kills_this_level=1;
+
+                        player.boss_end();
+
+                        profile.save_level_data();
+                        previous_level=current_level;
+                        previous_sub_level=current_sub_level;
+                        current_level=current_worldmap;
+                        current_checkpoint=-1;
+                        load_data();
+                        level.load_level();
+
+                        //Skip the rest of this function, as we are now on a different level.
+                        return;
+                    }
+
+                    /**if(event.key.keysym.scancode==SDL_SCANCODE_R && game_mode==GAME_MODE_SP_ADVENTURE && on_worldmap()){
+                        world_x[current_level]=x;
+                        world_y[current_level]=y;
+                        profile.save_level_data();
+                        previous_level=current_level;
+                        previous_sub_level=current_sub_level;
+                        current_level=fabs(100);
+                        current_sub_level=0;
+                        //Until current_checkpoint is not equal to -1, the player will respawn at the spawn point.
+                        player.current_checkpoint=-1;
+                        if(on_worldmap()){
+                            current_worldmap=current_level;
+                        }
+                        load_data();
+                        level.generate_level();
+
+                        //Skip the rest of this function, as we are now on a different level.
+                        return;
+                    }*/
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_D && !on_worldmap()){
+                        handle_death(x,y,w,h,true);
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].handle_death(mp_players[i].x,mp_players[i].y,mp_players[i].w,mp_players[i].h,true);
+                        }
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_K){
+                        for(int i=0;i<vector_npcs.size();i++){
+                            vector_npcs[i].handle_death(true);
+                        }
+                        for(int i=0;i<vector_traps.size();i++){
+                            vector_traps[i].active=false;
+                            vector_traps[i].dangerous=false;
+                        }
+
+                        return;
+                    }
+
+                    if(event.key.keysym.scancode==SDL_SCANCODE_S){
+                        if(UPDATE_RATE==DEFAULT_UPDATE_RATE){
+                            UPDATE_RATE=DEFAULT_UPDATE_RATE/2.4;
+                        }
+                        else if(UPDATE_RATE==DEFAULT_UPDATE_RATE/2.4){
+                            UPDATE_RATE=DEFAULT_UPDATE_RATE/4.0;
+                        }
+                        else{
+                            UPDATE_RATE=DEFAULT_UPDATE_RATE;
+                        }
+                        SKIP_TICKS=1000.0/UPDATE_RATE;
+
+                        return;
+                    }
+
+                    /**if(event.key.keysym.scancode==SDL_SCANCODE_RIGHT && !on_worldmap()){
+                        x+=32.0;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].x+=32.0;
+                        }
+
+                        return;
+                    }
+                    else if(event.key.keysym.scancode==SDL_SCANCODE_LEFT && !on_worldmap()){
+                        x-=32.0;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].x-=32.0;
+                        }
+
+                        return;
+                    }
+                    else if(event.key.keysym.scancode==SDL_SCANCODE_UP && !on_worldmap()){
+                        y-=32.0;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].y-=32.0;
+                        }
+
+                        return;
+                    }
+                    else if(event.key.keysym.scancode==SDL_SCANCODE_DOWN && !on_worldmap()){
+                        y+=32.0;
+                        for(int i=0;i<mp_players.size();i++){
+                            mp_players[i].y+=32.0;
+                        }
+
+                        return;
+                    }*/
+                }
+
+                ///*************************///
+                /// End of Debug/Test Code. ///
+                ///*************************///
             }
         }
     }

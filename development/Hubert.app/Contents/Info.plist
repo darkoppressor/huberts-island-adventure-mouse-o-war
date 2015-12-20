@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- BEGIN GAME-SPECIFIC -->
+
+	<key>CFBundleName</key>
+	<string>Hubert's Island Adventure: Mouse o' War</string>
+
+	<key>CFBundleDisplayName</key>
+	<string>Hubert's Island Adventure: Mouse o' War</string>
+
+	<key>CFBundleIdentifier</key>
+	<string>org.cheeseandbacon.hubert</string>
+
+	<key>CFBundleVersion</key>
+	<string>1.5.0</string>
+
+	<key>CFBundleShortVersionString</key>
+	<string>1.5.0</string>
+
+	<!-- END GAME-SPECIFIC -->
+
+	<key>CFBundleExecutable</key>
+	<string>game</string>
+
+	<key>CFBundleIconFile</key>
+	<string>icon.icns</string>
+
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleSignature</key>
+	<string>????</string>
+
+	<key>LSMinimumSystemVersion</key>
+	<string>10.7</string>
+</dict>
+</plist>

@@ -9,9 +9,7 @@ using namespace std;
 
 void hud_buttons_handle_input_states(){
     int mouse_x,mouse_y;
-    SDL_GetMouseState(&mouse_x,&mouse_y);
-    mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-    mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+    main_window.get_mouse_state(&mouse_x,&mouse_y);
 
     //Check to see if the mouse is hovering over any of the hud buttons.
     for(int i=0;i<hud_buttons.size();i++){
@@ -34,9 +32,7 @@ void hud_buttons_handle_input_states(){
 
 void hud_buttons_handle_input_events(){
     int mouse_x,mouse_y;
-    SDL_GetMouseState(&mouse_x,&mouse_y);
-    mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-    mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+    main_window.get_mouse_state(&mouse_x,&mouse_y);
 
     switch(event.type){
         case SDL_QUIT:

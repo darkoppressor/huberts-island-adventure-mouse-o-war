@@ -9,27 +9,20 @@ using namespace std;
 
 image_data::image_data(){
     texture=0;
-    surface=NULL;
     w=0;
     h=0;
 }
 
 void image_data::load_image(string filename){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        texture=load_texture(filename,this);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        surface=load_image_sdl(filename);
-        w=surface->w;
-        h=surface->h;
-    }
+    texture=load_texture(filename,this);
+
+    SDL_SetTextureBlendMode(texture,SDL_BLENDMODE_BLEND);
 }
 
 void image_data::unload_image(){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        glDeleteTextures(1,&texture);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        SDL_FreeSurface(surface);
-    }
+    SDL_DestroyTexture(texture);
+
+    texture=0;
+    w=0.0;
+    h=0.0;
 }

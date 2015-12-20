@@ -4,8 +4,13 @@
 #ifndef main_h
 #define main_h
 
+#include <SDL.h>
+
 //The main game loop.
 void game_loop();
+
+//Handle Android/iOS events
+int handle_app_events(void* userdata,SDL_Event* event);
 
 int main(int argc, char* args[]);
 

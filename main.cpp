@@ -10,6 +10,15 @@
 #include "message_log.h"
 #include "score.h"
 #include "achievement_tooltips.h"
+#include "quit.h"
+
+#ifdef GAME_OS_ANDROID
+    #include "android.h"
+    #include "file_io.h"
+
+    #include <SDL.h>
+    #include <jni.h>
+#endif
 
 #ifdef GAME_OS_OSX
     #include <CoreFoundation/CoreFoundation.h>
@@ -17,11 +26,36 @@
 
 using namespace std;
 
-void game_loop(){
-    //Turn off key repeating.
-    SDL_EnableKeyRepeat(0,0);
-    SDL_EnableUNICODE(SDL_ENABLE);
+#ifdef GAME_OS_ANDROID
+    //This block of code was taken from SDL_android_main.c
+    //I was having trouble compiling that file along with the game code to create the library for Android
+    //Simply copying that code here seems to fix things...
+    extern "C"{
+        /* Called before SDL_main() to initialize JNI bindings in SDL library */
+        extern void SDL_Android_Init(JNIEnv* env, jclass cls);
 
+        /* Start up the SDL app */
+        void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject obj)
+        {
+            /* This interface could expand with ABI negotiation, calbacks, etc. */
+            SDL_Android_Init(env, cls);
+
+            SDL_SetMainReady();
+
+            /* Run the application code! */
+            int status;
+            char *argv[2];
+            argv[0] = SDL_strdup("SDL_app");
+            argv[1] = NULL;
+            status = SDL_main(1, argv);
+
+            /* Do not issue an exit or the whole application will terminate instead of just the SDL thread */
+            /* exit(status); */
+        }
+    }
+#endif
+
+void game_loop(){
     int things_loaded=0;
     int things_to_load=11;
 
@@ -160,7 +194,7 @@ void game_loop(){
 
             if(player.need_to_reinit){
                 player.need_to_reinit=false;
-                main_window.reinitialize();
+                main_window.reload();
             }
 
             //First, we check for input from the player.
@@ -227,6 +261,18 @@ bool opaque_lighting(void *level,int x,int y){
 	return ((Level *)level)->blockLOS_lighting(x,y);
 }
 
+int handle_app_events(void* userdata,SDL_Event* event){
+    switch(event->type){
+    case SDL_APP_TERMINATING:
+        update_error_log("The OS is terminating this application, shutting down...");
+
+        quit_game();
+        return 0;
+    default:
+        return 1;
+    }
+}
+
 //Apparently, SDL likes main() to take these arguments, so that is what we will do.
 int main(int argc,char* args[]){
     #ifdef GAME_OS_OSX
@@ -242,12 +288,22 @@ int main(int argc,char* args[]){
         demo_mode=true;
     #endif
 
+    if(!main_window.pre_initialize()){
+        return 1;
+    }
+
+    #ifdef GAME_OS_ANDROID
+        Android::initialize();
+
+        if(!File_IO::external_storage_available()){
+            return 1;
+        }
+    #endif
+
     time_t seconds;
     uint32_t random_seed=(uint32_t)time(&seconds);
     rng.mrand_main.seed(random_seed);
     rng.mrand_render.seed(random_seed);
-
-    image.current_texture=0;
 
     determine_holiday();
 
@@ -256,6 +312,14 @@ int main(int argc,char* args[]){
     }
 
     profile.make_directories();
+
+    //If there is no player name, create a default profile
+    //I added this to basically remove the profile system from the game
+    if(player.name=="\x1F"){
+        creating_profile="default";
+
+        profile.create_profile(true);
+    }
 
     if(load_current_profile()){
         if(!options_load()){

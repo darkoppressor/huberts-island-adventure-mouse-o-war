@@ -1,3 +1,11 @@
+1.5.0 - 2015/12/19
+ - Updated compiler/libraries/build system (primarily upgraded to SDL2)
+ - Fixed game sound cutting out in Linux
+ - Fixed game crashing in Linux
+ - Attempted fix of game freezing on close
+ - Removed profile system
+ - Ported the game to Android
+
 1.4.0 - 2013/7/19
  - Updated compiler/libraries.
  - Ported the game to Linux and OS X!
@@ -98,6 +106,6 @@
  - Added save_location.cfg. Defaults to a user-editable area. See readme.txt for more information.
  - Harmless sea life is no longer multiplied on higher difficulties.
  - Added tons of FUN!
- 
+
 1.0.0 - 2012/1/27
  - Initial release version!

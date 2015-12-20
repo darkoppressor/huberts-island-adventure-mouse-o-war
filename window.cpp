@@ -99,38 +99,42 @@ void Window::turn_on(){
 }
 
 void Window::special_input_create_profile(){
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
-    SDL_EnableUNICODE(SDL_ENABLE);
-
     if(event.type==SDL_QUIT){
         quit_game();
     }
 
-    if(event.type==SDL_KEYDOWN && profile.profile_list.size()<7){
-        //If the string is less than the maximum size.
-        if(creating_profile.length()<16){
-            if((event.key.keysym.unicode>=(Uint16)'0' && event.key.keysym.unicode<=(Uint16)'9') ||
-               (event.key.keysym.unicode>=(Uint16)'A' && event.key.keysym.unicode<=(Uint16)'Z') ||
-               (event.key.keysym.unicode>=(Uint16)'a' && event.key.keysym.unicode<=(Uint16)'z') ||
-               event.key.keysym.unicode==(Uint16)'_' || event.key.keysym.unicode==(Uint16)'-' ||
-               event.key.keysym.unicode==(Uint16)'.'){
-                creating_profile+=(char)event.key.keysym.unicode;
+    if(event.type==SDL_TEXTINPUT && profile.profile_list.size()<7){
+        string text=event.text.text;
+
+        for(int i=0;i<text.length();i++){
+            //If the string is less than the maximum size.
+            if(creating_profile.length()<16){
+                if((text[i]>=(Uint16)'0' && text[i]<=(Uint16)'9') ||
+                   (text[i]>=(Uint16)'A' && text[i]<=(Uint16)'Z') ||
+                   (text[i]>=(Uint16)'a' && text[i]<=(Uint16)'z') ||
+                   text[i]==(Uint16)'_' || text[i]==(Uint16)'-' ||
+                   text[i]==(Uint16)'.'){
+                    creating_profile+=(char)text[i];
+                }
+            }
+            else{
+                break;
             }
         }
+    }
 
+    if(event.type==SDL_KEYDOWN && profile.profile_list.size()<7){
         //If the backspace key is pressed and the string is not empty.
-        if(event.key.keysym.sym==SDLK_BACKSPACE && creating_profile.length()>0){
+        if(event.key.keysym.scancode==SDL_SCANCODE_BACKSPACE && creating_profile.length()>0){
             //Remove one character from the end of the string.
             creating_profile.erase(creating_profile.length()-1);
         }
 
         //If the player hits enter, we create the new profile.
-        if(event.key.keysym.sym==SDLK_RETURN || event.key.keysym.sym==SDLK_KP_ENTER){
+        if(event.key.keysym.scancode==SDL_SCANCODE_RETURN || event.key.keysym.scancode==SDL_SCANCODE_KP_ENTER){
             profile.create_profile();
         }
     }
-
-    SDL_EnableKeyRepeat(0,0);
 }
 
 void Window::clear_buttons(){
@@ -152,9 +156,7 @@ void Window::create_information(short get_x,short get_y,string get_tooltip_text,
 void Window::handle_input_states(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         //If the window is moving, center it on the mouse's current position - the offsets.
         if(moving){
@@ -211,9 +213,7 @@ void Window::handle_input_states(){
 void Window::handle_input_events(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         if(special_input==SPECIAL_INPUT_CREATE_PROFILE){
             special_input_create_profile();

@@ -4,18 +4,14 @@
 #include "render.h"
 #include "world.h"
 #include "pixels.h"
-
-#include <SDL_gfxPrimitives.h>
-#include <SDL_gfxBlitFunc.h>
-#include <SDL_rotozoom.h>
+#include "color.h"
+#include "message_log.h"
 
 using namespace std;
 
-SDL_Surface* optimize_image_opengl(SDL_Surface* surface){
+SDL_Surface* optimize_surface(SDL_Surface* surface){
     SDL_PixelFormat RGBAFormat;
     RGBAFormat.palette=0;
-    RGBAFormat.colorkey=0;
-    RGBAFormat.alpha=0;
     RGBAFormat.BitsPerPixel=32;
     RGBAFormat.BytesPerPixel=4;
 
@@ -32,483 +28,162 @@ SDL_Surface* optimize_image_opengl(SDL_Surface* surface){
         RGBAFormat.Amask=0xFF000000; RGBAFormat.Ashift=0; RGBAFormat.Aloss=0;
     }
 
-    SDL_Surface* conv=SDL_ConvertSurface(surface,&RGBAFormat,SDL_SWSURFACE);
+    SDL_Surface* conv=SDL_ConvertSurface(surface,&RGBAFormat,0);
+
+    if(conv==0){
+        msg="Error converting surface: ";
+        msg+=SDL_GetError();
+        update_error_log(msg);
+    }
 
     return conv;
 }
 
-SDL_Surface* load_image_opengl(string filename){
+SDL_Surface* load_image(string filename){
     SDL_Surface* loaded_image=0;
     SDL_Surface* optimized_image=0;
 
-    //Load the image.
     loaded_image=IMG_Load(filename.c_str());
 
     if(loaded_image!=0){
-        optimized_image=optimize_image_opengl(loaded_image);
+        optimized_image=optimize_surface(loaded_image);
         SDL_FreeSurface(loaded_image);
     }
+    else{
+        update_error_log("Error loading image '"+filename+"': "+IMG_GetError());
+    }
 
-    //Return the optimized image.
     return optimized_image;
 }
 
-SDL_Surface* load_image_sdl(string filename){
-    SDL_Surface* loaded_image=0;
-    SDL_Surface* optimized_image=0;
-
-    //Load the image.
-    loaded_image=IMG_Load(filename.c_str());
-
-    if(loaded_image!=0){
-        optimized_image=SDL_DisplayFormatAlpha(loaded_image);
-        SDL_FreeSurface(loaded_image);
-    }
-
-    //Return the optimized image.
-    return optimized_image;
-}
-
-GLuint surface_to_texture(SDL_Surface* surface){
-    //This texture will be returned at the end of this function.
-    GLuint texture;
-
-    //Have OpenGL generate a texture object handle for us.
-    glGenTextures(1,&texture);
-
-    //Bind the texture object.
-    glBindTexture(GL_TEXTURE_2D,texture);
-
-    //Set the texture's properties:
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);///GL_LINEAR
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);///GL_LINEAR
-
-    //Edit the texture object's image data using the information our image gives us:
-    glTexImage2D(GL_TEXTURE_2D,0,surface->format->BytesPerPixel,surface->w,surface->h,0,GL_RGBA,GL_UNSIGNED_BYTE,surface->pixels);
-
-    return texture;
-}
-
-GLuint load_texture(string filename,image_data* id){
-    //This will temporarily store the name of the image we are loading.
-    SDL_Surface* surface=0;
-
-    //Load the image.
-    surface=load_image_opengl(filename.c_str());
-
-    GLuint texture=surface_to_texture(surface);
+SDL_Texture* load_texture(string filename,image_data* id){
+    SDL_Surface* surface=load_image(filename.c_str());
 
     id->w=surface->w;
     id->h=surface->h;
 
-    //We have copied the image data into the new texture, so delete the image data.
+    SDL_Texture* texture=main_window.create_texture_from_surface(surface);
+
+    if(texture==0){
+        msg="Error creating texture: ";
+        msg+=SDL_GetError();
+        update_error_log(msg);
+    }
+
     SDL_FreeSurface(surface);
 
-    //Return the new texture we have created.
     return texture;
 }
 
-void render_fbo_texture(){
-    glPushMatrix();
-    //Bind the texture object.
-    if(image.current_texture!=main_window.fbo_texture){
-        glBindTexture(GL_TEXTURE_2D,main_window.fbo_texture);
-        image.current_texture=main_window.fbo_texture;
+void render_rtt(double x,double y,Rtt_Data* rtt_source,double opacity,double scale_x,double scale_y,double angle,short color_name,bool flip_x,bool flip_y){
+    SDL_Rect rect_dst;
+    rect_dst.x=x;
+    rect_dst.y=y;
+    rect_dst.w=rtt_source->w*scale_x;
+    rect_dst.h=rtt_source->h*scale_y;
+
+    uint32_t flip=SDL_FLIP_NONE;
+    if(flip_x && flip_y){
+        flip=SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+    }
+    else if(flip_x){
+        flip=SDL_FLIP_HORIZONTAL;
+    }
+    else if(flip_y){
+        flip=SDL_FLIP_VERTICAL;
     }
 
-    glDisable(GL_BLEND);
+    SDL_SetTextureAlphaMod(rtt_source->texture,(uint8_t)(opacity*255.0));
 
-    //Move to the offset of the image we want to place.
-    glTranslated(0,0,0);
+    color_data colordata=color_name_to_doubles(color_name);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    SDL_SetTextureColorMod(rtt_source->texture,(uint8_t)color.get_red(),(uint8_t)color.get_green(),(uint8_t)color.get_blue());
 
-    color_data color=color_name_to_doubles(COLOR_WHITE);
-    glColor4d(color.red,color.green,color.blue,1.0);
-
-    //Start quad.
-    glBegin(GL_QUADS);
-
-    //Apply the texture to the screen:
-    glTexCoord2d(0,1);  glVertex3d(0,0,0);
-    glTexCoord2d(1,1);  glVertex3d(main_window.SCREEN_WIDTH,0,0);
-    glTexCoord2d(1,0);  glVertex3d(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,0);
-    glTexCoord2d(0,0);  glVertex3d(0,main_window.SCREEN_HEIGHT,0);
-
-    //End quad.
-    glEnd();
-
-    glEnable(GL_BLEND);
-
-    //Reset.
-    glPopMatrix();
+    main_window.render_copy_ex(rtt_source->texture,0,&rect_dst,-angle,0,(SDL_RendererFlip)flip);
 }
 
 void render_texture(double x,double y,image_data image_source,double opacity,short color_name){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        render_texture_opengl(x,y,image_source,opacity,color_name);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_surface(x,y,image_source,opacity,color_name);
-    }
-}
+    SDL_Rect rect_dst;
+    rect_dst.x=x;
+    rect_dst.y=y;
+    rect_dst.w=image_source.w;
+    rect_dst.h=image_source.h;
 
-void render_texture_opengl(double x,double y,image_data image_source,double opacity,short color_name){
-    glPushMatrix();
-    //Bind the texture object.
-    if(image.current_texture!=image_source.texture){
-        glBindTexture(GL_TEXTURE_2D,image_source.texture);
-        image.current_texture=image_source.texture;
-    }
+    SDL_SetTextureAlphaMod(image_source.texture,(uint8_t)(opacity*255.0));
 
-    //Move to the offset of the image we want to place.
-    glTranslated(x,y,0);
+    color_data colordata=color_name_to_doubles(color_name);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    SDL_SetTextureColorMod(image_source.texture,(uint8_t)color.get_red(),(uint8_t)color.get_green(),(uint8_t)color.get_blue());
 
-    color_data color=color_name_to_doubles(color_name);
-    glColor4d(color.red,color.green,color.blue,opacity);
-
-    //Start quad.
-    glBegin(GL_QUADS);
-
-    //Apply the texture to the screen:
-    glTexCoord2d(0,0);  glVertex3d(0,0,0);
-    glTexCoord2d(1,0);  glVertex3d(image_source.w,0,0);
-    glTexCoord2d(1,1);  glVertex3d(image_source.w,image_source.h,0);
-    glTexCoord2d(0,1);  glVertex3d(0,image_source.h,0);
-
-    //End quad.
-    glEnd();
-
-    //Reset.
-    glPopMatrix();
-}
-
-void render_surface(double x,double y,image_data image_source,double opacity,short color_name){
-    SDL_Rect position;
-    position.x=x;
-    position.y=y;
-
-    if(opacity!=1.0){
-        SDL_gfxSetAlpha(image_source.surface,opacity*255);
-    }
-
-    if(color_name!=COLOR_WHITE){
-        color_data color=color_name_to_doubles(color_name);
-        SDL_Surface* cover=SDL_CreateRGBSurface(image_source.surface->flags,image_source.surface->w,image_source.surface->h,image_source.surface->format->BitsPerPixel,image_source.surface->format->Rmask,image_source.surface->format->Gmask,image_source.surface->format->Bmask,image_source.surface->format->Amask);
-
-        if(SDL_MUSTLOCK(image_source.surface)){
-            SDL_LockSurface(image_source.surface);
-        }
-        for(int x=0;x<image_source.surface->w;x++){
-            for(int y=0;y<image_source.surface->h;y++){
-                Uint32 pixel=surface_get_pixel(image_source.surface,x,y);
-                Uint8 red;
-                Uint8 green;
-                Uint8 blue;
-                Uint8 alpha;
-                SDL_GetRGBA(pixel,image_source.surface->format,&red,&green,&blue,&alpha);
-                if(alpha!=0){
-                    Uint32 pixel_cover=SDL_MapRGBA(image_source.surface->format,color.red*255,color.green*255,color.blue*255,191);
-                    surface_put_pixel(cover,x,y,pixel_cover);
-                }
-                else{
-                    Uint32 pixel_cover=SDL_MapRGBA(image_source.surface->format,0,0,0,0);
-                    surface_put_pixel(cover,x,y,pixel_cover);
-                }
-            }
-        }
-        if(SDL_MUSTLOCK(image_source.surface)){
-            SDL_UnlockSurface(image_source.surface);
-        }
-
-        SDL_BlitSurface(image_source.surface,NULL,main_window.screen,&position);
-        SDL_BlitSurface(cover,NULL,main_window.screen,&position);
-        SDL_FreeSurface(cover);
-    }
-    else{
-        SDL_BlitSurface(image_source.surface,NULL,main_window.screen,&position);
-    }
+    main_window.render_copy_ex(image_source.texture,0,&rect_dst,0.0,0,SDL_FLIP_NONE);
 }
 
 void render_sprite(double x,double y,image_data image_source,SDL_Rect* texture_clip,double opacity,double scale_x,double scale_y,double angle,short color_name,bool flip_x){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        render_sprite_opengl(x,y,image_source,texture_clip,opacity,scale_x,scale_y,angle,color_name,flip_x);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_sprite_sdl(x,y,image_source,texture_clip,opacity,scale_x,scale_y,angle,color_name,flip_x);
-    }
-}
+    SDL_Rect rect_src;
+    rect_src.x=texture_clip->x;
+    rect_src.y=texture_clip->y;
+    rect_src.w=texture_clip->w;
+    rect_src.h=texture_clip->h;
 
-void render_sprite_opengl(double x,double y,image_data image_source,SDL_Rect* texture_clip,double opacity,double scale_x,double scale_y,double angle,short color_name,bool flip_x){
-    glPushMatrix();
-    //Bind the texture object.
-    if(image.current_texture!=image_source.texture){
-        glBindTexture(GL_TEXTURE_2D,image_source.texture);
-        image.current_texture=image_source.texture;
-    }
+    SDL_Rect rect_dst;
+    rect_dst.x=x;
+    rect_dst.y=y;
+    rect_dst.w=texture_clip->w*scale_x;
+    rect_dst.h=texture_clip->h*scale_y;
 
-    //Move to the offset of the image we want to place.
-    glTranslated(x,y,0);
-
-    glTranslated(texture_clip->w/2.0,texture_clip->h/2.0,0);
-
-    glRotated(angle,0,0,-1);
-
-    glTranslated(-texture_clip->w/2.0,-texture_clip->h/2.0,0);
-
-    glScaled(scale_x,scale_y,1.0);
-
+    uint32_t flip=SDL_FLIP_NONE;
     if(flip_x){
-        glScalef(-1,1,1);
-        glTranslated(-texture_clip->w,0,0);
+        flip=SDL_FLIP_HORIZONTAL;
     }
 
-    color_data color=color_name_to_doubles(color_name);
-    glColor4d(color.red,color.green,color.blue,opacity);
+    SDL_SetTextureAlphaMod(image_source.texture,(uint8_t)(opacity*255.0));
 
-    //Start quad.
-    glBegin(GL_QUADS);
+    color_data colordata=color_name_to_doubles(color_name);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    SDL_SetTextureColorMod(image_source.texture,(uint8_t)color.get_red(),(uint8_t)color.get_green(),(uint8_t)color.get_blue());
 
-    //Apply the texture to the screen:
-
-    //Bottom left corner.
-    glTexCoord2d((texture_clip->x)/image_source.w,(texture_clip->y+texture_clip->h)/image_source.h);
-    glVertex3d(0,texture_clip->h,0);
-
-    //Bottom right corner.
-    glTexCoord2d((texture_clip->x+texture_clip->w)/image_source.w,(texture_clip->y+texture_clip->h)/image_source.h);
-    glVertex3d(texture_clip->w,texture_clip->h,0);
-
-    //Top right corner.
-    glTexCoord2d((texture_clip->x+texture_clip->w)/image_source.w,(texture_clip->y)/image_source.h);
-    glVertex3d(texture_clip->w,0,0);
-
-    //Top left corner.
-    glTexCoord2d((texture_clip->x)/image_source.w,(texture_clip->y)/image_source.h);
-    glVertex3d(0,0,0);
-
-    //End quad.
-    glEnd();
-
-    //Reset.
-    glPopMatrix();
-}
-
-void render_sprite_sdl(double x,double y,image_data image_source,SDL_Rect* texture_clip,double opacity,double scale_x,double scale_y,double angle,short color_name,bool flip_x){
-    SDL_Rect position;
-    position.x=x;
-    position.y=y;
-
-    if(opacity!=1.0){
-        SDL_gfxSetAlpha(image_source.surface,opacity*255);
-    }
-
-    if(scale_x!=1.0 || scale_y!=1.0 || angle!=0.0){
-        SDL_Surface* temp_surface1=SDL_CreateRGBSurface(main_window.screen->flags,texture_clip->w,texture_clip->h,main_window.SCREEN_BPP,main_window.screen->format->Rmask,main_window.screen->format->Gmask,main_window.screen->format->Bmask,main_window.screen->format->Amask);
-
-        SDL_BlitSurface(image_source.surface,texture_clip,temp_surface1,NULL);
-
-        SDL_Surface* temp_surface2=rotozoomSurfaceXY(temp_surface1,angle,scale_x,scale_y,SMOOTHING_OFF);
-
-        if(color_name!=COLOR_WHITE){
-            color_data color=color_name_to_doubles(color_name);
-            SDL_Surface* cover=SDL_CreateRGBSurface(temp_surface2->flags,temp_surface2->w,temp_surface2->h,temp_surface2->format->BitsPerPixel,temp_surface2->format->Rmask,temp_surface2->format->Gmask,temp_surface2->format->Bmask,temp_surface2->format->Amask);
-
-            if(SDL_MUSTLOCK(temp_surface2)){
-                SDL_LockSurface(temp_surface2);
-            }
-            for(int x=0;x<temp_surface2->w;x++){
-                for(int y=0;y<temp_surface2->h;y++){
-                    Uint32 pixel=surface_get_pixel(temp_surface2,x,y);
-                    Uint8 red;
-                    Uint8 green;
-                    Uint8 blue;
-                    Uint8 alpha;
-                    SDL_GetRGBA(pixel,temp_surface2->format,&red,&green,&blue,&alpha);
-                    if(alpha!=0){
-                        Uint32 pixel_cover=SDL_MapRGBA(temp_surface2->format,color.red*255,color.green*255,color.blue*255,191);
-                        surface_put_pixel(cover,x,y,pixel_cover);
-                    }
-                    else{
-                        Uint32 pixel_cover=SDL_MapRGBA(temp_surface2->format,0,0,0,0);
-                        surface_put_pixel(cover,x,y,pixel_cover);
-                    }
-                }
-            }
-            if(SDL_MUSTLOCK(temp_surface2)){
-                SDL_UnlockSurface(temp_surface2);
-            }
-
-            SDL_BlitSurface(temp_surface2,NULL,main_window.screen,&position);
-            SDL_BlitSurface(cover,NULL,main_window.screen,&position);
-            SDL_FreeSurface(cover);
-        }
-        else{
-            SDL_BlitSurface(temp_surface2,NULL,main_window.screen,&position);
-        }
-
-        SDL_FreeSurface(temp_surface1);
-        SDL_FreeSurface(temp_surface2);
-    }
-    else{
-        if(color_name!=COLOR_WHITE){
-            color_data color=color_name_to_doubles(color_name);
-            SDL_Surface* cover=SDL_CreateRGBSurface(image_source.surface->flags,texture_clip->w,texture_clip->h,image_source.surface->format->BitsPerPixel,image_source.surface->format->Rmask,image_source.surface->format->Gmask,image_source.surface->format->Bmask,image_source.surface->format->Amask);
-
-            if(SDL_MUSTLOCK(image_source.surface)){
-                SDL_LockSurface(image_source.surface);
-            }
-            for(int x=texture_clip->x,x_cover=0;x<texture_clip->x+texture_clip->w;x++,x_cover++){
-                for(int y=texture_clip->y,y_cover=0;y<texture_clip->y+texture_clip->h;y++,y_cover++){
-                    Uint32 pixel=surface_get_pixel(image_source.surface,x,y);
-                    Uint8 red;
-                    Uint8 green;
-                    Uint8 blue;
-                    Uint8 alpha;
-                    SDL_GetRGBA(pixel,image_source.surface->format,&red,&green,&blue,&alpha);
-                    if(alpha!=0){
-                        Uint32 pixel_cover=SDL_MapRGBA(image_source.surface->format,color.red*255,color.green*255,color.blue*255,191);
-                        surface_put_pixel(cover,x_cover,y_cover,pixel_cover);
-                    }
-                    else{
-                        Uint32 pixel_cover=SDL_MapRGBA(image_source.surface->format,0,0,0,0);
-                        surface_put_pixel(cover,x_cover,y_cover,pixel_cover);
-                    }
-                }
-            }
-            if(SDL_MUSTLOCK(image_source.surface)){
-                SDL_UnlockSurface(image_source.surface);
-            }
-
-            SDL_BlitSurface(image_source.surface,texture_clip,main_window.screen,&position);
-            SDL_BlitSurface(cover,NULL,main_window.screen,&position);
-            SDL_FreeSurface(cover);
-        }
-        else{
-            SDL_BlitSurface(image_source.surface,texture_clip,main_window.screen,&position);
-        }
-    }
+    main_window.render_copy_ex(image_source.texture,&rect_src,&rect_dst,-angle,0,(SDL_RendererFlip)flip);
 }
 
 void render_rectangle(double x,double y,double w,double h,double opacity,short color_name){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        render_rectangle_opengl(x,y,w,h,opacity,color_name);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_rectangle_sdl(x,y,w,h,opacity,color_name);
-    }
+    main_window.set_render_draw_blend_mode(SDL_BLENDMODE_BLEND);
+
+    color_data colordata=color_name_to_doubles(color_name);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    main_window.set_render_draw_color(color,opacity);
+
+    SDL_Rect rect;
+    rect.x=x;
+    rect.y=y;
+    rect.w=w;
+    rect.h=h;
+
+    main_window.render_fill_rect(&rect);
 }
 
-void render_rectangle_opengl(double x,double y,double w,double h,double opacity,short color_name){
-    glPushMatrix();
-    //Bind the texture object.
-    glBindTexture(GL_TEXTURE_2D,NULL);
-    image.current_texture=0;
+void render_rectangle(double x,double y,double w,double h,double opacity,color_data colordata){
+    main_window.set_render_draw_blend_mode(SDL_BLENDMODE_BLEND);
 
-    //Move to the offset of the image we want to place.
-    glTranslated(x,y,0);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    main_window.set_render_draw_color(color,opacity);
 
-    color_data color=color_name_to_doubles(color_name);
-    glColor4d(color.red,color.green,color.blue,opacity);
+    SDL_Rect rect;
+    rect.x=x;
+    rect.y=y;
+    rect.w=w;
+    rect.h=h;
 
-    //Start quad.
-    glBegin(GL_QUADS);
-
-    //Apply the texture to the screen:
-    glTexCoord2d(0,0);  glVertex3d(0,0,0);
-    glTexCoord2d(1,0);  glVertex3d(w,0,0);
-    glTexCoord2d(1,1);  glVertex3d(w,h,0);
-    glTexCoord2d(0,1);  glVertex3d(0,h,0);
-
-    //End quad.
-    glEnd();
-
-    //Reset.
-    glPopMatrix();
-}
-
-void render_rectangle_sdl(double x,double y,double w,double h,double opacity,short color_name){
-    color_data color=color_name_to_doubles(color_name);
-
-    boxRGBA(main_window.screen,x+w,y,x,y+h,color.red*255,color.green*255,color.blue*255,opacity*255);
-}
-
-void render_rectangle(double x,double y,double w,double h,double opacity,color_data color){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        render_rectangle_opengl(x,y,w,h,opacity,color);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_rectangle_sdl(x,y,w,h,opacity,color);
-    }
-}
-
-void render_rectangle_opengl(double x,double y,double w,double h,double opacity,color_data color){
-    glPushMatrix();
-    //Bind the texture object.
-    glBindTexture(GL_TEXTURE_2D,NULL);
-    image.current_texture=0;
-
-    //Move to the offset of the image we want to place.
-    glTranslated(x,y,0);
-
-    glColor4d(color.red,color.green,color.blue,opacity);
-
-    //Start quad.
-    glBegin(GL_QUADS);
-
-    //Apply the texture to the screen:
-    glTexCoord2d(0,0);  glVertex3d(0,0,0);
-    glTexCoord2d(1,0);  glVertex3d(w,0,0);
-    glTexCoord2d(1,1);  glVertex3d(w,h,0);
-    glTexCoord2d(0,1);  glVertex3d(0,h,0);
-
-    //End quad.
-    glEnd();
-
-    //Reset.
-    glPopMatrix();
-}
-
-void render_rectangle_sdl(double x,double y,double w,double h,double opacity,color_data color){
-    boxRGBA(main_window.screen,x+w,y,x,y+h,color.red*255,color.green*255,color.blue*255,opacity*255);
+    main_window.render_fill_rect(&rect);
 }
 
 void render_line(double x1,double y1,double x2,double y2,double opacity,short color_name){
-    if(player.option_renderer==RENDERER_HARDWARE){
-        render_line_opengl(x1,y1,x2,y2,opacity,color_name);
-    }
-    else if(player.option_renderer==RENDERER_SOFTWARE){
-        render_line_sdl(x1,y1,x2,y2,opacity,color_name);
-    }
-}
+    main_window.set_render_draw_blend_mode(SDL_BLENDMODE_BLEND);
 
-void render_line_opengl(double x1,double y1,double x2,double y2,double opacity,short color_name){
-    glPushMatrix();
-    //Bind the texture object.
-    glBindTexture(GL_TEXTURE_2D,NULL);
-    image.current_texture=0;
+    color_data colordata=color_name_to_doubles(color_name);
+    Color color(colordata.red*255.0,colordata.green*255.0,colordata.blue*255.0,255);
+    main_window.set_render_draw_color(color,opacity);
 
-    color_data color=color_name_to_doubles(color_name);
-    glColor4d(color.red,color.green,color.blue,opacity);
-
-    glLineWidth(1);
-
-    glBegin(GL_LINES);
-
-    //Apply the texture to the screen:
-    glVertex2d(x1,y1);
-    glVertex2d(x2,y2);
-
-    glEnd();
-
-    //Reset.
-    glPopMatrix();
-}
-
-void render_line_sdl(double x1,double y1,double x2,double y2,double opacity,short color_name){
-    color_data color=color_name_to_doubles(color_name);
-
-    lineRGBA(main_window.screen,x1,y1,x2,y2,color.red*255,color.green*255,color.blue*255,opacity*255);
+    main_window.render_draw_line(x1,y1,x2,y2);
 }
 
 color_data color_name_to_doubles(short color_number){

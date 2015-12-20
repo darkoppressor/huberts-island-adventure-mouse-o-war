@@ -31,8 +31,6 @@ bool Player::is_level_worldmap(short level_to_check){
 }
 
 void Player::worldmap_handle_input_states(){
-    handle_input_states_always();
-
     handle_input_states_during_play();
 
     //************************//

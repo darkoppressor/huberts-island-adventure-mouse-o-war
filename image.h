@@ -11,9 +11,6 @@
 #include <SDL.h>
 #include <string>
 
-#define GLEW_STATIC
-#include <glew.h>
-
 class Image{
     private:
     public:
@@ -29,9 +26,6 @@ class Image{
 
     void load_images_level_adventure(short level_to_load,short sub_level_to_load);
     void load_images_level_survival(std::string current_level);
-
-    //The currently bound texture.
-    GLuint current_texture;
 
     //Global images.
     std::vector<image_data> menu_background_images;

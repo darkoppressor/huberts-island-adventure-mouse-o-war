@@ -11,8 +11,6 @@
 class Window_Level_Info: public Window{
     private:
 
-    Uint8 *keystates;
-
     int window_identifier;
 
     public:

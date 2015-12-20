@@ -85,9 +85,7 @@ void Window_Inventory::turn_off(){
 void Window_Inventory::handle_input_states(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         //If the window is moving, center it on the mouse's current position - the offsets.
         if(moving){
@@ -151,9 +149,7 @@ void Window_Inventory::handle_input_states(){
 void Window_Inventory::handle_input_events(){
     if(on){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         switch(event.type){
             case SDL_QUIT:
@@ -444,9 +440,7 @@ void Window_Inventory::display_dragged_item(){
     //If there is a dragged item.
     if(player.dragged_item.size()>0){
         int mouse_x,mouse_y;
-        SDL_GetMouseState(&mouse_x,&mouse_y);
-        mouse_x*=(double)((double)main_window.SCREEN_WIDTH/(double)main_window.REAL_SCREEN_WIDTH);
-        mouse_y*=(double)((double)main_window.SCREEN_HEIGHT/(double)main_window.REAL_SCREEN_HEIGHT);
+        main_window.get_mouse_state(&mouse_x,&mouse_y);
 
         if(player.dragged_item[0].type==ITEM_SWIMMING_GEAR){
             render_sprite(mouse_x-player.dragged_item[0].offset_x+2,mouse_y-player.dragged_item[0].offset_y+2,image.sprite_sheet_items,&sprites_item_swimming_gear[0],1.0,1.0,1.0,0.0,COLOR_BLACK);

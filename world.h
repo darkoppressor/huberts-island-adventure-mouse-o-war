@@ -85,11 +85,6 @@ struct joy_stick{
 //Vector containing all of the joysticks.
 extern std::vector<joy_stick> joystick;
 
-//The number of joysticks connected to the system when the joysticks were loaded up.
-//I don't know if SDL_NumJoysticks() might change during runtime if the player disconnects one or more joysticks (or connects one or more new ones).
-//Thus, it is saved here right after the joysticks are loaded, and this number is used when unloading them in quit().
-extern int number_of_joysticks;
-
 extern BitmapFont font;
 extern BitmapFont font_sga;
 extern BitmapFont font_large;

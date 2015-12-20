@@ -8,9 +8,6 @@
 
 #include <vector>
 
-#define GLEW_STATIC
-#include <glew.h>
-
 class Overlay{
     private:
     public:

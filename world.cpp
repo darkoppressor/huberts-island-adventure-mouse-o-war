@@ -52,8 +52,6 @@ SDL_Event event;
 
 vector<joy_stick> joystick;
 
-int number_of_joysticks=0;
-
 BitmapFont font;
 BitmapFont font_sga;
 BitmapFont font_large;
@@ -312,7 +310,8 @@ void create_windows(){
     msg="Change Profile";
     button_sound=7-1;
     y_position=90;
-    vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,y_position,"",msg,&button_event_open_window_change_profile,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
+    //This button now begins disabled as part of the removal of the profile system
+    vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,y_position,"",msg,&button_event_open_window_change_profile,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_INVISIBLE,-1,BUTTON_DISABLED);
     window_manager.main_menu_buttons_no_game.push_back(vector_windows[vector_windows.size()-1].buttons.size()-1);
     msg="Play";
     button_sound=9-1;

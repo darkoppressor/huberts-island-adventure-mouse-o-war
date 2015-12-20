@@ -10,9 +10,9 @@
 #include "holidays.h"
 #include "message_log.h"
 #include "button_events.h"
+#include "file_io.h"
 
 #include <fstream>
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
 #ifdef GAME_OS_OSX
@@ -67,6 +67,22 @@ string Profile::get_home_directory(){
             str_home+="/";
         #endif
 
+        #ifdef GAME_OS_ANDROID
+            if(File_IO::external_storage_available()){
+                const char* external_path=SDL_AndroidGetExternalStoragePath();
+
+                if(external_path!=0){
+                    str_home=external_path;
+                    str_home+="/";
+                }
+                else{
+                    msg="Error getting external storage path: ";
+                    msg+=SDL_GetError();
+                    update_error_log(msg);
+                }
+            }
+        #endif
+
         correct_slashes(&str_home);
     }
 
@@ -81,7 +97,7 @@ void Profile::make_home_directory(){
 
             correct_slashes(&str_my_games);
 
-            boost::filesystem::create_directory(str_my_games);
+            File_IO::create_directory(str_my_games);
         #endif
 
         string str_home=get_home_directory();
@@ -91,7 +107,7 @@ void Profile::make_home_directory(){
 
         correct_slashes(&str_home);
 
-        boost::filesystem::create_directory(str_home);
+        File_IO::create_directory(str_home);
     }
 }
 
@@ -100,31 +116,31 @@ void Profile::make_directories(){
 
     make_home_directory();
 
-    boost::filesystem::create_directory(get_home_directory()+"profiles");
-    boost::filesystem::create_directory(get_home_directory()+"profiles/backups");
+    File_IO::create_directory(get_home_directory()+"profiles");
+    File_IO::create_directory(get_home_directory()+"profiles/backups");
 
     //If there is a profile.
     if(player.name!="\x1F"){
         temp=get_home_directory()+"profiles/";
         temp+=player.name;
-        boost::filesystem::create_directory(temp.c_str());
+        File_IO::create_directory(temp);
 
         temp=get_home_directory()+"profiles/";
         temp+=player.name;
         temp+="/screenshots";
-        boost::filesystem::create_directory(temp.c_str());
+        File_IO::create_directory(temp);
 
         temp=get_home_directory()+"profiles/";
         temp+=player.name;
         temp+="/saves";
-        boost::filesystem::create_directory(temp.c_str());
+        File_IO::create_directory(temp);
 
         for(int i=0;i<=LAST_LEVEL;i++){
             temp=get_home_directory()+"profiles/";
             temp+=player.name;
             temp+="/saves/";
             ss.clear();ss.str("");ss<<i;temp+=ss.str();
-            boost::filesystem::create_directory(temp.c_str());
+            File_IO::create_directory(temp);
         }
     }
 }
@@ -145,7 +161,7 @@ void Profile::delete_profile(int profile_to_delete){
 
     string temp=get_home_directory()+"profiles/";
     temp+=profile_list[profile_to_delete];
-    boost::filesystem::remove_all(temp.c_str());
+    File_IO::remove_directory(temp);
 
     profile_list.erase(profile_list.begin()+profile_to_delete);
 
@@ -235,24 +251,26 @@ void Profile::select_profile(int profile_to_select){
     }
 }
 
-void Profile::create_profile(){
+void Profile::create_profile(bool creating_default){
     if(creating_profile.length()>0 && !does_profile_exist(creating_profile)){
         version_mismatch=false;
 
-        //If a game was already in progress, save the current profile before creating the new one.
-        if(player.game_in_progress){
-            save_level_data();
+        if(!creating_default){
+            //If a game was already in progress, save the current profile before creating the new one.
+            if(player.game_in_progress){
+                save_level_data();
+            }
+
+            options_save();
+            save_profile_global_data();
+            save_current_profile();
+            save_profile_list();
+
+            //If a game was in progress with the previous profile, it should be stopped.
+            player.stop_game();
+
+            sliders.clear();
         }
-
-        options_save();
-        save_profile_global_data();
-        save_current_profile();
-        save_profile_list();
-
-        //If a game was in progress with the previous profile, it should be stopped.
-        player.stop_game();
-
-        sliders.clear();
 
         //Set the profile name.
         player.name=creating_profile;
@@ -269,23 +287,28 @@ void Profile::create_profile(){
         save_current_profile();
         save_profile_list();
 
-        window_manager.close_windows(0);
+        if(!creating_default){
+            window_manager.close_windows(0);
 
-        window_manager.configure_main_menu();
+            window_manager.configure_main_menu();
 
-        vector_windows[WINDOW_MAIN_MENU].turn_on();
+            vector_windows[WINDOW_MAIN_MENU].turn_on();
 
-        //Show or hide the hardware mouse cursor.
-        if(player.option_hardware_cursor){
-            SDL_ShowCursor(SDL_ENABLE);
+            //Show or hide the hardware mouse cursor.
+            if(player.option_hardware_cursor){
+                SDL_ShowCursor(SDL_ENABLE);
+            }
+            else{
+                SDL_ShowCursor(SDL_DISABLE);
+            }
+
+            global_options_load();
+
+            play_game_start_sound();
         }
         else{
-            SDL_ShowCursor(SDL_DISABLE);
+            creating_profile.clear();
         }
-
-        global_options_load();
-
-        play_game_start_sound();
     }
 }
 
@@ -373,22 +396,21 @@ void Profile::save_backup(){
             string profile_backup=get_home_directory()+"profiles/backups/";
             profile_backup+=player.name;
 
-            try{
-                boost::filesystem::remove_all(profile_backup.c_str());
+            File_IO::remove_directory(profile_backup);
 
-                boost::filesystem::create_directory(profile_backup.c_str());
-            }
-            catch(boost::filesystem::filesystem_error& e){
-                msg="Filesystem error: ";
-                msg+=e.what();
-                update_error_log(msg);
-            }
+            File_IO::create_directory(profile_backup);
 
-            for(boost::filesystem::recursive_directory_iterator end_of_files,dir(profile_directory);dir!=end_of_files;dir++){
-                boost::filesystem::path temp_path(*dir);
-                string destination_file=temp_path.string();
-                boost::algorithm::replace_first(destination_file,profile_directory,profile_backup);
-                boost::filesystem::copy(*dir,destination_file);
+            for(File_IO_Directory_Iterator it(profile_directory);it.evaluate();it.iterate()){
+                //If the file is not a directory
+                if(it.is_regular_file()){
+                    string path_name=it.get_full_path();
+
+                    string destination_path=path_name;
+
+                    boost::algorithm::replace_first(destination_path,profile_directory,profile_backup);
+
+                    File_IO::copy_file(path_name,destination_path);
+                }
             }
         }
     }
@@ -1237,7 +1259,7 @@ void Profile::reset_world_map_data(){
 
                 string world_map_save=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/world.blazesave";
 
-                boost::filesystem::remove(world_map_save.c_str());
+                File_IO::remove_file(world_map_save);
             }
         }
     }

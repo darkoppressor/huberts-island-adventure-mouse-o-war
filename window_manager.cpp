@@ -128,15 +128,21 @@ void Window_Manager::configure_main_menu(){
 
     if(!player.game_in_progress){
         for(int i=0;i<main_menu_buttons_no_game.size();i++){
-            vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_no_game[i]].set_invisibility(false);
-            vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_no_game[i]].set_enabled(true);
+            //Don't enable the change profile button, because the profile system is being removed
+            if(vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_no_game[i]].text!="Change Profile"){
+                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_no_game[i]].set_invisibility(false);
+                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_no_game[i]].set_enabled(true);
+            }
         }
     }
     else{
         if(player.game_mode==GAME_MODE_SP_ADVENTURE){
             for(int i=0;i<main_menu_buttons_sp_adventure.size();i++){
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_sp_adventure[i]].set_invisibility(false);
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_sp_adventure[i]].set_enabled(true);
+                //Don't enable the change profile button, because the profile system is being removed
+                if(vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_sp_adventure[i]].text!="Change Profile"){
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_sp_adventure[i]].set_invisibility(false);
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_sp_adventure[i]].set_enabled(true);
+                }
             }
 
             if(player.on_worldmap()){
@@ -146,8 +152,11 @@ void Window_Manager::configure_main_menu(){
         }
         else if(player.game_mode==GAME_MODE_MP_ADVENTURE){
             for(int i=0;i<main_menu_buttons_mp_adventure.size();i++){
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_mp_adventure[i]].set_invisibility(false);
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_mp_adventure[i]].set_enabled(true);
+                //Don't enable the change profile button, because the profile system is being removed
+                if(vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_mp_adventure[i]].text!="Change Profile"){
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_mp_adventure[i]].set_invisibility(false);
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_mp_adventure[i]].set_enabled(true);
+                }
             }
 
             if(player.on_worldmap()){
@@ -157,8 +166,11 @@ void Window_Manager::configure_main_menu(){
         }
         else if(player.game_mode==GAME_MODE_SP_SURVIVAL || player.game_mode==GAME_MODE_MP_SURVIVAL){
             for(int i=0;i<main_menu_buttons_survival.size();i++){
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_survival[i]].set_invisibility(false);
-                vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_survival[i]].set_enabled(true);
+                //Don't enable the change profile button, because the profile system is being removed
+                if(vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_survival[i]].text!="Change Profile"){
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_survival[i]].set_invisibility(false);
+                    vector_windows[WINDOW_MAIN_MENU].buttons[main_menu_buttons_survival[i]].set_enabled(true);
+                }
             }
         }
     }

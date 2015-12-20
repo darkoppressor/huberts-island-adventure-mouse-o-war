@@ -682,15 +682,6 @@ enum{
     CHARACTER_END
 };
 
-//*******************//
-// Renderer Options: //
-//*******************//
-
-enum{
-    RENDERER_SOFTWARE,
-    RENDERER_HARDWARE
-};
-
 //*********************//
 // Fullscreen Options: //
 //*********************//

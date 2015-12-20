@@ -31,7 +31,8 @@ special_info_return_data set_special_info_string(short special_info){
     switch(special_info){
 
     case SPECIAL_INFO_CURRENT_PROFILE:
-        ss.clear();ss.str("");ss<<"Current profile:\xA";ss<<player.name;text=ss.str();
+        //I commented this out as part of the removal of the profile system
+        ///ss.clear();ss.str("");ss<<"Current profile:\xA";ss<<player.name;text=ss.str();
         break;
 
     case SPECIAL_INFO_NO_PROFILE:

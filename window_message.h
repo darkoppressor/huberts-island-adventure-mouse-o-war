@@ -11,8 +11,6 @@
 class Window_Message: public Window{
     private:
 
-    Uint8 *keystates;
-
     public:
 
     Window_Message();

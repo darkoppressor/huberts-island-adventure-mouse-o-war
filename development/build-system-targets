@@ -1,0 +1,21 @@
+# Comment out any line to tell the build system not to build for that platform
+# A line must exactly equal a project build target string to tell the build system to build for that platform,
+# except for Android, which is explained below
+
+Release-Linux-x86_64
+Release-Linux-x86
+Cross-Compile-Windows-x86_64
+Release-Windows-x86
+Release-OSX-x86_64
+
+# A line beginning with 'Android' tells the build system to build for Android
+# The remainder of an Android line will be used to generate a new APP_ABI line in Application.mk
+# The existing APP_ABI line in Application.mk will be replaced with the ABIs specified on the Android line
+
+# Some Android targets don't work right now. They fail to compile, complaining of missing headers:
+# mips
+# arm64-v8a
+# x86_64
+# mips64
+
+Android armeabi armeabi-v7a x86
