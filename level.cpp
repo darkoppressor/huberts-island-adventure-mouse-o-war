@@ -368,12 +368,12 @@ void Level::process_title(){
         bool top_done=false;
         bool bottom_done=false;
 
-        if(title_top_x<=(main_window.SCREEN_WIDTH-title_top_string.length()*font_large.spacing_x)/2.0){
-            title_top_x=(main_window.SCREEN_WIDTH-title_top_string.length()*font_large.spacing_x)/2.0;
+        if(title_top_x<=(main_window.SCREEN_WIDTH-title_top_string.length()*font_large.spacing_x*2.0)/2.0){
+            title_top_x=(main_window.SCREEN_WIDTH-title_top_string.length()*font_large.spacing_x*2.0)/2.0;
             top_done=true;
         }
-        if(title_bottom_x>=(main_window.SCREEN_WIDTH-title_bottom_string.length()*font_large.spacing_x)/2.0){
-            title_bottom_x=(main_window.SCREEN_WIDTH-title_bottom_string.length()*font_large.spacing_x)/2.0;
+        if(title_bottom_x>=(main_window.SCREEN_WIDTH-title_bottom_string.length()*font_large.spacing_x*2.0)/2.0){
+            title_bottom_x=(main_window.SCREEN_WIDTH-title_bottom_string.length()*font_large.spacing_x*2.0)/2.0;
             bottom_done=true;
         }
 
@@ -415,7 +415,7 @@ void Level::process_title(){
         title_top_x+=SPEED_OUT;
         title_bottom_x-=SPEED_OUT;
 
-        if(title_top_x>main_window.SCREEN_WIDTH && title_bottom_x+title_bottom_string.length()*font_large.spacing_x<0){
+        if(title_top_x>main_window.SCREEN_WIDTH && title_bottom_x+title_bottom_string.length()*font_large.spacing_x*2.0<0){
             title_moving=TITLE_NOT_MOVING;
         }
     }
@@ -1494,8 +1494,8 @@ void Level::load_level_adventure(){
 
         if(!player.on_worldmap()){
             set_title_strings(player.current_level);
-            title_top_x=main_window.SCREEN_WIDTH+font_large.spacing_x;
-            title_bottom_x=0.0-title_bottom_string.length()*font_large.spacing_x-font_large.spacing_x;
+            title_top_x=main_window.SCREEN_WIDTH+font_large.spacing_x*2.0;
+            title_bottom_x=0.0-title_bottom_string.length()*font_large.spacing_x*2.0-font_large.spacing_x*2.0;
             title_bg_y_top=0.0-main_window.SCREEN_HEIGHT;
             title_bg_x_bottom=main_window.SCREEN_WIDTH;
             title_bg_x_left=0.0-main_window.SCREEN_WIDTH;
