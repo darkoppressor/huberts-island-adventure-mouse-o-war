@@ -11,6 +11,21 @@
 
 using namespace std;
 
+bool Player::mouse_allowed(){
+    if(!touch_controls){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool Player::keystate(SDL_Scancode button){
+    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+
+    return keystates[button] || (touch_controls && touch_controller.check_button_state(button));
+}
+
 void Player::prepare_for_input(){
     crouching_at_frame_start=CROUCHING;
 
@@ -249,6 +264,9 @@ void Player::handle_command_event(short command){
             window_manager.close_windows(0);
             if(!game_in_progress){
                 vector_windows[WINDOW_MAIN_MENU].turn_on();
+
+                //As part of the removal of the profile system, this ensures we skip the profile button
+                player.current_button=2;
             }
         }
         //As long as the game is not paused and is in progress.
@@ -427,25 +445,44 @@ void Player::handle_command_event(short command){
     case COMMAND_UP: case COMMAND_LEFT:
         //If a window is open.
         if(ptr_window!=NULL){
-            if(current_button==-1){
-                current_button=ptr_window->buttons.size();
+            if(command_state(COMMAND_LOOK)){
+                if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
+                    if(--window_setup_survival[0].level_list_selection<0){
+                        window_setup_survival[0].level_list_selection=window_setup_survival[0].levels.size()-1;
+                    }
+                }
+                else if(current_window==WHICH_WINDOW_SHOP){
+                    if(--window_shop[0].upgrade_list_selection<0){
+                        window_shop[0].upgrade_list_selection=window_shop[0].upgrades.size()-1;
+                    }
+                }
+                else if(current_window==WHICH_WINDOW_UPGRADES){
+                    if(--window_upgrades[0].upgrade_list_selection<0){
+                        window_upgrades[0].upgrade_list_selection=window_upgrades[0].upgrades.size()-1;
+                    }
+                }
             }
-
-            button_check=current_button;
-            last_check=-1;
-            do{
-                if(--button_check<1){
-                    button_check=ptr_window->buttons.size()-1;
+            else{
+                if(current_button==-1){
+                    current_button=ptr_window->buttons.size();
                 }
 
-                if(last_check==current_button){
-                    button_check=current_button;
-                    break;
-                }
+                button_check=current_button;
+                last_check=-1;
+                do{
+                    if(--button_check<1){
+                        button_check=ptr_window->buttons.size()-1;
+                    }
 
-                last_check=button_check;
-            }while(!ptr_window->buttons[button_check].enabled);
-            current_button=button_check;
+                    if(last_check==current_button){
+                        button_check=current_button;
+                        break;
+                    }
+
+                    last_check=button_check;
+                }while(!ptr_window->buttons[button_check].enabled);
+                current_button=button_check;
+            }
         }
         else{
             if(command==COMMAND_UP){
@@ -506,28 +543,47 @@ void Player::handle_command_event(short command){
     case COMMAND_DOWN: case COMMAND_RIGHT:
         //If a window is open.
         if(ptr_window!=NULL){
-            if(current_button==-1){
-                current_button=0;
-            }
-
-            button_check=current_button;
-            last_check=-1;
-            do{
-                if(++button_check>ptr_window->buttons.size()-1){
-                    button_check=1;
-                    if(ptr_window->buttons.size()==1){
-                        button_check=0;
+            if(command_state(COMMAND_LOOK)){
+                if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
+                    if(++window_setup_survival[0].level_list_selection==window_setup_survival[0].levels.size()){
+                        window_setup_survival[0].level_list_selection=0;
                     }
                 }
-
-                if(last_check==current_button){
-                    button_check=current_button;
-                    break;
+                else if(current_window==WHICH_WINDOW_SHOP){
+                    if(++window_shop[0].upgrade_list_selection==window_shop[0].upgrades.size()){
+                        window_shop[0].upgrade_list_selection=0;
+                    }
+                }
+                else if(current_window==WHICH_WINDOW_UPGRADES){
+                    if(++window_upgrades[0].upgrade_list_selection==window_upgrades[0].upgrades.size()){
+                        window_upgrades[0].upgrade_list_selection=0;
+                    }
+                }
+            }
+            else{
+                if(current_button==-1){
+                    current_button=0;
                 }
 
-                last_check=button_check;
-            }while(!ptr_window->buttons[button_check].enabled);
-            current_button=button_check;
+                button_check=current_button;
+                last_check=-1;
+                do{
+                    if(++button_check>ptr_window->buttons.size()-1){
+                        button_check=1;
+                        if(ptr_window->buttons.size()==1){
+                            button_check=0;
+                        }
+                    }
+
+                    if(last_check==current_button){
+                        button_check=current_button;
+                        break;
+                    }
+
+                    last_check=button_check;
+                }while(!ptr_window->buttons[button_check].enabled);
+                current_button=button_check;
+            }
         }
         break;
 
@@ -936,8 +992,6 @@ void Player::handle_input_states(){
 }
 
 void Player::handle_input_states_during_play(){
-    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
-
     //If the player is alive and developer mode is on.
     if(option_dev){
         //******************//
@@ -947,56 +1001,56 @@ void Player::handle_input_states_during_play(){
         //If the camera is unsticky, check for camera inputs.
         if(cam_state!=CAM_STICKY){
             //Handle camera directional keys being pressed.
-            if(keystates[SDL_SCANCODE_KP_1]){
+            if(keystate(SDL_SCANCODE_KP_1)){
                 cam_state=LEFT;
             }
-            if(keystates[SDL_SCANCODE_KP_5]){
+            if(keystate(SDL_SCANCODE_KP_5)){
                 cam_state=UP;
             }
-            if(keystates[SDL_SCANCODE_KP_3]){
+            if(keystate(SDL_SCANCODE_KP_3)){
                 cam_state=RIGHT;
             }
-            if(keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_2)){
                 cam_state=DOWN;
             }
 
             //Handle multiple camera directional keys being pressed at once.
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5)){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3]){
+            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)){
                 cam_state=RIGHT_UP;
             }
-            if(keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
                 cam_state=RIGHT_DOWN;
             }
-            if(keystates[SDL_SCANCODE_KP_2] && keystates[SDL_SCANCODE_KP_1]){
+            if(keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_1)){
                 cam_state=LEFT_DOWN;
             }
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_3]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_3)){
                 cam_state=LEFT;
             }
-            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)){
                 cam_state=UP;
             }
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_2] && keystates[SDL_SCANCODE_KP_3]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_3)){
                 cam_state=LEFT_DOWN;
             }
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)){
                 cam_state=LEFT_UP;
             }
-            if(keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
                 cam_state=RIGHT_UP;
             }
-            if(keystates[SDL_SCANCODE_KP_1] && keystates[SDL_SCANCODE_KP_5] && keystates[SDL_SCANCODE_KP_3] && keystates[SDL_SCANCODE_KP_2]){
+            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
                 cam_state=LEFT_UP;
             }
 
             //If no camera directional keys are pressed, stop the camera.
-            if(!keystates[SDL_SCANCODE_KP_1] && !keystates[SDL_SCANCODE_KP_5] && !keystates[SDL_SCANCODE_KP_3] && !keystates[SDL_SCANCODE_KP_2]){
+            if(!keystate(SDL_SCANCODE_KP_1) && !keystate(SDL_SCANCODE_KP_5) && !keystate(SDL_SCANCODE_KP_3) && !keystate(SDL_SCANCODE_KP_2)){
                 cam_state=0;
             }
         }
@@ -1007,8 +1061,8 @@ void Player::handle_input_states_during_play(){
     ///******************///
 
     //If developer mode is enabled and the dev key is pressed.
-    if(option_dev && keystates[SDL_SCANCODE_F1]){
-        if(keystates[SDL_SCANCODE_Q]){
+    if(option_dev && keystate(SDL_SCANCODE_F1)){
+        if(keystate(SDL_SCANCODE_Q)){
             vector_items.push_back(Item(x+(w-sprites_item_candy[0].w)/2.0,y-sprites_item_candy[0].h,true,random_range(ITEM_CANDY,ITEM_CANDY),0,false,40,80,80,160,false,60));
 
             for(int i=0;i<mp_players.size();i++){
@@ -1041,8 +1095,6 @@ void Player::handle_input_states_during_play(){
 }
 
 bool Player::command_state(short command){
-    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
-
     Sint16 axis_value=0;
     Uint8 hat_value=SDL_HAT_CENTERED;
     short ball_direction=NONE;
@@ -1050,7 +1102,7 @@ bool Player::command_state(short command){
     int ball_delta_y=0;
 
     //If this command's bound input is a keyboard key, and the key is being pressed.
-    if(keys[command].type==INPUT_TYPE_KEYBOARD && keystates[keys[command].key]){
+    if(keys[command].type==INPUT_TYPE_KEYBOARD && keystate(keys[command].key)){
         return true;
     }
 
@@ -1280,8 +1332,6 @@ string Player::command_bound_input(short command,short player_index){
 }
 
 void Player::handle_input_events(){
-    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
-
     if(event.type==SDL_QUIT){
         quit_game();
 
@@ -1344,6 +1394,8 @@ void Player::handle_input_events(){
                     vector_windows[WINDOW_CREATE_PROFILE].turn_on();
                 }
             }
+
+            return;
         }
         else if(event.key.keysym.scancode==SDL_SCANCODE_AC_BACK){
             //If the game is in progress.
@@ -1366,6 +1418,8 @@ void Player::handle_input_events(){
                     quit_game();
                 }
             }
+
+            return;
         }
         else if(event.key.keysym.scancode==SDL_SCANCODE_MENU){
             //If the game is in progress.
@@ -1394,9 +1448,9 @@ void Player::handle_input_events(){
                     vector_windows[WINDOW_CREATE_PROFILE].turn_on();
                 }
             }
-        }
 
-        return;
+            return;
+        }
     }
 
     bool allow_input_event=true;
@@ -1496,23 +1550,23 @@ void Player::handle_input_events(){
 
         if(event.type==SDL_KEYDOWN){
             //Toggle fullscreen.
-            if((keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_RETURN){
+            if((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) && event.key.keysym.scancode==SDL_SCANCODE_RETURN){
                 toggle_fullscreen();
 
                 return;
             }
 
             //Quit the game.
-            if((keystates[SDL_SCANCODE_LALT] || keystates[SDL_SCANCODE_RALT]) && event.key.keysym.scancode==SDL_SCANCODE_F4){
+            if((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) && event.key.keysym.scancode==SDL_SCANCODE_F4){
                 quit_game();
 
                 return;
             }
 
             //Toggle dev mode.
-            if((keystates[SDL_SCANCODE_D] && keystates[SDL_SCANCODE_E] && event.key.keysym.scancode==SDL_SCANCODE_V) ||
-               (keystates[SDL_SCANCODE_D] && keystates[SDL_SCANCODE_V] && event.key.keysym.scancode==SDL_SCANCODE_E) ||
-               (keystates[SDL_SCANCODE_V] && keystates[SDL_SCANCODE_E] && event.key.keysym.scancode==SDL_SCANCODE_D)){
+            if((keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode==SDL_SCANCODE_V) ||
+               (keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_V) && event.key.keysym.scancode==SDL_SCANCODE_E) ||
+               (keystate(SDL_SCANCODE_V) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode==SDL_SCANCODE_D)){
                 option_dev=!option_dev;
                 options_save();
 
@@ -1592,16 +1646,16 @@ void Player::handle_input_events(){
                     }
                 }
 
-                if((keystates[SDL_SCANCODE_RALT] || keystates[SDL_SCANCODE_LALT]) && event.key.keysym.scancode==SDL_SCANCODE_Z){
+                if((keystate(SDL_SCANCODE_RALT) || keystate(SDL_SCANCODE_LALT)) && event.key.keysym.scancode==SDL_SCANCODE_Z){
                     hide_gui=!hide_gui;
 
                     return;
                 }
 
                 if(game_mode==GAME_MODE_SP_ADVENTURE){
-                    if((keystates[SDL_SCANCODE_B] && keystates[SDL_SCANCODE_A] && event.key.keysym.scancode==SDL_SCANCODE_T) ||
-                       (keystates[SDL_SCANCODE_B] && keystates[SDL_SCANCODE_T] && event.key.keysym.scancode==SDL_SCANCODE_A) ||
-                       (keystates[SDL_SCANCODE_T] && keystates[SDL_SCANCODE_A] && event.key.keysym.scancode==SDL_SCANCODE_B)){
+                    if((keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_A) && event.key.keysym.scancode==SDL_SCANCODE_T) ||
+                       (keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_T) && event.key.keysym.scancode==SDL_SCANCODE_A) ||
+                       (keystate(SDL_SCANCODE_T) && keystate(SDL_SCANCODE_A) && event.key.keysym.scancode==SDL_SCANCODE_B)){
                         ammo+=99;
                         profile.save_inventory();
 
@@ -1614,7 +1668,7 @@ void Player::handle_input_events(){
                 ///******************///
 
                 //If developer mode is enabled and the dev key is pressed.
-                if(option_dev && keystates[SDL_SCANCODE_F1]){
+                if(option_dev && keystate(SDL_SCANCODE_F1)){
                     if(event.key.keysym.scancode==SDL_SCANCODE_L){
                         levelshot();
 

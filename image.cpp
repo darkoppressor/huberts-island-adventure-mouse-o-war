@@ -125,6 +125,13 @@ void Image::load_images_global(){
     sprite_sheet_trap_boss_castle.load_image("data/images/sprite_sheet_trap_boss_castle.png");
     sprite_sheet_trap_boss_pyramid.load_image("data/images/sprite_sheet_trap_boss_pyramid.png");
     sprite_sheet_trap_seaweed.load_image("data/images/sprite_sheet_trap_seaweed.png");
+    touch_controller_dpad.load_image("data/images/touch_controller_dpad.png");
+    touch_controller_main.load_image("data/images/touch_controller_main.png");
+    touch_controller_main_small.load_image("data/images/touch_controller_main_small.png");
+    touch_controller_middle.load_image("data/images/touch_controller_middle.png");
+    touch_controller_middle_small.load_image("data/images/touch_controller_middle_small.png");
+    touch_controller_shoulder_left.load_image("data/images/touch_controller_shoulder_left.png");
+    touch_controller_shoulder_right.load_image("data/images/touch_controller_shoulder_right.png");
 
     for(int i=0;i<player.menu_backgrounds.size();i++){
         menu_background_images.push_back(image_data());
@@ -275,6 +282,13 @@ void Image::unload_images_global(){
     sprite_sheet_trap_boss_castle.unload_image();
     sprite_sheet_trap_boss_pyramid.unload_image();
     sprite_sheet_trap_seaweed.unload_image();
+    touch_controller_dpad.unload_image();
+    touch_controller_main.unload_image();
+    touch_controller_main_small.unload_image();
+    touch_controller_middle.unload_image();
+    touch_controller_middle_small.unload_image();
+    touch_controller_shoulder_left.unload_image();
+    touch_controller_shoulder_right.unload_image();
 
     for(int i=0;i<menu_background_images.size();i++){
         menu_background_images[i].unload_image();

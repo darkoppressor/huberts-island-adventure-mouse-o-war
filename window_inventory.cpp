@@ -89,20 +89,22 @@ void Window_Inventory::handle_input_states(){
 
         //If the window is moving, center it on the mouse's current position - the offsets.
         if(moving){
-            x=mouse_x-mouse_offset_x;
-            y=mouse_y-mouse_offset_y;
+            if(player.mouse_allowed()){
+                x=mouse_x-mouse_offset_x;
+                y=mouse_y-mouse_offset_y;
 
-            if(x<0){
-                x=0;
-            }
-            if(y<0){
-                y=0;
-            }
-            if(x+w>main_window.SCREEN_WIDTH){
-                x=main_window.SCREEN_WIDTH-w;
-            }
-            if(y+h>main_window.SCREEN_HEIGHT){
-                y=main_window.SCREEN_HEIGHT-h;
+                if(x<0){
+                    x=0;
+                }
+                if(y<0){
+                    y=0;
+                }
+                if(x+w>main_window.SCREEN_WIDTH){
+                    x=main_window.SCREEN_WIDTH-w;
+                }
+                if(y+h>main_window.SCREEN_HEIGHT){
+                    y=main_window.SCREEN_HEIGHT-h;
+                }
             }
         }
 

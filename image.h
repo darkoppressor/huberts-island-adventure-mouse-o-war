@@ -148,6 +148,13 @@ class Image{
     image_data sprite_sheet_trap_boss_castle;
     image_data sprite_sheet_trap_boss_pyramid;
     image_data sprite_sheet_trap_seaweed;
+    image_data touch_controller_dpad;
+    image_data touch_controller_main;
+    image_data touch_controller_main_small;
+    image_data touch_controller_middle;
+    image_data touch_controller_middle_small;
+    image_data touch_controller_shoulder_left;
+    image_data touch_controller_shoulder_right;
 
     //Level-specific images.
     std::vector<image_data> background_layer_images;

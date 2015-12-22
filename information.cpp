@@ -459,7 +459,7 @@ void Information::set_special_image(){
 }
 
 void Information::handle_input(int mouse_x,int mouse_y,short x_offset,short y_offset){
-    if(tooltip_text.length()>0 && collision_check(mouse_x,mouse_y,2,2,x_offset+x,y_offset+y,w,h)){
+    if(tooltip_text.length()>0 && player.mouse_allowed() && collision_check(mouse_x,mouse_y,2,2,x_offset+x,y_offset+y,w,h)){
         //Setup the information's tooltip.
         tooltip.setup(tooltip_text,mouse_x,mouse_y);
     }

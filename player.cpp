@@ -27,6 +27,8 @@ Player::Player(){
 
     timer_save_data.start();
 
+    touch_controls=false;
+
     reset();
 }
 
@@ -36,6 +38,13 @@ void Player::reset(){
 
     option_fps=false;
     option_dev=false;
+
+    #ifdef GAME_OS_ANDROID
+        option_touch_controls=true;
+    #else
+        option_touch_controls=false;
+    #endif
+
     option_effect_limit=5000;
     option_volume_global=1.0;
     option_mute_global=false;
@@ -3014,8 +3023,8 @@ void Player::render_menu_pretties(){
         if(!game_in_progress){
             colored_message="Hubert's Island Adventure:";
             for(int i=0;i<colored_message.length();i++){
-                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,15+4,colored_message.substr(i,1),COLOR_BLACK);
-                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x),15,colored_message.substr(i,1),colors[msg_color]);
+                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0)+4,15+4,colored_message.substr(i,1),COLOR_BLACK,1.0,2.0);
+                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0),15,colored_message.substr(i,1),colors[msg_color],1.0,2.0);
                 if(colored_message.substr(i,1)!=" " && ++msg_color>5){
                     msg_color=0;
                 }
@@ -3023,8 +3032,8 @@ void Player::render_menu_pretties(){
 
             colored_message="Mouse o' War";
             for(int i=0;i<colored_message.length();i++){
-                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,47+4,colored_message.substr(i,1),COLOR_BLACK);
-                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x),47,colored_message.substr(i,1),colors[msg_color]);
+                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0)+4,47+4,colored_message.substr(i,1),COLOR_BLACK,1.0,2.0);
+                font_large.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0),47,colored_message.substr(i,1),colors[msg_color],1.0,2.0);
                 if(colored_message.substr(i,1)!=" " && ++msg_color>5){
                     msg_color=0;
                 }
@@ -3067,8 +3076,8 @@ void Player::render_menu_pretties(){
         if(!game_in_progress){
             colored_message="Hubert's Island Adventure:";
             for(int i=0;i<colored_message.length();i++){
-                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,15+4,colored_message.substr(i,1),COLOR_BLACK);
-                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x),15,colored_message.substr(i,1),colors[msg_color]);
+                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0)+4,15+4,colored_message.substr(i,1),COLOR_BLACK,1.0,2.0);
+                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0),15,colored_message.substr(i,1),colors[msg_color],1.0,2.0);
                 if(colored_message.substr(i,1)!=" " && ++msg_color>5){
                     msg_color=0;
                 }
@@ -3076,8 +3085,8 @@ void Player::render_menu_pretties(){
 
             colored_message="Mouse o' War";
             for(int i=0;i<colored_message.length();i++){
-                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x)+4,47+4,colored_message.substr(i,1),COLOR_BLACK);
-                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x)/2.0+(i*font_large.spacing_x),47,colored_message.substr(i,1),colors[msg_color]);
+                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0)+4,47+4,colored_message.substr(i,1),COLOR_BLACK,1.0,2.0);
+                font_large2.show((main_window.SCREEN_WIDTH-colored_message.length()*font_large.spacing_x*2.0)/2.0+(i*font_large.spacing_x*2.0),47,colored_message.substr(i,1),colors[msg_color],1.0,2.0);
                 if(colored_message.substr(i,1)!=" " && ++msg_color>5){
                     msg_color=0;
                 }
@@ -3174,7 +3183,7 @@ void Player::render_foreground(){
         }
 
         if(night_mode){
-            render_texture((int)(x-camera_x-800+w/2),(int)(y-camera_y-600+h/2),image.overlay_night);
+            render_texture((int)(x-camera_x-DEFAULT_SCREEN_WIDTH+w/2),(int)(y-camera_y-DEFAULT_SCREEN_HEIGHT+h/2),image.overlay_night);
         }
 
         if(level.return_level_snow(current_level)){

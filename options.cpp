@@ -216,6 +216,7 @@ bool options_load(){
 
                 data_stream>>player.option_fps;
                 data_stream>>player.option_dev;
+                data_stream>>player.option_touch_controls;
                 data_stream>>player.option_effect_limit;
                 data_stream>>player.option_volume_global;
                 data_stream>>player.option_mute_global;
@@ -326,6 +327,8 @@ bool options_save(){
             save<<player.option_fps;
             save<<"\n";
             save<<player.option_dev;
+            save<<"\n";
+            save<<player.option_touch_controls;
             save<<"\n";
             save<<player.option_effect_limit;
             save<<"\n";

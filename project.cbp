@@ -505,6 +505,8 @@
 		<Unit filename="timer.h" />
 		<Unit filename="tooltip.cpp" />
 		<Unit filename="tooltip.h" />
+		<Unit filename="touch_controller.cpp" />
+		<Unit filename="touch_controller.h" />
 		<Unit filename="tracer.cpp" />
 		<Unit filename="tracer.h" />
 		<Unit filename="trap.cpp" />

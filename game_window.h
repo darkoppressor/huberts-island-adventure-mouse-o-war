@@ -49,8 +49,11 @@ class Game_Window{
 
     bool is_initialized();
 
+    void get_renderer_logical_size(int* width,int* height);
     void get_renderer_viewport(SDL_Rect* rect);
     void get_renderer_scale(float* x,float* y);
+    void get_renderer_output_size(int* width,int* height);
+    void get_renderer_info(SDL_RendererInfo* info);
 
     void get_rgba_masks(uint32_t* rmask,uint32_t* gmask,uint32_t* bmask,uint32_t* amask);
 

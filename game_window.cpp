@@ -428,6 +428,11 @@ void Game_Window::reload(){
             msg+=SDL_GetError();
             update_error_log(msg);
         }
+
+        int actual_width=DEFAULT_SCREEN_WIDTH;
+        int actual_height=DEFAULT_SCREEN_HEIGHT;
+        ///SDL_GetRendererOutputSize(renderer,&actual_width,&actual_height);
+        touch_controller.scale(actual_width,actual_height);
     }
 }
 
@@ -495,6 +500,11 @@ bool Game_Window::init(){
             return false;
         }
 
+        int actual_width=DEFAULT_SCREEN_WIDTH;
+        int actual_height=DEFAULT_SCREEN_HEIGHT;
+        ///SDL_GetRendererOutputSize(renderer,&actual_width,&actual_height);
+        touch_controller.scale(actual_width,actual_height);
+
         if(Mix_Init(MIX_INIT_OGG)==0){
             msg="SDL2_mixer initialization failed: ";
             msg+=Mix_GetError();
@@ -529,12 +539,19 @@ bool Game_Window::init(){
             update_error_log(msg);
         }
 
-        //Show or hide the hardware mouse cursor.
-        if(player.option_hardware_cursor){
-            SDL_ShowCursor(SDL_ENABLE);
+        if(player.option_touch_controls && SDL_GetNumTouchDevices()>0){
+            player.touch_controls=true;
+
+            SDL_ShowCursor(SDL_DISABLE);
         }
         else{
-            SDL_ShowCursor(SDL_DISABLE);
+            //Show or hide the hardware mouse cursor.
+            if(player.option_hardware_cursor){
+                SDL_ShowCursor(SDL_ENABLE);
+            }
+            else{
+                SDL_ShowCursor(SDL_DISABLE);
+            }
         }
 
         //Setup the hardware cursor.
@@ -630,12 +647,24 @@ bool Game_Window::is_initialized(){
     return initialized;
 }
 
+void Game_Window::get_renderer_logical_size(int* width,int* height){
+    SDL_RenderGetLogicalSize(renderer,width,height);
+}
+
 void Game_Window::get_renderer_viewport(SDL_Rect* rect){
     SDL_RenderGetViewport(renderer,rect);
 }
 
 void Game_Window::get_renderer_scale(float* x,float* y){
     SDL_RenderGetScale(renderer,x,y);
+}
+
+void Game_Window::get_renderer_output_size(int* width,int* height){
+    SDL_GetRendererOutputSize(renderer,width,height);
+}
+
+void Game_Window::get_renderer_info(SDL_RendererInfo* info){
+    SDL_GetRendererInfo(renderer,info);
 }
 
 void Game_Window::update_display_number(){

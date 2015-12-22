@@ -38,6 +38,10 @@ Window_Shop::Window_Shop(short get_x,short get_y,short get_w,short get_h,string 
     button_sound=12-1;
     create_button(16,h-back_button_space,"",msg,&button_event_close_window,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
 
+    int x_size=msg.length()*font.spacing_x+4*font.spacing_x;
+    msg="Look + up/down to scroll list";
+    create_information(16+x_size,h-back_button_space,"",msg,0,NO_SPECIAL_INFO);
+
     msg="Purchase Toy";
     button_sound=10-1;
     create_button(w-(msg.length()*font.spacing_x)-16,h-back_button_space,"",msg,&button_event_shop_buy,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
@@ -122,14 +126,16 @@ void Window_Shop::handle_input_events(){
                 break;
 
             case SDL_MOUSEWHEEL:
-                if(event.wheel.y<0){
-                    if(upgrade_list_display_position<upgrades.size()-1){
-                        upgrade_list_display_position++;
+                if(player.mouse_allowed()){
+                    if(event.wheel.y<0){
+                        if(upgrade_list_display_position<upgrades.size()-1){
+                            upgrade_list_display_position++;
+                        }
                     }
-                }
-                else if(event.wheel.y>0){
-                    if(upgrade_list_display_position>0){
-                        upgrade_list_display_position--;
+                    else if(event.wheel.y>0){
+                        if(upgrade_list_display_position>0){
+                            upgrade_list_display_position--;
+                        }
                     }
                 }
                 break;

@@ -57,7 +57,7 @@ using namespace std;
 
 void game_loop(){
     int things_loaded=0;
-    int things_to_load=11;
+    int things_to_load=12;
 
     load_world();
     render_loading_screen((double)++things_loaded/(double)things_to_load);
@@ -261,8 +261,8 @@ bool opaque_lighting(void *level,int x,int y){
 	return ((Level *)level)->blockLOS_lighting(x,y);
 }
 
-int handle_app_events(void* userdata,SDL_Event* event){
-    switch(event->type){
+int handle_app_events(void* userdata,SDL_Event* event_storage){
+    switch(event_storage->type){
     case SDL_APP_TERMINATING:
         update_error_log("The OS is terminating this application, shutting down...");
 
@@ -315,6 +315,7 @@ int main(int argc,char* args[]){
 
     //If there is no player name, create a default profile
     //I added this to basically remove the profile system from the game
+    load_current_profile();
     if(player.name=="\x1F"){
         creating_profile="default";
 

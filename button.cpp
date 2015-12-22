@@ -74,7 +74,7 @@ void Button::set_dimensions(){
 }
 
 bool Button::is_moused_over(int mouse_x,int mouse_y,short x_offset,short y_offset,int index){
-    if(index==player.current_button || collision_check(mouse_x,mouse_y,2,2,x_offset+x,y_offset+y,w,h)){
+    if(index==player.current_button || (player.mouse_allowed() && collision_check(mouse_x,mouse_y,2,2,x_offset+x,y_offset+y,w,h))){
         return true;
     }
 

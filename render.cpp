@@ -102,12 +102,12 @@ void render_rtt(double x,double y,Rtt_Data* rtt_source,double opacity,double sca
     main_window.render_copy_ex(rtt_source->texture,0,&rect_dst,-angle,0,(SDL_RendererFlip)flip);
 }
 
-void render_texture(double x,double y,image_data image_source,double opacity,short color_name){
+void render_texture(double x,double y,image_data image_source,double opacity,short color_name,double scale_x,double scale_y){
     SDL_Rect rect_dst;
     rect_dst.x=x;
     rect_dst.y=y;
-    rect_dst.w=image_source.w;
-    rect_dst.h=image_source.h;
+    rect_dst.w=image_source.w*scale_x;
+    rect_dst.h=image_source.h*scale_y;
 
     SDL_SetTextureAlphaMod(image_source.texture,(uint8_t)(opacity*255.0));
 

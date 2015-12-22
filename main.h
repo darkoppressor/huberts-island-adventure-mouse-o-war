@@ -10,7 +10,7 @@
 void game_loop();
 
 //Handle Android/iOS events
-int handle_app_events(void* userdata,SDL_Event* event);
+int handle_app_events(void* userdata,SDL_Event* event_storage);
 
 int main(int argc, char* args[]);
 

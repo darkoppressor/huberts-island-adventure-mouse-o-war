@@ -603,8 +603,6 @@ void Player_Mp::handle_input_states(){
 }
 
 bool Player_Mp::command_state(short command){
-    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
-
     Sint16 axis_value=0;
     Uint8 hat_value=SDL_HAT_CENTERED;
     short ball_direction=NONE;
@@ -617,7 +615,7 @@ bool Player_Mp::command_state(short command){
 
     if(!player.on_worldmap()){
         //If this command's bound input is a keyboard key, and the key is being pressed.
-        if(keys[command].type==INPUT_TYPE_KEYBOARD && keystates[keys[command].key]){
+        if(keys[command].type==INPUT_TYPE_KEYBOARD && player.keystate(keys[command].key)){
             return true;
         }
 

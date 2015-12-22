@@ -22,7 +22,7 @@ SDL_Texture* load_texture(std::string filename,image_data* id);
 
 void render_rtt(double x,double y,Rtt_Data* rtt_source,double opacity=1.0,double scale_x=1.0,double scale_y=1.0,double angle=0.0,short color_name=COLOR_WHITE,bool flip_x=false,bool flip_y=false);
 
-void render_texture(double x,double y,image_data image_source,double opacity=1.0,short color_name=COLOR_WHITE);
+void render_texture(double x,double y,image_data image_source,double opacity=1.0,short color_name=COLOR_WHITE,double scale_x=1.0,double scale_y=1.0);
 
 void render_sprite(double x,double y,image_data image_source,SDL_Rect* texture_clip=0,double opacity=1.0,double scale_x=1.0,double scale_y=1.0,double angle=0.0,short color_name=COLOR_WHITE,bool flip_x=false);
 

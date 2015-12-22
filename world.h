@@ -48,6 +48,9 @@
 #include "window_setup_survival.h"
 #include "window_shop.h"
 #include "window_upgrades.h"
+#include "touch_controller.h"
+
+#include <SDL.h>
 
 extern Game_Window main_window;
 
@@ -171,11 +174,15 @@ extern std::vector<Effect_Score_Floater> vector_effect_score_floater;
 extern std::vector<Effect_Firework> vector_effect_firework;
 extern std::vector<Spawner> vector_spawners;
 
+extern std::vector<SDL_Event> touch_controller_events;
+
 extern Image image;
 
 extern Music music;
 
 extern Sound sound_system;
+
+extern Touch_Controller touch_controller;
 
 void load_world();
 

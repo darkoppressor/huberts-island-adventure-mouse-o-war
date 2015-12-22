@@ -48,7 +48,7 @@ void input(){
         }
     }
 
-    while(SDL_PollEvent(&event)){
+    while(poll_event(&event)){
         hud_buttons_handle_input_events();
 
         window_inventory[0].handle_input_events();
@@ -82,9 +82,15 @@ void input(){
         }
 
         switch(event.type){
-            //Check to see if the player has X'ed out of the game. If so, run quit_game().
-            case SDL_QUIT:
+        //Check to see if the player has X'ed out of the game. If so, run quit_game().
+        case SDL_QUIT:
             quit_game();
+            break;
+
+        case SDL_FINGERDOWN:
+            if(player.touch_controls){
+                finger_down(event);
+            }
             break;
         }
     }
@@ -142,6 +148,52 @@ void input(){
     //If the game is paused and is in progress.
     else if(player.pause && player.game_in_progress){
         player.handle_input_states_during_play();
+    }
+}
+
+bool poll_event(SDL_Event* event_storage){
+    if(SDL_PollEvent(event_storage)){
+        return true;
+    }
+    else if(poll_event_touch(event_storage)){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool poll_event_touch(SDL_Event* event_storage){
+    if(touch_controller_events.size()>0){
+        *event_storage=touch_controller_events[0];
+
+        touch_controller_events.erase(touch_controller_events.begin());
+
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+void finger_down(const SDL_Event& event_storage){
+    vector<SDL_Scancode> touch_buttons=touch_controller.check_for_button_press(event_storage.tfinger.x,event_storage.tfinger.y);
+
+    for(int i=0;i<touch_buttons.size();i++){
+        SDL_Event touch_controller_event;
+        touch_controller_event.type=SDL_KEYDOWN;
+        touch_controller_event.common.type=touch_controller_event.type;
+        touch_controller_event.common.timestamp=SDL_GetTicks();
+        touch_controller_event.key.type=touch_controller_event.type;
+        touch_controller_event.key.timestamp=touch_controller_event.common.timestamp;
+        touch_controller_event.key.windowID=0;
+        touch_controller_event.key.state=SDL_PRESSED;
+        touch_controller_event.key.repeat=0;
+        touch_controller_event.key.keysym.scancode=touch_buttons[i];
+        touch_controller_event.key.keysym.sym=SDLK_UNKNOWN;
+        touch_controller_event.key.keysym.mod=KMOD_NONE;
+
+        touch_controller_events.push_back(touch_controller_event);
     }
 }
 
@@ -804,8 +856,8 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         if(player.DYING){
             if(player.game_mode==GAME_MODE_SP_ADVENTURE){
                 ss.clear();ss.str("");ss<<"Death #";ss<<player.stat_deaths_enemies+player.stat_deaths_traps+player.stat_deaths_drowning;msg=ss.str();
-                font_large.show((main_window.SCREEN_WIDTH-msg.length()*font_large.spacing_x*2.0)/2.0+2,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0+2,msg,COLOR_BLACK,1.0,2.0);
-                font_large.show((main_window.SCREEN_WIDTH-msg.length()*font_large.spacing_x*2.0)/2.0,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0,msg,return_gui_color(holiday,3),1.0,2.0);
+                font_large.show((main_window.SCREEN_WIDTH-msg.length()*font_large.spacing_x*4.0)/2.0+2,(main_window.SCREEN_HEIGHT-font_large.spacing_y*4.0)/2.0+2,msg,COLOR_BLACK,1.0,4.0);
+                font_large.show((main_window.SCREEN_WIDTH-msg.length()*font_large.spacing_x*4.0)/2.0,(main_window.SCREEN_HEIGHT-font_large.spacing_y*4.0)/2.0,msg,return_gui_color(holiday,3),1.0,4.0);
             }
         }
 
@@ -1061,6 +1113,10 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
         }
 
         tooltip.render();
+
+        if(player.touch_controls){
+            touch_controller.render();
+        }
     }
 
     /**ss.clear();ss.str("");ss<<"Number of joysticks: ";ss<<joystick.size();ss<<"\xA";msg=ss.str();
@@ -1083,7 +1139,7 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
     }
 
     //Render the software mouse cursor.
-    if(!player.option_hardware_cursor && (window_manager.which_window_open()!=-1 || player.cam_state!=CAM_STICKY)){
+    if(!player.touch_controls && !player.option_hardware_cursor && (window_manager.which_window_open()!=-1 || player.cam_state!=CAM_STICKY)){
         int mouse_x=0;
         int mouse_y=0;
         main_window.get_mouse_state(&mouse_x,&mouse_y);

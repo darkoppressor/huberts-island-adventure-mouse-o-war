@@ -8,6 +8,10 @@
 
 void input();
 
+bool poll_event(SDL_Event* event_storage);
+bool poll_event_touch(SDL_Event* event_storage);
+void finger_down(const SDL_Event& event_storage);
+
 void movement();
 
 void events();

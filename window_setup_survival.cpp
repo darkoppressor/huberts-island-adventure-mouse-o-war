@@ -11,6 +11,8 @@
 #include "quit.h"
 #include "file_io.h"
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 
 Window_Setup_Survival::Window_Setup_Survival(short get_x,short get_y,short get_w,short get_h,string get_title){
@@ -74,6 +76,10 @@ Window_Setup_Survival::Window_Setup_Survival(short get_x,short get_y,short get_w
     button_sound=12-1;
     create_button(16,h-back_button_space,"",msg,&button_event_open_window_select_game_mode,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
 
+    int x_size=msg.length()*font.spacing_x+5*font.spacing_x;
+    msg="Look + up/down to scroll list";
+    create_information(16+x_size,h-back_button_space,"",msg,0,NO_SPECIAL_INFO);
+
     msg="Start";
     button_sound=10-1;
     create_button(w-(msg.length()*font.spacing_x)-16,h-back_button_space,"",msg,&button_event_start_game_survival,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
@@ -92,12 +98,22 @@ void Window_Setup_Survival::setup(bool multiplayer){
     }
 
     //Look through all of the levels in the directory.
-    for(File_IO_Directory_Iterator it("data/levels/survival");it.evaluate();it.iterate()){
-        if(it.is_directory()){
-            string file_name=it.get_file_name();
+    File_IO_Load load("data/levels/survival/levels");
 
-            levels.push_back(file_name);
+    if(load.is_opened()){
+        while(!load.eof()){
+            string line="";
+
+            load.getline(&line);
+
+            boost::algorithm::trim(line);
+
+            if(line.length()>0){
+                levels.push_back(line);
+            }
         }
+
+        load.close();
     }
 
     if(level_list_display_position>levels.size()-1){
@@ -145,14 +161,16 @@ void Window_Setup_Survival::handle_input_events(){
                 break;
 
             case SDL_MOUSEWHEEL:
-                if(event.wheel.y<0){
-                    if(level_list_display_position<levels.size()-1){
-                        level_list_display_position++;
+                if(player.mouse_allowed()){
+                    if(event.wheel.y<0){
+                        if(level_list_display_position<levels.size()-1){
+                            level_list_display_position++;
+                        }
                     }
-                }
-                else if(event.wheel.y>0){
-                    if(level_list_display_position>0){
-                        level_list_display_position--;
+                    else if(event.wheel.y>0){
+                        if(level_list_display_position>0){
+                            level_list_display_position--;
+                        }
                     }
                 }
                 break;

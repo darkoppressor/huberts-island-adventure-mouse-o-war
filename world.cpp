@@ -100,17 +100,21 @@ vector<Effect_Score_Floater> vector_effect_score_floater;
 vector<Effect_Firework> vector_effect_firework;
 vector<Spawner> vector_spawners;
 
+vector<SDL_Event> touch_controller_events;
+
 Image image;
 
 Music music;
 
 Sound sound_system;
 
+Touch_Controller touch_controller;
+
 void load_world(){
     font.build_font("data/images/bitmap_font.png",4096,16,11,24);
     font_sga.build_font("data/images/bitmap_font_sga.png",4096,16,20,24);
-    font_large.build_font("data/images/bitmap_font_large.png",8192,32,22,48);
-    font_large2.build_font("data/images/bitmap_font_large2.png",8192,32,22,48);
+    font_large.build_font("data/images/bitmap_font_large.png",4096,16,11,24);
+    font_large2.build_font("data/images/bitmap_font_large2.png",4096,16,11,24);
 
     image.load_images_global();
 

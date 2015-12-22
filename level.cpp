@@ -431,11 +431,11 @@ void Level::render_title(){
         render_texture(title_bg_x_bottom,0,image.level_title_background_1);
         render_texture(title_bg_x_left,0,image.level_title_background_2);
 
-        font_large.show(title_top_x+4,(main_window.SCREEN_HEIGHT-font_large.spacing_y)/2.0-font_large.spacing_y+4,title_top_string,COLOR_BLACK);
-        font_large.show(title_top_x,(main_window.SCREEN_HEIGHT-font_large.spacing_y)/2.0-font_large.spacing_y,title_top_string,return_gui_color(holiday,3));
+        font_large.show(title_top_x+4,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0-font_large.spacing_y*2.0+4,title_top_string,COLOR_BLACK,1.0,2.0);
+        font_large.show(title_top_x,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0-font_large.spacing_y*2.0,title_top_string,return_gui_color(holiday,3),1.0,2.0);
 
-        font_large.show(title_bottom_x+4,(main_window.SCREEN_HEIGHT-font_large.spacing_y)/2.0+font_large.spacing_y+4,title_bottom_string,COLOR_BLACK);
-        font_large.show(title_bottom_x,(main_window.SCREEN_HEIGHT-font_large.spacing_y)/2.0+font_large.spacing_y,title_bottom_string,return_gui_color(holiday,3));
+        font_large.show(title_bottom_x+4,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0+font_large.spacing_y*2.0+4,title_bottom_string,COLOR_BLACK,1.0,2.0);
+        font_large.show(title_bottom_x,(main_window.SCREEN_HEIGHT-font_large.spacing_y*2.0)/2.0+font_large.spacing_y*2.0,title_bottom_string,return_gui_color(holiday,3),1.0,2.0);
     }
 }
 

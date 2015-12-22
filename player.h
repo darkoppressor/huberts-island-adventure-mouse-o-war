@@ -97,6 +97,9 @@ class Player: public Actor{
     //If get_pause is false, unpause the game.
     void toggle_pause(bool get_pause);
 
+    bool mouse_allowed();
+    bool keystate(SDL_Scancode button);
+
     //Prepare to check for input.
     void prepare_for_input();
 
@@ -552,6 +555,7 @@ class Player: public Actor{
     //Options:
     bool option_fps;
     bool option_dev;
+    bool option_touch_controls;
     int option_effect_limit;
     double option_volume_global;
     bool option_mute_global;
@@ -566,6 +570,8 @@ class Player: public Actor{
     bool option_hardware_cursor;
     bool option_hints;
     short option_character;
+
+    bool touch_controls;
 
     //Global options:
     std::string option_fullscreen_mode;
