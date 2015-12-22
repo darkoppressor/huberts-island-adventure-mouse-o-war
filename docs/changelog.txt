@@ -5,6 +5,7 @@
  - Attempted fix of game freezing on close
  - Removed profile system
  - Ported the game to Android
+ - Added touch controller
 
 1.4.0 - 2013/7/19
  - Updated compiler/libraries.
