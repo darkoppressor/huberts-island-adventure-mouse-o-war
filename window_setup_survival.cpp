@@ -180,11 +180,13 @@ void Window_Setup_Survival::handle_input_events(){
                     //Stop moving the window.
                     moving=false;
 
-                    for(int i=level_list_display_position,n=0;i<level_list_display_position+18;i++,n++){
-                        //If this is a valid level.
-                        if(i<levels.size()){
-                            if(collision_check(mouse_x,mouse_y,1,1,0,70+font.spacing_y*2+n*font.spacing_y,w,font.spacing_y)){
-                                level_list_selection=i;
+                    if(player.mouse_allowed()){
+                        for(int i=level_list_display_position,n=0;i<level_list_display_position+18;i++,n++){
+                            //If this is a valid level.
+                            if(i<levels.size()){
+                                if(collision_check(mouse_x,mouse_y,1,1,0,70+font.spacing_y*2+n*font.spacing_y,w,font.spacing_y)){
+                                    level_list_selection=i;
+                                }
                             }
                         }
                     }

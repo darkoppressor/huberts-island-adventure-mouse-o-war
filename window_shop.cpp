@@ -145,11 +145,13 @@ void Window_Shop::handle_input_events(){
                     //Stop moving the window.
                     moving=false;
 
-                    for(int i=upgrade_list_display_position,n=0;i<upgrade_list_display_position+18;i++,n++){
-                        //If this is a valid list item.
-                        if(i<upgrades.size()){
-                            if(collision_check(mouse_x,mouse_y,1,1,0,70+font.spacing_y*2+n*font.spacing_y,w,font.spacing_y)){
-                                upgrade_list_selection=i;
+                    if(player.mouse_allowed()){
+                        for(int i=upgrade_list_display_position,n=0;i<upgrade_list_display_position+18;i++,n++){
+                            //If this is a valid list item.
+                            if(i<upgrades.size()){
+                                if(collision_check(mouse_x,mouse_y,1,1,0,70+font.spacing_y*2+n*font.spacing_y,w,font.spacing_y)){
+                                    upgrade_list_selection=i;
+                                }
                             }
                         }
                     }
