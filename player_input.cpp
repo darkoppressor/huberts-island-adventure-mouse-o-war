@@ -1357,7 +1357,14 @@ void Player::handle_input_events(){
             }
             //If the game is not in progress and there is not command being set.
             else if(!game_in_progress && command_to_set==-1){
-                quit_game();
+                if(window_manager.which_window_open()!=-1){
+                    window_manager.close_windows(0);
+
+                    handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
+                }
+                else{
+                    quit_game();
+                }
             }
         }
         else if(event.key.keysym.scancode==SDL_SCANCODE_MENU){
