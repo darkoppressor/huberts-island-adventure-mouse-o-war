@@ -332,22 +332,22 @@ bool Profile::load_profile_list(){
 
     profile_list.clear();
 
-    ifstream load;
+    File_IO_Load load;
     string file_to_load=get_home_directory()+"profiles/profile_list.cfg";
-    load.open(file_to_load.c_str(),ifstream::in);
+    load.open(file_to_load);
 
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
 
-        load>>number_of_profiles;
+        data_stream>>number_of_profiles;
 
         for(int i=0;i<number_of_profiles;i++){
-            load>>temp;
+            data_stream>>temp;
 
             profile_list.push_back(string(temp));
         }
 
         load.close();
-        load.clear();
     }
     else{
         if(!save_profile_list()){
@@ -475,22 +475,23 @@ bool Profile::load_map(){
         string current_level="";
         ss.clear();ss.str("");ss<<player.current_level;current_level=ss.str();
 
-        ifstream load;
+        File_IO_Load load;
         string level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/map.blazesave";
-        load.open(level_to_load.c_str(),ifstream::in);
+        load.open(level_to_load);
 
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             bool seen=false;
 
             for(int int_y=0;int_y<level.level_y/TILE_SIZE;int_y++){
                 for(int int_x=0;int_x<level.level_x/TILE_SIZE;int_x++){
-                    load >> seen;
+                    data_stream >> seen;
                     current_level_map_data[int_x][int_y]=seen;
                 }
             }
 
             load.close();
-            load.clear();
         }
         else{
             if(!save_map()){
@@ -551,17 +552,18 @@ bool Profile::load_level_properties(){
             string current_level="";
             ss.clear();ss.str("");ss<<player.current_level;current_level=ss.str();
 
-            ifstream load;
+            File_IO_Load load;
             string level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/level_properties.blazesave";
-            load.open(level_to_load.c_str(),ifstream::in);
+            load.open(level_to_load);
 
-            if(load!=NULL){
-                load>>player.current_sub_level;
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
 
-                load>>player.level_beaten;
+                data_stream>>player.current_sub_level;
+
+                data_stream>>player.level_beaten;
 
                 load.close();
-                load.clear();
             }
             else{
                 if(!save_level_properties()){
@@ -633,21 +635,23 @@ bool Profile::load_level_data(){
                 string current_level="";
                 ss.clear();ss.str("");ss<<player.current_level;current_level=ss.str();
 
-                ifstream load;
+                File_IO_Load load;
                 string level_to_load="";
 
                 //If the current level is not the world map.
                 if(!player.on_worldmap()){
                     level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
-                    load.open(level_to_load.c_str(),ifstream::in);
+                    load.open(level_to_load);
 
-                    if(load!=NULL){
+                    if(load.is_opened()){
+                        istringstream data_stream(load.get_data());
+
                         bool collected=false;
 
                         for(int i=0;i<vector_items.size();i++){
                             //If the item is of a collectable type.
                             if(is_item_collectable(vector_items[i].type)){
-                                load>>collected;
+                                data_stream>>collected;
                                 if(collected){
                                     vector_items[i].exists=false;
                                     if(vector_items[i].type==ITEM_LEAF){
@@ -670,7 +674,6 @@ bool Profile::load_level_data(){
                         }
 
                         load.close();
-                        load.clear();
                     }
                     else{
                         if(!save_level_data()){
@@ -679,14 +682,16 @@ bool Profile::load_level_data(){
                     }
 
                     level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/doors.blazesave";
-                    load.open(level_to_load.c_str(),ifstream::in);
+                    load.open(level_to_load);
 
-                    if(load!=NULL){
+                    if(load.is_opened()){
+                        istringstream data_stream(load.get_data());
+
                         bool opened=false;
 
                         for(int i=0;i<vector_doors.size();i++){
                             if(vector_doors[i].type==DOOR_TYPE_KEY){
-                                load>>opened;
+                                data_stream>>opened;
                                 if(opened){
                                     vector_doors[i].open=true;
                                     vector_doors[i].frame=KEY_DOOR_SPRITES-1;
@@ -695,7 +700,6 @@ bool Profile::load_level_data(){
                         }
 
                         load.close();
-                        load.clear();
                     }
                     else{
                         return false;
@@ -706,18 +710,19 @@ bool Profile::load_level_data(){
                 //If the current level is the world map.
                 else{
                     level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/world.blazesave";
-                    load.open(level_to_load.c_str(),ifstream::in);
+                    load.open(level_to_load);
 
-                    if(load!=NULL){
-                        load>>player.world_x[player.current_level];
-                        load>>player.world_y[player.current_level];
+                    if(load.is_opened()){
+                        istringstream data_stream(load.get_data());
+
+                        data_stream>>player.world_x[player.current_level];
+                        data_stream>>player.world_y[player.current_level];
                         player.x=player.world_x[player.current_level];
                         player.y=player.world_y[player.current_level];
 
-                        load>>player.facing;
+                        data_stream>>player.facing;
 
                         load.close();
-                        load.clear();
                     }
                     else{
                         player.world_x[player.current_level]=-1;
@@ -878,39 +883,41 @@ bool Profile::load_inventory(){
     //If there is a profile.
     else{
         if(player.game_mode==GAME_MODE_SP_ADVENTURE){
-            ifstream load;
+            File_IO_Load load;
             string file_to_load=get_home_directory()+"profiles/"+player.name+"/inventory.blazesave";
-            load.open(file_to_load.c_str(),ifstream::in);
+            load.open(file_to_load);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 int inventory_size=0;
                 player.inventory.clear();
                 string name="";
 
-                load>>player.leaves;
-                load>>player.cheese;
-                load>>player.leaves_max;
-                load>>player.cheese_max;
-                load>>player.ammo;
-                load>>player.score;
-                load>>player.main_levels_beaten;
-                load>>player.weather_machine;
-                load>>player.current_shot;
+                data_stream>>player.leaves;
+                data_stream>>player.cheese;
+                data_stream>>player.leaves_max;
+                data_stream>>player.cheese_max;
+                data_stream>>player.ammo;
+                data_stream>>player.score;
+                data_stream>>player.main_levels_beaten;
+                data_stream>>player.weather_machine;
+                data_stream>>player.current_shot;
 
-                load>>player.current_worldmap;
+                data_stream>>player.current_worldmap;
                 player.current_level=player.current_worldmap;
 
-                load>>player.new_game_plus;
+                data_stream>>player.new_game_plus;
 
-                load>>player.option_character;
+                data_stream>>player.option_character;
 
-                load>>inventory_size;
+                data_stream>>inventory_size;
 
                 for(int i=0;i<inventory_size;i++){
                     player.inventory.push_back(inventory_item());
-                    load>>player.inventory[i].type;
-                    load>>player.inventory[i].slot;
-                    load>>name;
+                    data_stream>>player.inventory[i].type;
+                    data_stream>>player.inventory[i].slot;
+                    data_stream>>name;
 
                     while(name.rfind("SPACE")!=string::npos){
                         name.replace(name.rfind("SPACE"),5," ");
@@ -923,7 +930,6 @@ bool Profile::load_inventory(){
                 }
 
                 load.close();
-                load.clear();
             }
             else{
                 if(!save_inventory()){
@@ -1019,33 +1025,34 @@ bool Profile::load_stats(){
     //If there is a profile.
     else{
         if(player.game_mode==GAME_MODE_SP_ADVENTURE){
-            ifstream load;
+            File_IO_Load load;
             string file_to_load=get_home_directory()+"profiles/"+player.name+"/stats.blazesave";
-            load.open(file_to_load.c_str(),ifstream::in);
+            load.open(file_to_load);
 
-            if(load!=NULL){
-                load>>player.stat_enemies_stunned;
-                load>>player.stat_triggers_shot;
-                load>>player.stat_checkpoints_activated;
-                load>>player.stat_ammo_picked_up;
-                load>>player.stat_shots_fired;
-                load>>player.stat_deaths_enemies;
-                load>>player.stat_deaths_traps;
-                load>>player.stat_deaths_drowning;
-                load>>player.stat_levels_replayed;
-                load>>player.stat_total_jumps;
-                load>>player.stat_seconds_playing;
-                load>>player.stat_seconds_traveling;
-                load>>player.stat_seconds_menus;
-                load>>player.stat_levers_pulled;
-                load>>player.stat_seconds_riding_cows;
-                load>>player.stat_farthest_fall;
-                load>>player.stat_water_shot;
-                load>>player.stat_bosses_defeated;
-                load>>player.stat_items_moved;
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
+                data_stream>>player.stat_enemies_stunned;
+                data_stream>>player.stat_triggers_shot;
+                data_stream>>player.stat_checkpoints_activated;
+                data_stream>>player.stat_ammo_picked_up;
+                data_stream>>player.stat_shots_fired;
+                data_stream>>player.stat_deaths_enemies;
+                data_stream>>player.stat_deaths_traps;
+                data_stream>>player.stat_deaths_drowning;
+                data_stream>>player.stat_levels_replayed;
+                data_stream>>player.stat_total_jumps;
+                data_stream>>player.stat_seconds_playing;
+                data_stream>>player.stat_seconds_traveling;
+                data_stream>>player.stat_seconds_menus;
+                data_stream>>player.stat_levers_pulled;
+                data_stream>>player.stat_seconds_riding_cows;
+                data_stream>>player.stat_farthest_fall;
+                data_stream>>player.stat_water_shot;
+                data_stream>>player.stat_bosses_defeated;
+                data_stream>>player.stat_items_moved;
 
                 load.close();
-                load.clear();
             }
             else{
                 if(!save_stats()){
@@ -1131,17 +1138,18 @@ bool Profile::load_achievements(){
     //If there is a profile.
     else{
         if(player.game_mode==GAME_MODE_SP_ADVENTURE){
-            ifstream load;
+            File_IO_Load load;
             string file_to_load=get_home_directory()+"profiles/"+player.name+"/achievements.blazesave";
-            load.open(file_to_load.c_str(),ifstream::in);
+            load.open(file_to_load);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 for(int i=0;i<ACHIEVEMENT_END;i++){
-                    load>>player.achievements[i];
+                    data_stream>>player.achievements[i];
                 }
 
                 load.close();
-                load.clear();
             }
             else{
                 if(!save_achievements()){
@@ -1193,17 +1201,18 @@ bool Profile::load_boss_states(){
     //If there is a profile.
     else{
         if(player.game_mode==GAME_MODE_SP_ADVENTURE){
-            ifstream load;
+            File_IO_Load load;
             string file_to_load=get_home_directory()+"profiles/"+player.name+"/bosses.blazesave";
-            load.open(file_to_load.c_str(),ifstream::in);
+            load.open(file_to_load);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 for(int i=0;i<=LAST_LEVEL;i++){
-                    load>>player.bosses[i];
+                    data_stream>>player.bosses[i];
                 }
 
                 load.close();
-                load.clear();
             }
             else{
                 if(!save_boss_states()){
@@ -1278,63 +1287,66 @@ void Profile::reset_ammo_barrels(){
 
                 bool persistent_level_data=false;
 
-                ifstream load;
+                File_IO_Load load;
                 string level_to_load="";
 
                 level_to_load="data/levels/"+current_level+"/level_properties.blazelevel";
-                load.open(level_to_load.c_str(),ifstream::in);
+                load.open(level_to_load);
 
-                if(load!=NULL){
+                if(load.is_opened()){
+                    istringstream data_stream(load.get_data());
+
                     short number_of_background_layers=0;
                     double unneeded=0.0;
 
-                    load >> unneeded;
-                    load >> unneeded;
+                    data_stream >> unneeded;
+                    data_stream >> unneeded;
 
-                    load >> unneeded;
+                    data_stream >> unneeded;
 
-                    load >> unneeded;
-                    load >> unneeded;
-                    load >> unneeded;
+                    data_stream >> unneeded;
+                    data_stream >> unneeded;
+                    data_stream >> unneeded;
 
-                    load >> number_of_background_layers;
+                    data_stream >> number_of_background_layers;
 
                     for(int i=0;i<number_of_background_layers;i++){
-                        load >> unneeded;
-                        load >> unneeded;
+                        data_stream >> unneeded;
+                        data_stream >> unneeded;
                     }
 
-                    load >> persistent_level_data;
+                    data_stream >> persistent_level_data;
 
                     load.close();
-                    load.clear();
                 }
 
                 if(persistent_level_data){
                     vector<Item> temp_items;
 
                     level_to_load="data/levels/"+current_level+"/items.blazelevel";
-                    load.open(level_to_load.c_str(),ifstream::in);
+                    load.open(level_to_load);
 
-                    if(load!=NULL){
+                    if(load.is_opened()){
+                        istringstream data_stream(load.get_data());
+
                         short type;
                         double x;
                         double y;
                         int goal_level_to_load;
                         bool goal_secret;
 
-                        while(!load.eof()){
+                        while(!data_stream.eof()){
                             type=30000;
                             x=0;
                             y=0;
                             goal_level_to_load=0;
                             goal_secret=false;
 
-                            load >> type;
-                            load >> x;
-                            load >> y;
-                            load >> goal_level_to_load;
-                            load >> goal_secret;
+                            data_stream >> type;
+                            data_stream >> x;
+                            data_stream >> y;
+                            data_stream >> goal_level_to_load;
+                            data_stream >> goal_secret;
 
                             if(type!=30000){
                                 temp_items.push_back(Item(x,y,false,type,goal_level_to_load,goal_secret));
@@ -1342,19 +1354,20 @@ void Profile::reset_ammo_barrels(){
                         }
 
                         load.close();
-                        load.clear();
                     }
 
                     if(temp_items.size()>0){
                         level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
-                        load.open(level_to_load.c_str(),ifstream::in);
+                        load.open(level_to_load);
 
-                        if(load!=NULL){
+                        if(load.is_opened()){
+                            istringstream data_stream(load.get_data());
+
                             bool collected=false;
 
                             for(int i=0;i<temp_items.size();i++){
                                 if(is_item_collectable(temp_items[i].type)){
-                                    load>>collected;
+                                    data_stream>>collected;
                                     if(collected){
                                         temp_items[i].exists=false;
                                     }
@@ -1366,7 +1379,6 @@ void Profile::reset_ammo_barrels(){
                             }
 
                             load.close();
-                            load.clear();
 
                             ofstream save;
                             string save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
@@ -1421,20 +1433,21 @@ void Profile::reset_level_beaten(){
                 string current_level="";
                 ss.clear();ss.str("");ss<<n;current_level=ss.str();
 
-                ifstream load;
+                File_IO_Load load;
                 string level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/level_properties.blazesave";
-                load.open(level_to_load.c_str(),ifstream::in);
+                load.open(level_to_load);
 
-                if(load!=NULL){
+                if(load.is_opened()){
+                    istringstream data_stream(load.get_data());
+
                     short current_sub_level=0;
                     bool level_beaten=false;
 
-                    load>>current_sub_level;
+                    data_stream>>current_sub_level;
 
-                    load>>level_beaten;
+                    data_stream>>level_beaten;
 
                     load.close();
-                    load.clear();
 
                     level_beaten=false;
 
@@ -1518,51 +1531,52 @@ bool Profile::load_mp_players(){
     }
     //If there is a profile.
     else{
-        ifstream load;
+        File_IO_Load load;
         string file_to_load=get_home_directory()+"profiles/"+player.name+"/mp_players.blazesave";
-        load.open(file_to_load.c_str(),ifstream::in);
+        load.open(file_to_load);
 
-        if(load!=NULL){
-            load>>player.mp_player_count;
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
 
-            load>>player.mp_character;
+            data_stream>>player.mp_player_count;
+
+            data_stream>>player.mp_character;
 
             player.mp_available_characters.clear();
             int mp_available_characters_size=0;
-            load>>mp_available_characters_size;
+            data_stream>>mp_available_characters_size;
             for(int i=0;i<mp_available_characters_size;i++){
                 short data=0;
-                load>>data;
+                data_stream>>data;
 
                 player.mp_available_characters.push_back(data);
             }
 
             player.mp_ai.clear();
             int mp_ai_size=0;
-            load>>mp_ai_size;
+            data_stream>>mp_ai_size;
             for(int i=0;i<mp_ai_size;i++){
                 bool data=false;
-                load>>data;
+                data_stream>>data;
 
                 player.mp_ai.push_back(data);
             }
 
             mp_players.clear();
             int mp_players_size=0;
-            load>>mp_players_size;
+            data_stream>>mp_players_size;
             for(int i=0;i<mp_players_size;i++){
                 int which_mp_player=0;
                 short option_character=0;
 
-                load>>which_mp_player;
-                load>>option_character;
+                data_stream>>which_mp_player;
+                data_stream>>option_character;
 
                 mp_players.push_back(Player_Mp(player.mp_keys[which_mp_player],which_mp_player,player.mp_ai[which_mp_player]));
                 mp_players[mp_players.size()-1].option_character=option_character;
             }
 
             load.close();
-            load.clear();
         }
         else{
             if(!save_mp_players()){
@@ -1612,23 +1626,24 @@ bool Profile::load_shop(){
     }
     //If there is a profile.
     else{
-        ifstream load;
+        File_IO_Load load;
         string file_to_load=get_home_directory()+"profiles/"+player.name+"/shop.blazesave";
-        load.open(file_to_load.c_str(),ifstream::in);
+        load.open(file_to_load);
 
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             player.shop_upgrades.clear();
             int shop_upgrades_size=0;
-            load>>shop_upgrades_size;
+            data_stream>>shop_upgrades_size;
             for(int i=0;i<shop_upgrades_size;i++){
                 string data="";
-                load>>data;
+                data_stream>>data;
 
                 player.shop_upgrades.push_back(data);
             }
 
             load.close();
-            load.clear();
         }
         else{
             if(!save_shop()){
@@ -1681,26 +1696,27 @@ bool Profile::load_upgrades(){
     }
     //If there is a profile.
     else{
-        ifstream load;
+        File_IO_Load load;
         string file_to_load=get_home_directory()+"profiles/"+player.name+"/upgrades.blazesave";
-        load.open(file_to_load.c_str(),ifstream::in);
+        load.open(file_to_load);
 
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             player.upgrades.clear();
             int upgrades_size=0;
-            load>>upgrades_size;
+            data_stream>>upgrades_size;
             for(int i=0;i<upgrades_size;i++){
                 string data="";
-                load>>data;
+                data_stream>>data;
 
                 bool upgrade_state=false;
-                load>>upgrade_state;
+                data_stream>>upgrade_state;
 
                 player.upgrades.insert(make_pair(data,upgrade_state));
             }
 
             load.close();
-            load.clear();
         }
         else{
             if(!save_upgrades()){

@@ -32,7 +32,7 @@ public:
     File_IO_Load();
     File_IO_Load(std::string path,bool path_is_backup=false,bool get_binary=false,bool suppress_errors=false);
 
-    void open(std::string path,bool path_is_backup,bool get_binary,bool suppress_errors);
+    void open(std::string path,bool path_is_backup=false,bool get_binary=false,bool suppress_errors=false);
     void close();
 
     bool is_opened();

@@ -21,21 +21,21 @@ Version_Series::Version_Series(int get_major_1,int get_minor_1,int get_micro_1,i
 }
 
 bool load_current_profile(){
-    ifstream load;
+    File_IO_Load load;
     string file_to_load=profile.get_home_directory()+"profiles/current_profile.cfg";
-    load.open(file_to_load.c_str(),ifstream::in);
+    load.open(file_to_load);
 
-    if(load!=NULL){
-        load>>player.name;
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
 
-        if(load.fail()){
+        data_stream>>player.name;
+
+        if(data_stream.fail()){
             update_error_log("Failed to load 'current_profile.cfg.'");
             load.close();
-            load.clear();
             return false;
         }
         load.close();
-        load.clear();
     }
     else{
         if(!save_current_profile()){
@@ -120,19 +120,20 @@ bool options_version_compatible(string name_to_check){
     int current_minor=Version::MINOR;
     int current_micro=Version::MICRO;
 
-    ifstream load;
+    File_IO_Load load;
     string file_to_load=profile.get_home_directory()+"profiles/";
     file_to_load+=name_to_check;
     file_to_load+="/options.cfg";
-    load.open(file_to_load.c_str(),ifstream::in);
+    load.open(file_to_load);
 
     string version="";
 
-    if(load!=NULL){
-        load>>version;
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
+        data_stream>>version;
 
         load.close();
-        load.clear();
     }
     else{
         update_error_log("Failed to load profile version!");
@@ -188,15 +189,17 @@ bool options_load(){
             return false;
         }
         else{
-            ifstream load;
+            File_IO_Load load;
             string file_to_load=profile.get_home_directory()+"profiles/";
             file_to_load+=player.name;
             file_to_load+="/options.cfg";
-            load.open(file_to_load.c_str(),ifstream::in);
+            load.open(file_to_load);
 
             string version="";
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 //Temporary variables for loading command data.
                 short type;
                 int key;
@@ -209,35 +212,35 @@ bool options_load(){
                 unsigned int joy_ball;
                 short joy_ball_direction;
 
-                load>>version;
+                data_stream>>version;
 
-                load>>player.option_fps;
-                load>>player.option_dev;
-                load>>player.option_effect_limit;
-                load>>player.option_volume_global;
-                load>>player.option_mute_global;
-                load>>player.option_volume_sound;
-                load>>player.option_mute_sound;
-                load>>player.option_volume_music;
-                load>>player.option_mute_music;
-                load>>player.option_holiday_cheer;
-                load>>player.option_time_of_day;
-                load>>player.option_time_of_day_levels;
-                load>>player.option_difficulty;
-                load>>player.option_hardware_cursor;
-                load>>player.option_hints;
+                data_stream>>player.option_fps;
+                data_stream>>player.option_dev;
+                data_stream>>player.option_effect_limit;
+                data_stream>>player.option_volume_global;
+                data_stream>>player.option_mute_global;
+                data_stream>>player.option_volume_sound;
+                data_stream>>player.option_mute_sound;
+                data_stream>>player.option_volume_music;
+                data_stream>>player.option_mute_music;
+                data_stream>>player.option_holiday_cheer;
+                data_stream>>player.option_time_of_day;
+                data_stream>>player.option_time_of_day_levels;
+                data_stream>>player.option_difficulty;
+                data_stream>>player.option_hardware_cursor;
+                data_stream>>player.option_hints;
 
                 for(int i=0;i<COMMAND_END;i++){
-                    load>>type;
-                    load>>key;
-                    load>>which_joystick;
-                    load>>joy_button;
-                    load>>joy_axis;
-                    load>>joy_axis_direction;
-                    load>>joy_hat;
-                    load>>joy_hat_direction;
-                    load>>joy_ball;
-                    load>>joy_ball_direction;
+                    data_stream>>type;
+                    data_stream>>key;
+                    data_stream>>which_joystick;
+                    data_stream>>joy_button;
+                    data_stream>>joy_axis;
+                    data_stream>>joy_axis_direction;
+                    data_stream>>joy_hat;
+                    data_stream>>joy_hat_direction;
+                    data_stream>>joy_ball;
+                    data_stream>>joy_ball_direction;
 
                     player.keys[i].type=type;
                     player.keys[i].key=(SDL_Scancode)key;
@@ -253,16 +256,16 @@ bool options_load(){
 
                 for(int i=0;i<3;i++){
                     for(int n=0;n<COMMAND_END;n++){
-                        load>>type;
-                        load>>key;
-                        load>>which_joystick;
-                        load>>joy_button;
-                        load>>joy_axis;
-                        load>>joy_axis_direction;
-                        load>>joy_hat;
-                        load>>joy_hat_direction;
-                        load>>joy_ball;
-                        load>>joy_ball_direction;
+                        data_stream>>type;
+                        data_stream>>key;
+                        data_stream>>which_joystick;
+                        data_stream>>joy_button;
+                        data_stream>>joy_axis;
+                        data_stream>>joy_axis_direction;
+                        data_stream>>joy_hat;
+                        data_stream>>joy_hat_direction;
+                        data_stream>>joy_ball;
+                        data_stream>>joy_ball_direction;
 
                         player.mp_keys[i][n].type=type;
                         player.mp_keys[i][n].key=(SDL_Scancode)key;
@@ -278,7 +281,6 @@ bool options_load(){
                 }
 
                 load.close();
-                load.clear();
             }
             else{
                 //Save options to options.cfg.
@@ -413,11 +415,11 @@ bool options_save(){
 }
 
 bool global_options_load(){
-    ifstream load;
+    File_IO_Load load;
     string file_to_load=profile.get_home_directory()+"global_options.cfg";
-    load.open(file_to_load.c_str(),ifstream::in);
+    load.open(file_to_load);
 
-    if(load!=NULL){
+    if(load.is_opened()){
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.
@@ -436,7 +438,7 @@ bool global_options_load(){
             string str_npc_fade_survival="npc fade time survival:";
 
             //Grab the next line of the file.
-            getline(load,line);
+            load.getline(&line);
 
             //Clear initial whitespace from the line.
             trim(line);
@@ -517,7 +519,6 @@ bool global_options_load(){
         LIGHTING_TILE_SIZE=player.option_lighting_tile_size;
 
         load.close();
-        load.clear();
     }
     else{
         if(!global_options_save()){
@@ -574,6 +575,8 @@ bool save_location_load(){
     File_IO_Load load("save_location.cfg");
 
     if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         bool multi_line_comment=false;
 
         //As long as we haven't reached the end of the file.

@@ -4,6 +4,7 @@
 #include "profile.h"
 #include "world.h"
 #include "message_log.h"
+#include "file_io.h"
 
 #include <fstream>
 
@@ -32,7 +33,7 @@ Leaves_And_Cheese Profile::load_this_levels_leaves_cheese(short level_to_check){
         string current_level="";
         ss.clear();ss.str("");ss<<level_to_check;current_level=ss.str();
 
-        ifstream load;
+        File_IO_Load load;
         string level_to_load="";
 
         //******************************//
@@ -40,10 +41,12 @@ Leaves_And_Cheese Profile::load_this_levels_leaves_cheese(short level_to_check){
         //******************************//
 
         level_to_load="data/levels/"+current_level+"/items.blazelevel";
-        load.open(level_to_load.c_str(),ifstream::in);
+        load.open(level_to_load);
 
         //As long as the file opened successfully, proceed to load the data.
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             //Now we make a temporary variable for getting the type of each item being loaded.
             short type;
             double x;
@@ -52,7 +55,7 @@ Leaves_And_Cheese Profile::load_this_levels_leaves_cheese(short level_to_check){
             bool goal_secret;
 
             //Then we iterate through all of the items in the file, setting each one.
-            while(!load.eof()){
+            while(!data_stream.eof()){
                 type=30000;
                 x=0;
                 y=0;
@@ -60,11 +63,11 @@ Leaves_And_Cheese Profile::load_this_levels_leaves_cheese(short level_to_check){
                 goal_secret=false;
 
                 //For each item, load the type information from the file.
-                load >> type;
-                load >> x;
-                load >> y;
-                load >> goal_level_to_load;
-                load >> goal_secret;
+                data_stream >> type;
+                data_stream >> x;
+                data_stream >> y;
+                data_stream >> goal_level_to_load;
+                data_stream >> goal_secret;
 
                 if(type==ITEM_LEAF){
                     lac.leaves++;
@@ -76,7 +79,6 @@ Leaves_And_Cheese Profile::load_this_levels_leaves_cheese(short level_to_check){
 
             //When we are done using the level file, we close it, and clear load for its next use.
             load.close();
-            load.clear();
         }
         //If the level file could not be loaded for any reason, we print an error message letting the user know.
         else{
@@ -97,16 +99,18 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
         string current_level="";
         ss.clear();ss.str("");ss<<level_to_check;current_level=ss.str();
 
-        ifstream load;
+        File_IO_Load load;
         string level_to_load="";
 
         vector<Item> temp_items;
 
         level_to_load="data/levels/"+current_level+"/items.blazelevel";
-        load.open(level_to_load.c_str(),ifstream::in);
+        load.open(level_to_load);
 
         //As long as the file opened successfully, proceed to load the data.
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             //Now we make a temporary variable for getting the type of each item being loaded.
             short type;
             double x;
@@ -115,7 +119,7 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
             bool goal_secret;
 
             //Then we iterate through all of the items in the file, setting each one.
-            while(!load.eof()){
+            while(!data_stream.eof()){
                 type=30000;
                 x=0;
                 y=0;
@@ -123,11 +127,11 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
                 goal_secret=false;
 
                 //For each item, load the type information from the file.
-                load >> type;
-                load >> x;
-                load >> y;
-                load >> goal_level_to_load;
-                load >> goal_secret;
+                data_stream >> type;
+                data_stream >> x;
+                data_stream >> y;
+                data_stream >> goal_level_to_load;
+                data_stream >> goal_secret;
 
                 if(type!=30000){
                     temp_items.push_back(Item(x,y,false,type,goal_level_to_load,goal_secret));
@@ -136,7 +140,6 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
 
             //When we are done using the level file, we close it, and clear load for its next use.
             load.close();
-            load.clear();
         }
         //If the level file could not be loaded for any reason, we print an error message letting the user know.
         else{
@@ -145,15 +148,17 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
 
         if(temp_items.size()>0){
             level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
-            load.open(level_to_load.c_str(),ifstream::in);
+            load.open(level_to_load);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 bool collected=false;
 
                 for(int i=0;i<temp_items.size();i++){
                     //If the item is of a collectable type.
                     if(is_item_collectable(temp_items[i].type)){
-                        load>>collected;
+                        data_stream>>collected;
                         if(collected){
                             if(temp_items[i].type==ITEM_LEAF){
                                 lac.leaves++;
@@ -166,7 +171,6 @@ Leaves_And_Cheese Profile::load_collected_leaves_cheese(short level_to_check){
                 }
 
                 load.close();
-                load.clear();
             }
             else{
             }

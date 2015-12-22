@@ -3,6 +3,7 @@
 
 #include "profile.h"
 #include "world.h"
+#include "file_io.h"
 
 #include <fstream>
 
@@ -18,17 +19,18 @@ Level_Properties Profile::load_level_properties_weather_machine(short level_to_c
         string current_level="";
         ss.clear();ss.str("");ss<<level_to_change;current_level=ss.str();
 
-        ifstream load;
+        File_IO_Load load;
         string level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/level_properties.blazesave";
-        load.open(level_to_load.c_str(),ifstream::in);
+        load.open(level_to_load);
 
-        if(load!=NULL){
-            load>>lp.current_sub_level;
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
 
-            load>>lp.level_beaten;
+            data_stream>>lp.current_sub_level;
+
+            data_stream>>lp.level_beaten;
 
             load.close();
-            load.clear();
         }
         else{
             lp=save_level_properties_weather_machine(level_to_change,lp);

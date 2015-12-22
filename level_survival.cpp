@@ -6,6 +6,7 @@
 #include "message_log.h"
 #include "render.h"
 #include "update.h"
+#include "file_io.h"
 
 #include <fstream>
 
@@ -145,18 +146,19 @@ void Level::load_level_survival(){
     //*******************************************//
 
     //First, we open the file for reading.
-    ifstream load;
+    File_IO_Load load;
 
     string level_to_load="";
 
     level_to_load="data/levels/"+current_level+"/level_properties.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     bool items_stay=false;
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
 
         //Create any variables that will be used to pass on information from the level file.
         double start_y=0;
@@ -167,33 +169,33 @@ void Level::load_level_survival(){
         double parallax_speed_y=0;
 
         //The first two numbers in the level file are the x and y dimensions of the entire level's map.
-        load >> level_x;
-        load >> level_y;
+        data_stream >> level_x;
+        data_stream >> level_y;
 
-        load >> player.ammo;
+        data_stream >> player.ammo;
         player.ammo=floor((double)player.ammo*(1+((double)mp_players.size()*0.5)));
         for(int i=0;i<mp_players.size();i++){
             mp_players[i].ammo=player.ammo;
         }
 
-        load >> start_y;
-        load >> width;
-        load >> height;
+        data_stream >> start_y;
+        data_stream >> width;
+        data_stream >> height;
 
         //Load in the number of background layers.
-        load >> number_of_background_layers;
+        data_stream >> number_of_background_layers;
 
         for(int i=0;i<number_of_background_layers;i++){
-            load >> parallax_speed_x;
-            load >> parallax_speed_y;
+            data_stream >> parallax_speed_x;
+            data_stream >> parallax_speed_y;
             background_layers.push_back(Background_Layer(start_y,width,height,parallax_speed_x,parallax_speed_y));
         }
 
-        load >> items_stay;
+        data_stream >> items_stay;
 
-        load >> player.night_mode;
+        data_stream >> player.night_mode;
 
-        load >> player.deadly_water;
+        data_stream >> player.deadly_water;
 
         if(random_range(0,99)<50){
             player.facing=LEFT;
@@ -238,7 +240,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -253,10 +254,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/tiles.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         tile_array.clear();
         tile_array.resize(level_x/TILE_SIZE,vector<Tile>(level_y/TILE_SIZE));
 
@@ -271,11 +274,11 @@ void Level::load_level_survival(){
         for(int int_y=0;int_y<level_y/TILE_SIZE;int_y++){
             for(int int_x=0;int_x<level_x/TILE_SIZE;int_x++){
                 //For each tile, load the type information from the level file.
-                load >> solidity;
-                load >> sprite;
-                load >> special;
-                load >> foreground;
-                load >> slope;
+                data_stream >> solidity;
+                data_stream >> sprite;
+                data_stream >> special;
+                data_stream >> foreground;
+                data_stream >> slope;
 
                 //If the tile is an item holder, make it empty air.
                 if(special==TILE_SPECIAL_ITEM_HOLDER){
@@ -317,7 +320,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it, and clear load for its next use.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -332,10 +334,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/tiles_background.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         tile_background_array.clear();
 
         tile_background_array.resize(level_x/TILE_SIZE,vector<Tile_Background>(level_y/TILE_SIZE));
@@ -347,7 +351,7 @@ void Level::load_level_survival(){
         for(int int_y=0;int_y<(level_y/TILE_SIZE);int_y++){
             for(int int_x=0;int_x<(level_x/TILE_SIZE);int_x++){
                 //For each tile, load the type information from the level file.
-                load >> sprite;
+                data_stream >> sprite;
 
                 //Then generate a new tile in the tile vector with the proper coordinates and the type loaded from the level file.
                 tile_background_array[int_x][int_y].x=int_x*TILE_SIZE;
@@ -358,7 +362,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it, and clear load for its next use.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -373,10 +376,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/items.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make a temporary variable for getting the type of each item being loaded.
         short type;
         double x;
@@ -385,7 +390,7 @@ void Level::load_level_survival(){
         bool goal_secret;
 
         //Then we iterate through all of the items in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             type=30000;
             x=0;
             y=0;
@@ -393,11 +398,11 @@ void Level::load_level_survival(){
             goal_secret=false;
 
             //For each item, load the type information from the file.
-            load >> type;
-            load >> x;
-            load >> y;
-            load >> goal_level_to_load;
-            load >> goal_secret;
+            data_stream >> type;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> goal_level_to_load;
+            data_stream >> goal_secret;
 
             bool should_spawn=false;
             if(type!=ITEM_LEAF && type!=ITEM_CANDY){
@@ -411,7 +416,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it, and clear load for its next use.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -426,25 +430,27 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/npcs.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make a temporary variable for getting the type of each npc being loaded.
         short type;
         double x;
         double y;
 
         //Then we iterate through all of the items in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             type=0;
             x=0;
             y=0;
 
             //For each item, load the type information from the file.
-            load >> type;
-            load >> x;
-            load >> y;
+            data_stream >> type;
+            data_stream >> x;
+            data_stream >> y;
 
             bool should_spawn=true;
             if(player.npc_is_main_boss(type)){
@@ -463,7 +469,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it, and clear load for its next use.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -478,10 +483,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/moving_platforms.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double move_speed;
         double start_point_x;
@@ -496,7 +503,7 @@ void Level::load_level_survival(){
         vector<moving_platform_waypoint> waypoints;
 
         //Then we iterate through all of the npcs in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             move_speed=0;
             start_point_x=0;
             start_point_y=0;
@@ -510,21 +517,21 @@ void Level::load_level_survival(){
             waypoints.clear();
 
             //For each item, load the type information from the file.
-            load >> move_speed;
-            load >> start_point_x;
-            load >> start_point_y;
-            load >> end_point_x;
-            load >> end_point_y;
-            load >> active;
-            load >> round_trip;
-            load >> movement_type;
-            load >> identifier;
-            load >> number_of_waypoints;
+            data_stream >> move_speed;
+            data_stream >> start_point_x;
+            data_stream >> start_point_y;
+            data_stream >> end_point_x;
+            data_stream >> end_point_y;
+            data_stream >> active;
+            data_stream >> round_trip;
+            data_stream >> movement_type;
+            data_stream >> identifier;
+            data_stream >> number_of_waypoints;
 
             for(int i=0;i<number_of_waypoints;i++){
                 waypoints.push_back(moving_platform_waypoint());
-                load >> waypoints[i].x;
-                load >> waypoints[i].y;
+                data_stream >> waypoints[i].x;
+                data_stream >> waypoints[i].y;
             }
 
             if(move_speed!=0){
@@ -534,7 +541,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it, and clear load for its next use.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -549,10 +555,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/triggers.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         double w,h;
@@ -565,7 +573,7 @@ void Level::load_level_survival(){
         short render_trigger;
 
         //Then we iterate through all of the triggers in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=0;
             y=0;
             w=0;
@@ -579,23 +587,23 @@ void Level::load_level_survival(){
             render_trigger=0;
 
             //For each item, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> w;
-            load >> h;
-            load >> number_of_targets;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> w;
+            data_stream >> h;
+            data_stream >> number_of_targets;
 
             for(int i=0;i<number_of_targets;i++){
                 targets.push_back(target());
-                load >> targets[i].type;
-                load >> targets[i].identifier;
+                data_stream >> targets[i].type;
+                data_stream >> targets[i].identifier;
             }
 
-            load >> trigger_method;
-            load >> user_type;
-            load >> repeating;
-            load >> repeat_time;
-            load >> render_trigger;
+            data_stream >> trigger_method;
+            data_stream >> user_type;
+            data_stream >> repeating;
+            data_stream >> repeat_time;
+            data_stream >> render_trigger;
 
             if(w!=0){
                 vector_triggers.push_back(Trigger(x,y,w,h,targets,trigger_method,user_type,repeating,repeat_time,render_trigger));
@@ -604,7 +612,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -619,10 +626,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/doors.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         short type;
@@ -631,7 +640,7 @@ void Level::load_level_survival(){
         short identifier;
 
         //Then we iterate through all of the doors in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=0;
             y=0;
             type=0;
@@ -640,12 +649,12 @@ void Level::load_level_survival(){
             identifier=-1;
 
             //For each one, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> type;
-            load >> number;
-            load >> open;
-            load >> identifier;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> type;
+            data_stream >> number;
+            data_stream >> open;
+            data_stream >> identifier;
 
             if(type==DOOR_TYPE_KEY){
                 open=true;
@@ -658,7 +667,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -673,10 +681,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/traps.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         short type;
@@ -684,7 +694,7 @@ void Level::load_level_survival(){
         short identifier;
 
         //Then we iterate through all of the traps in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=0;
             y=0;
             type=0;
@@ -692,11 +702,11 @@ void Level::load_level_survival(){
             identifier=-1;
 
             //For each one, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> type;
-            load >> active;
-            load >> identifier;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> type;
+            data_stream >> active;
+            data_stream >> identifier;
 
             bool should_spawn=true;
             if(type==TRAP_WEATHER_MACHINE || type==TRAP_OPEN_SHOP || type==TRAP_OPEN_UPGRADES || type==TRAP_BOSS_CASTLE || type==TRAP_BOSS_PYRAMID){
@@ -710,7 +720,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -725,10 +734,12 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/signs.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         string message;
@@ -736,7 +747,7 @@ void Level::load_level_survival(){
         short font_type;
 
         //Then we iterate through all of the signs in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=-1;
             y=-1;
             message="";
@@ -744,11 +755,11 @@ void Level::load_level_survival(){
             font_type=0;
 
             //For each one, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> message;
-            load >> sign_type;
-            load >> font_type;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> message;
+            data_stream >> sign_type;
+            data_stream >> font_type;
 
             boost::algorithm::replace_all(message,"<SPACE>"," ");
             boost::algorithm::replace_all(message,"<NEWLINE>","\xA");
@@ -760,7 +771,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -775,27 +785,29 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/springs.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         double speed;
         short direction;
 
         //Then we iterate through all of the springs in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=-1;
             y=-1;
             speed=0.0;
             direction=LEFT;
 
             //For each one, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> speed;
-            load >> direction;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> speed;
+            data_stream >> direction;
 
             if(x!=-1 && y!=-1){
                 vector_springs.push_back(Spring(x,y,speed,direction));
@@ -804,7 +816,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{
@@ -819,27 +830,29 @@ void Level::load_level_survival(){
 
     level_to_load="data/levels/"+current_level+"/boosters.blazelevel";
 
-    load.open(level_to_load.c_str(),ifstream::in);
+    load.open(level_to_load);
 
     //As long as the file opened successfully, proceed to load the level data.
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         //Now we make temporary variables.
         double x,y;
         double speed;
         short direction;
 
         //Then we iterate through all of the boosters in the file, setting each one.
-        while(!load.eof()){
+        while(!data_stream.eof()){
             x=-1;
             y=-1;
             speed=0.0;
             direction=LEFT;
 
             //For each one, load the type information from the file.
-            load >> x;
-            load >> y;
-            load >> speed;
-            load >> direction;
+            data_stream >> x;
+            data_stream >> y;
+            data_stream >> speed;
+            data_stream >> direction;
 
             if(x!=-1 && y!=-1){
                 vector_boosters.push_back(Booster(x,y,speed,direction));
@@ -848,7 +861,6 @@ void Level::load_level_survival(){
 
         //When we are done using the level file, we close it.
         load.close();
-        load.clear();
     }
     //If the level file could not be loaded for any reason, we print an error message letting the user know.
     else{

@@ -8,6 +8,7 @@
 #include "quit.h"
 #include "button_events.h"
 #include "holidays.h"
+#include "file_io.h"
 
 #include <fstream>
 
@@ -306,7 +307,7 @@ void Window_Map::load_map_level_properties(){
 
     string load_path="";
 
-    ifstream load;
+    File_IO_Load load;
 
     persistent_level_data=false;
     level_x=0;
@@ -322,32 +323,33 @@ void Window_Map::load_map_level_properties(){
     else{
         load_path="data/levels/"+current_level+"/"+current_sub_level+"/level_properties.blazelevel";
     }
-    load.open(load_path.c_str(),ifstream::in);
+    load.open(load_path);
 
-    if(load!=NULL){
+    if(load.is_opened()){
+        istringstream data_stream(load.get_data());
+
         string catch_unneeded="";
         short number_of_background_layers=0;
 
         //Skip over the unneeded level data.
-        load >> level_x;
-        load >> level_y;
-        load >> catch_unneeded;
-        load >> catch_unneeded;
-        load >> catch_unneeded;
-        load >> catch_unneeded;
-        load >> number_of_background_layers;
+        data_stream >> level_x;
+        data_stream >> level_y;
+        data_stream >> catch_unneeded;
+        data_stream >> catch_unneeded;
+        data_stream >> catch_unneeded;
+        data_stream >> catch_unneeded;
+        data_stream >> number_of_background_layers;
         for(int i=0;i<number_of_background_layers;i++){
-            load >> catch_unneeded;
-            load >> catch_unneeded;
+            data_stream >> catch_unneeded;
+            data_stream >> catch_unneeded;
         }
-        load >> persistent_level_data;
+        data_stream >> persistent_level_data;
 
-        load >> catch_unneeded;
+        data_stream >> catch_unneeded;
 
-        load >> catch_unneeded;
+        data_stream >> catch_unneeded;
 
         load.close();
-        load.clear();
     }
 }
 
@@ -412,7 +414,7 @@ void Window_Map::load_map_data(){
 
         string load_path="";
 
-        ifstream load;
+        File_IO_Load load;
 
         //Prepare the map data vector.
         viewable_map_data.clear();
@@ -423,20 +425,21 @@ void Window_Map::load_map_data(){
         //Load the map seen data from the map save file.
 
         load_path=profile.get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/map.blazesave";
-        load.open(load_path.c_str(),ifstream::in);
+        load.open(load_path);
 
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             bool seen=false;
 
             for(int int_y=0;int_y<level_y/TILE_SIZE;int_y++){
                 for(int int_x=0;int_x<level_x/TILE_SIZE;int_x++){
-                    load >> seen;
+                    data_stream >> seen;
                     viewable_map_data[int_x][int_y].seen=seen;
                 }
             }
 
             load.close();
-            load.clear();
         }
         else{
             //We have failed to load the map save data, so it must not have been saved yet.
@@ -454,26 +457,27 @@ void Window_Map::load_map_data(){
         else{
             load_path="data/levels/"+current_level+"/"+current_sub_level+"/tiles.blazelevel";
         }
-        load.open(load_path.c_str(),ifstream::in);
+        load.open(load_path);
 
-        if(load!=NULL){
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
             short sprite=0;
             string catch_unneeded="";
 
             for(int int_y=0;int_y<level_y/TILE_SIZE;int_y++){
                 for(int int_x=0;int_x<level_x/TILE_SIZE;int_x++){
-                    load>>catch_unneeded;
-                    load>>sprite;
-                    load>>catch_unneeded;
-                    load>>catch_unneeded;
-                    load>>catch_unneeded;
+                    data_stream>>catch_unneeded;
+                    data_stream>>sprite;
+                    data_stream>>catch_unneeded;
+                    data_stream>>catch_unneeded;
+                    data_stream>>catch_unneeded;
 
                     viewable_map_data[int_x][int_y].sprite=sprite;
                 }
             }
 
             load.close();
-            load.clear();
         }
 
         if(!player.is_level_worldmap(current_viewable_level)){
@@ -485,21 +489,22 @@ void Window_Map::load_map_data(){
             else{
                 load_path="data/levels/"+current_level+"/"+current_sub_level+"/tiles_background.blazelevel";
             }
-            load.open(load_path.c_str(),ifstream::in);
+            load.open(load_path);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 short sprite=0;
 
                 for(int int_y=0;int_y<level_y/TILE_SIZE;int_y++){
                     for(int int_x=0;int_x<level_x/TILE_SIZE;int_x++){
-                        load>>sprite;
+                        data_stream>>sprite;
 
                         viewable_map_data[int_x][int_y].background_sprite=sprite;
                     }
                 }
 
                 load.close();
-                load.clear();
             }
 
             //If the current sub level is 0, meaning "load the main level."
@@ -510,27 +515,29 @@ void Window_Map::load_map_data(){
             else{
                 load_path="data/levels/"+current_level+"/"+current_sub_level+"/items.blazelevel";
             }
-            load.open(load_path.c_str(),ifstream::in);
+            load.open(load_path);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 short type=0;
                 double x=0.0;
                 double y=0.0;
                 int goal_level_to_load=0;
                 bool goal_secret=false;
 
-                while(!load.eof()){
+                while(!data_stream.eof()){
                     type=30000;
                     x=0.0;
                     y=0.0;
                     goal_level_to_load=0;
                     goal_secret=false;
 
-                    load >> type;
-                    load >> x;
-                    load >> y;
-                    load >> goal_level_to_load;
-                    load >> goal_secret;
+                    data_stream >> type;
+                    data_stream >> x;
+                    data_stream >> y;
+                    data_stream >> goal_level_to_load;
+                    data_stream >> goal_secret;
 
                     if(type!=30000){
                         viewable_items.push_back(Item(x,y,false,type,goal_level_to_load,goal_secret));
@@ -538,21 +545,22 @@ void Window_Map::load_map_data(){
                 }
 
                 load.close();
-                load.clear();
             }
 
             //Load the item seen data from the item save file.
 
             load_path=profile.get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
-            load.open(load_path.c_str(),ifstream::in);
+            load.open(load_path);
 
-            if(load!=NULL){
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
                 bool collected=false;
 
                 for(int i=0;i<viewable_items.size();i++){
                     //If the item is of a collectable type.
                     if(profile.is_item_collectable(viewable_items[i].type)){
-                        load>>collected;
+                        data_stream>>collected;
                         if(collected){
                             viewable_items[i].exists=false;
                         }
@@ -565,7 +573,6 @@ void Window_Map::load_map_data(){
                 }
 
                 load.close();
-                load.clear();
             }
         }
     }

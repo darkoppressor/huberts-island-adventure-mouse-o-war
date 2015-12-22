@@ -3,6 +3,7 @@
 
 #include "profile.h"
 #include "world.h"
+#include "file_io.h"
 
 #include <fstream>
 
@@ -18,18 +19,19 @@ Level_Stats Profile::return_level_stats(short level_to_check){
         string current_level="";
         ss.clear();ss.str("");ss<<level_to_check;current_level=ss.str();
 
-        ifstream load;
+        File_IO_Load load;
         string level_to_load="";
 
         level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/stats.blazesave";
-        load.open(level_to_load.c_str(),ifstream::in);
+        load.open(level_to_load);
 
-        if(load!=NULL){
-            load>>level_stats.seconds_total_time;
-            load>>level_stats.seconds_best_time;
+        if(load.is_opened()){
+            istringstream data_stream(load.get_data());
+
+            data_stream>>level_stats.seconds_total_time;
+            data_stream>>level_stats.seconds_best_time;
 
             load.close();
-            load.clear();
         }
         else{
         }
@@ -50,18 +52,19 @@ bool Profile::load_level_stats(){
             string current_level="";
             ss.clear();ss.str("");ss<<player.current_level;current_level=ss.str();
 
-            ifstream load;
+            File_IO_Load load;
             string level_to_load="";
 
             level_to_load=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/stats.blazesave";
-            load.open(level_to_load.c_str(),ifstream::in);
+            load.open(level_to_load);
 
-            if(load!=NULL){
-                load>>player.seconds_total_current_level;
-                load>>player.seconds_best_current_level;
+            if(load.is_opened()){
+                istringstream data_stream(load.get_data());
+
+                data_stream>>player.seconds_total_current_level;
+                data_stream>>player.seconds_best_current_level;
 
                 load.close();
-                load.clear();
             }
             else{
                 return false;
