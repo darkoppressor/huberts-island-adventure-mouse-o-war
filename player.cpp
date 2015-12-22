@@ -25,7 +25,8 @@ using namespace std;
 Player::Player(){
     timer_update_achievements.start();
 
-    timer_save_data.start();
+    // I've disabled this to prevent periodic saving
+    ///timer_save_data.start();
 
     touch_controls=false;
 

@@ -82,7 +82,9 @@ void Player::toggle_character(){
     if(option_character>=CHARACTER_END){
         option_character=CHARACTER_BEGIN;
     }
-    profile.save_inventory();
+
+    // I've disabled this to reduce saving
+    ///profile.save_inventory();
 
     ptr_player_worldmap_image=return_character_worldmap_image();
 
