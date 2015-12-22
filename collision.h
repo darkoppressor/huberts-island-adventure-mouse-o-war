@@ -175,8 +175,8 @@ public:
         double x2=box_b.center_x();
         double y2=box_b.center_y();
 
-        double x_component=abs(x2-x1);
-        double y_component=abs(y2-y1);
+        double x_component=fabs(x2-x1);
+        double y_component=fabs(y2-y1);
 
         if(x2<x1){
             x_component*=-1.0;
@@ -198,8 +198,8 @@ public:
         double x2=box.center_x();
         double y2=box.center_y();
 
-        double x_component=abs(x2-x1);
-        double y_component=abs(y2-y1);
+        double x_component=fabs(x2-x1);
+        double y_component=fabs(y2-y1);
 
         if(x2<x1){
             x_component*=-1.0;
@@ -221,8 +221,8 @@ public:
         double x2=circle_b.x;
         double y2=circle_b.y;
 
-        double x_component=abs(x2-x1);
-        double y_component=abs(y2-y1);
+        double x_component=fabs(x2-x1);
+        double y_component=fabs(y2-y1);
 
         if(x2<x1){
             x_component*=-1.0;
@@ -244,8 +244,8 @@ public:
         double x2=circle.x;
         double y2=circle.y;
 
-        double x_component=abs(x2-x1);
-        double y_component=abs(y2-y1);
+        double x_component=fabs(x2-x1);
+        double y_component=fabs(y2-y1);
 
         if(x2<x1){
             x_component*=-1.0;
