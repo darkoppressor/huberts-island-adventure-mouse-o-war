@@ -1,4 +1,4 @@
-1.5.0 - 2015/12/19
+1.5.0 - 2015/12/22
  - Updated compiler/libraries/build system (primarily upgraded to SDL2)
  - Fixed game sound cutting out in Linux
  - Fixed game crashing in Linux
@@ -7,6 +7,7 @@
  - Ported the game to Android
  - Added touch controller
  - Disabled periodic saving of data
+ - Abandoned use of installer on Windows
 
 1.4.0 - 2013/7/19
  - Updated compiler/libraries.

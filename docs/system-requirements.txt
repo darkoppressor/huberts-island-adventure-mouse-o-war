@@ -12,16 +12,16 @@ Requires glibc 2.19 or newer
 
 Minimum:
 Processor: 2 GHz
-Memory: 512 MB
-Graphics: Video card made within the last 4 years. Integrated graphics may or may not work.
+Memory: 1 GB
+Graphics: Video card made within the last 4 years (as of 2015). Integrated graphics may or may not work.
 Sound: None required, although you will need a sound device for sound...
 Hard Drive: 120 MB
 Network: None required
 
 Recommended:
 Processor: 2.2 Ghz or faster
-Memory: 1 GB
-Graphics: Video card made within the last 2 years. Integrated graphics may or may not work.
+Memory: 2 GB
+Graphics: Video card made within the last 2 years (as of 2015). Integrated graphics may or may not work.
 Sound: We recommend you have a sound device. So you can have sound.
 Hard Drive: 120 MB
 Network: None required
