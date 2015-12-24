@@ -1,4 +1,4 @@
-1.5.0 - 2015/12/22
+1.5.0 - 2015/12/24
  - Updated compiler/libraries/build system (primarily upgraded to SDL2)
  - Fixed game sound cutting out in Linux
  - Fixed game crashing in Linux
@@ -8,6 +8,7 @@
  - Added touch controller
  - Disabled periodic saving of data
  - Abandoned use of installer on Windows
+ - Switched to C++11
 
 1.4.0 - 2013/7/19
  - Updated compiler/libraries.

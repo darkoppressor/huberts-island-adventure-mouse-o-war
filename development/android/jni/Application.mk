@@ -27,6 +27,6 @@ APP_CFLAGS += -fexpensive-optimizations
 #APP_CFLAGS += -fno-omit-frame-pointer
 
 # Global options:
-#APP_CFLAGS += -std=c++11
+APP_CFLAGS += -std=c++11
 APP_CFLAGS += -fexceptions
 APP_CFLAGS += -DGAME_OS_ANDROID
