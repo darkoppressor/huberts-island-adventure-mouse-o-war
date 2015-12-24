@@ -215,8 +215,8 @@ void Player::handle_command_event(short command){
                             else if((p_angle>90 && p_angle<180) || (p_angle>270 && p_angle<360)){
                                 p_angle-=90;
                             }
-                            run_speed+=jump_max*(cos(p_angle*(M_PI/180)));
-                            air_velocity=jump_max*-(sin(p_angle*(M_PI/180)));*/
+                            run_speed+=jump_max*(cos(p_angle*(ENGINE_MATH_PI/180)));
+                            air_velocity=jump_max*-(sin(p_angle*(ENGINE_MATH_PI/180)));*/
                         }
                         else{
                             air_velocity=climbing_jump_max*-1;

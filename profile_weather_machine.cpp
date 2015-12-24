@@ -56,7 +56,7 @@ Level_Properties Profile::save_level_properties_weather_machine(short level_to_c
             lp.level_beaten=false;
         }
 
-        if(save!=NULL){
+        if(save.is_open()){
             save<<lp.current_sub_level;
             save<<"\n";
             save<<lp.level_beaten;

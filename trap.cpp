@@ -656,8 +656,8 @@ void Trap::move(){
                                 circle_angle+=360.0;
                             }
                         }
-                        x=circle_radius*cos(circle_angle*(M_PI/180))+circle_center_x;
-                        y=circle_radius*sin(circle_angle*(M_PI/180))+circle_center_y;
+                        x=circle_radius*cos(circle_angle*(ENGINE_MATH_PI/180))+circle_center_x;
+                        y=circle_radius*sin(circle_angle*(ENGINE_MATH_PI/180))+circle_center_y;
                     }
                     else{
                         if(move_state==LEFT){

@@ -168,8 +168,8 @@ void Npc::handle_ai(int index){
                                 }
                             }
 
-                            check_x+=(double)TILE_SIZE*(cos(temp_angle*(M_PI/180)));
-                            check_y+=(double)TILE_SIZE*-(sin(temp_angle*(M_PI/180)));
+                            check_x+=(double)TILE_SIZE*(cos(temp_angle*(ENGINE_MATH_PI/180)));
+                            check_y+=(double)TILE_SIZE*-(sin(temp_angle*(ENGINE_MATH_PI/180)));
 
                             if(++tries>250){
                                 break;
@@ -790,7 +790,7 @@ double Npc::ai_get_target_direction(double target_x,double target_y,double targe
         x_component*=-1;
     }
 
-    target_angle=atan2(y_component,x_component)*(180/M_PI);
+    target_angle=atan2(y_component,x_component)*(180/ENGINE_MATH_PI);
 
     if(rotation_target_y>(y+h/2-player.camera_y)){
         target_angle=180+(180-target_angle);

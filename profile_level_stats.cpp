@@ -93,7 +93,7 @@ bool Profile::save_level_stats(){
             save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/stats.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 save<<player.seconds_total_current_level;
                 save<<"\n";
                 save<<player.seconds_best_current_level;

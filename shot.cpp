@@ -472,7 +472,7 @@ Shot::Shot(double get_x,double get_y,double get_angle,short get_type,bool get_co
     if(render_rotated){
         //Determine the angle of movement.
         if(gravity_affects){
-            double x_move=move_speed*(cos(angle*(M_PI/180)));
+            double x_move=move_speed*(cos(angle*(ENGINE_MATH_PI/180)));
             render_angle=x_move-air_velocity*8;
             if(x_move<0.0){
                 render_angle+=270;
@@ -639,7 +639,7 @@ double Shot::get_target_direction(double target_x,double target_y,double target_
         x_component*=-1;
     }
 
-    target_angle=atan2(y_component,x_component)*(180/M_PI);
+    target_angle=atan2(y_component,x_component)*(180/ENGINE_MATH_PI);
 
     if(rotation_target_y>(y+h/2-player.camera_y)){
         target_angle=180+(180-target_angle);
@@ -893,11 +893,11 @@ void Shot::move(){
 
                 //Move.
                 if(gravity_affects){
-                    x+=run_chunk*(cos(angle*(M_PI/180)));
+                    x+=run_chunk*(cos(angle*(ENGINE_MATH_PI/180)));
                 }
                 else{
-                    x+=run_chunk*(cos(angle*(M_PI/180)));
-                    y+=run_chunk*-(sin(angle*(M_PI/180)));
+                    x+=run_chunk*(cos(angle*(ENGINE_MATH_PI/180)));
+                    y+=run_chunk*-(sin(angle*(ENGINE_MATH_PI/180)));
                 }
 
                 //If we still have pixels left to move.
@@ -965,7 +965,7 @@ void Shot::move(){
             if(render_rotated){
                 //Determine the angle of movement.
                 if(gravity_affects){
-                    double x_move=move_speed*(cos(angle*(M_PI/180)));
+                    double x_move=move_speed*(cos(angle*(ENGINE_MATH_PI/180)));
 
                     if(x_move<0.0){
                         render_angle=x_move+air_velocity*8;

@@ -564,14 +564,14 @@ void Actor::handle_collision_springs(short solidity){
                     y=springy.y+adjust_y-h;
                 }
                 else if(vector_springs[i].direction==RIGHT_UP){
-                    run_speed=vector_springs[i].speed*(cos(45.0*(M_PI/180)));
-                    air_velocity=vector_springs[i].speed*-(sin(45.0*(M_PI/180)));
+                    run_speed=vector_springs[i].speed*(cos(45.0*(ENGINE_MATH_PI/180)));
+                    air_velocity=vector_springs[i].speed*-(sin(45.0*(ENGINE_MATH_PI/180)));
                     x=springy.x+adjust_x+springy.w+adjust_w;
                     y=springy.y+adjust_y-h;
                 }
                 else if(vector_springs[i].direction==LEFT_UP){
-                    run_speed=vector_springs[i].speed*(cos(135.0*(M_PI/180)));
-                    air_velocity=vector_springs[i].speed*-(sin(135.0*(M_PI/180)));
+                    run_speed=vector_springs[i].speed*(cos(135.0*(ENGINE_MATH_PI/180)));
+                    air_velocity=vector_springs[i].speed*-(sin(135.0*(ENGINE_MATH_PI/180)));
                     x=springy.x+adjust_x-w;
                     y=springy.y+adjust_y-h;
                 }
@@ -580,14 +580,14 @@ void Actor::handle_collision_springs(short solidity){
                     y=springy.y+adjust_y+springy.h+adjust_h;
                 }
                 else if(vector_springs[i].direction==RIGHT_DOWN){
-                    run_speed=vector_springs[i].speed*(cos(45.0*(M_PI/180)));
-                    air_velocity=vector_springs[i].speed*(sin(45.0*(M_PI/180)));
+                    run_speed=vector_springs[i].speed*(cos(45.0*(ENGINE_MATH_PI/180)));
+                    air_velocity=vector_springs[i].speed*(sin(45.0*(ENGINE_MATH_PI/180)));
                     x=springy.x+adjust_x+springy.w+adjust_w;
                     y=springy.y+adjust_y+springy.h+adjust_h;
                 }
                 else if(vector_springs[i].direction==LEFT_DOWN){
-                    run_speed=vector_springs[i].speed*(cos(135.0*(M_PI/180)));
-                    air_velocity=vector_springs[i].speed*(sin(135.0*(M_PI/180)));
+                    run_speed=vector_springs[i].speed*(cos(135.0*(ENGINE_MATH_PI/180)));
+                    air_velocity=vector_springs[i].speed*(sin(135.0*(ENGINE_MATH_PI/180)));
                     x=springy.x+adjust_x-w;
                     y=springy.y+adjust_y+springy.h+adjust_h;
                 }

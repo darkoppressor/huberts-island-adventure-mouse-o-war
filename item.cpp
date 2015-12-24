@@ -371,7 +371,7 @@ double Item::get_target_direction(double target_x,double target_y,double target_
         x_component*=-1;
     }
 
-    target_angle=atan2(y_component,x_component)*(180/M_PI);
+    target_angle=atan2(y_component,x_component)*(180/ENGINE_MATH_PI);
 
     if(rotation_target_y>(y+h/2-player.camera_y)){
         target_angle=180+(180-target_angle);
@@ -459,8 +459,8 @@ void Item::move(){
                 }
 
                 //Move.
-                x+=suck_chunk*(cos(angle*(M_PI/180)));
-                y+=suck_chunk*-(sin(angle*(M_PI/180)));
+                x+=suck_chunk*(cos(angle*(ENGINE_MATH_PI/180)));
+                y+=suck_chunk*-(sin(angle*(ENGINE_MATH_PI/180)));
 
                 //If we still have pixels left to move.
                 if(i!=0){

@@ -364,8 +364,7 @@ bool Profile::save_profile_list(){
     string save_name=get_home_directory()+"profiles/profile_list.cfg";
     save.open(save_name.c_str());
 
-    if(save!=NULL){
-
+    if(save.is_open()){
         save<<profile_list.size();
         save<<"\n";
 
@@ -520,7 +519,7 @@ bool Profile::save_map(){
             string save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/map.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 for(int y=0;y<level.level_y/TILE_SIZE;y++){
                     for(int x=0;x<level.level_x/TILE_SIZE;x++){
                         save << current_level_map_data[x][y];
@@ -593,7 +592,7 @@ bool Profile::save_level_properties(){
             string save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/level_properties.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 save<<player.current_sub_level;
                 save<<"\n";
                 save<<player.level_beaten;
@@ -772,7 +771,7 @@ bool Profile::save_level_data(){
                     save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
                     save.open(save_name.c_str());
 
-                    if(save!=NULL){
+                    if(save.is_open()){
                         bool collected=false;
 
                         for(int i=0;i<vector_items.size();i++){
@@ -800,7 +799,7 @@ bool Profile::save_level_data(){
                     save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/doors.blazesave";
                     save.open(save_name.c_str());
 
-                    if(save!=NULL){
+                    if(save.is_open()){
                         bool opened=false;
 
                         for(int i=0;i<vector_doors.size();i++){
@@ -850,7 +849,7 @@ bool Profile::save_level_data(){
                         y=player.world_y[player.current_level];
                     }
 
-                    if(save!=NULL){
+                    if(save.is_open()){
                         save<<x;
                         save<<"\n";
                         save<<y;
@@ -958,7 +957,7 @@ bool Profile::save_inventory(){
             string name="";
             window_inventory[0].drop_dragged_item();
 
-            if(save!=NULL){
+            if(save.is_open()){
                 save<<player.leaves;
                 save<<"\n";
                 save<<player.cheese;
@@ -1078,7 +1077,7 @@ bool Profile::save_stats(){
             string save_name=get_home_directory()+"profiles/"+player.name+"/stats.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 save<<player.stat_enemies_stunned;
                 save<<"\n";
                 save<<player.stat_triggers_shot;
@@ -1175,7 +1174,7 @@ bool Profile::save_achievements(){
             string save_name=get_home_directory()+"profiles/"+player.name+"/achievements.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 for(int i=0;i<ACHIEVEMENT_END;i++){
                     save<<player.achievements[i];
                     save<<"\n";
@@ -1238,7 +1237,7 @@ bool Profile::save_boss_states(){
             string save_name=get_home_directory()+"profiles/"+player.name+"/bosses.blazesave";
             save.open(save_name.c_str());
 
-            if(save!=NULL){
+            if(save.is_open()){
                 for(int i=0;i<=LAST_LEVEL;i++){
                     save<<player.bosses[i];
                     save<<"\n";
@@ -1384,7 +1383,7 @@ void Profile::reset_ammo_barrels(){
                             string save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/items.blazesave";
                             save.open(save_name.c_str());
 
-                            if(save!=NULL){
+                            if(save.is_open()){
                                 bool collected=false;
 
                                 for(int i=0;i<temp_items.size();i++){
@@ -1455,7 +1454,7 @@ void Profile::reset_level_beaten(){
                     string save_name=get_home_directory()+"profiles/"+player.name+"/saves/"+current_level+"/level_properties.blazesave";
                     save.open(save_name.c_str());
 
-                    if(save!=NULL){
+                    if(save.is_open()){
                         save<<current_sub_level;
                         save<<"\n";
                         save<<level_beaten;
@@ -1482,7 +1481,7 @@ bool Profile::save_mp_players(){
         string save_name=get_home_directory()+"profiles/"+player.name+"/mp_players.blazesave";
         save.open(save_name.c_str());
 
-        if(save!=NULL){
+        if(save.is_open()){
             save<<player.mp_player_count;
             save<<"\n";
 
@@ -1600,7 +1599,7 @@ bool Profile::save_shop(){
         string save_name=get_home_directory()+"profiles/"+player.name+"/shop.blazesave";
         save.open(save_name.c_str());
 
-        if(save!=NULL){
+        if(save.is_open()){
             save<<player.shop_upgrades.size();
             save<<"\n";
             for(int i=0;i<player.shop_upgrades.size();i++){
@@ -1667,7 +1666,7 @@ bool Profile::save_upgrades(){
         string save_name=get_home_directory()+"profiles/"+player.name+"/upgrades.blazesave";
         save.open(save_name.c_str());
 
-        if(save!=NULL){
+        if(save.is_open()){
             save<<player.upgrades.size();
             save<<"\n";
             for(map<string,bool>::iterator it=player.upgrades.begin();it!=player.upgrades.end();it++){

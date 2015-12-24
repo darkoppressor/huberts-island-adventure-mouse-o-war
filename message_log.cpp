@@ -26,7 +26,7 @@ void update_error_log(string message,bool allow_save){
         //Append this message to the error log.
         string save_location=profile.get_home_directory()+"error_log.txt";
         ofstream save_log(save_location.c_str(),ifstream::app);
-        if(save_log!=NULL){
+        if(save_log.is_open()){
             save_log<<message<<"\n";
 
             save_log.close();
@@ -53,7 +53,7 @@ void update_survival_log(string message,bool multiplayer){
     //Append this message to the error log.
     string save_location=profile.get_home_directory()+log_file;
     ofstream save_log(save_location.c_str(),ifstream::app);
-    if(save_log!=NULL){
+    if(save_log.is_open()){
         save_log<<message<<"\n\n";
 
         save_log.close();

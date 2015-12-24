@@ -321,7 +321,7 @@ bool options_save(){
         string current_version="";
         ss.clear();ss.str("");ss<<Version::MAJOR;ss<<".";ss<<Version::MINOR;ss<<".";ss<<Version::MICRO;current_version=ss.str();
 
-        if(save!=NULL){
+        if(save.is_open()){
             save<<current_version;
             save<<"\n";
             save<<player.option_fps;
@@ -538,7 +538,7 @@ bool global_options_save(){
     string save_name=profile.get_home_directory()+"global_options.cfg";
     save.open(save_name.c_str());
 
-    if(save!=NULL){
+    if(save.is_open()){
         save<<"//Sets the fullscreen mode to use.\n//Note that this does not toggle between fullscreen and windowed. It sets the method of making the window fullscreen.\n";
         save<<"//standard - Attempts to make the window fullscreen.\n//windowed - The window remains windowed, but is stretched to the screen dimensions, and the titlebar is removed.\n//desktop - attempts to match the desktop mode.\n//Default: windowed"<<"\n";
         save<<"fullscreen mode:"<<player.option_fullscreen_mode<<"\n\n";
@@ -637,7 +637,7 @@ bool save_location_save(){
     string save_name="save_location.cfg";
     save.open(save_name.c_str());
 
-    if(save!=NULL){
+    if(save.is_open()){
         save<<"//Sets the save location to use for user data.\n";
         save<<"//0 - Local. Saves in the game directory.\n//1 - Home. Saves in:";
         save<<"\n//Windows (Full Game) - <$USERPROFILE>/My Documents/My Games/huberts-island-adventure-mouse-o-war";
