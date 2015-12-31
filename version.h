@@ -9,7 +9,7 @@ namespace Version{
 	//Build date
 	static const char YEAR[]="2015";
 	static const char MONTH[]="12";
-	static const char DAY[]="24";
+	static const char DAY[]="30";
 
 	//Version
 	static const int MAJOR=1;
@@ -17,7 +17,7 @@ namespace Version{
 	static const int MICRO=0;
 
 	//Status
-	static const char STATUS[] = "rc2";
+	static const char STATUS[] = "";
 }
 
 #endif

@@ -1,8 +1,8 @@
-1.5.0 - 2015/12/24
+1.5.0 - 2015/12/30
  - Updated compiler/libraries/build system (primarily upgraded to SDL2)
  - Fixed game sound cutting out in Linux
  - Fixed game crashing in Linux
- - Attempted fix of game freezing on close
+ - Fixed game freezing on close
  - Removed profile system
  - Ported the game to Android
  - Added touch controller

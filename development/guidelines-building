@@ -1,0 +1,7 @@
+The full Cheesy Build System Version 3 build script will mostly work
+
+Exceptions:
+Be sure that save_location.cfg is set to the default, as it differs from what the script understands
+The normal.xcf icon image needs to be placed in development/images/icons/standard.xcf
+The version needs to be updated everywhere
+Also, the game code needs to handle the new version
