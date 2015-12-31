@@ -105,8 +105,10 @@ void Player::handle_command_event(short command){
                 //Close all windows except this one.
                 window_manager.close_windows(&window_map[0]);
 
-                profile.save_profile_global_data();
-                profile.save_level_data();
+                if(!window_map[0].return_on()){
+                    profile.save_profile_global_data();
+                    profile.save_level_data();
+                }
 
                 //Center the map camera on the player.
                 window_map[0].set_map_level(current_level,current_sub_level);
