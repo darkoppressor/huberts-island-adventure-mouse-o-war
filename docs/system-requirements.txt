@@ -2,6 +2,10 @@ Windows
 OS: XP / Vista / 7 / 8 / 8.1 / 10 or newer
 Architecture: x86 / x86_64
 
+Android
+OS: 2.3.3 Gingerbread (API level 10) or newer
+Architecture: armeabi / armeabi-v7a / x86
+
 OS X
 OS: 10.7 Lion / 10.8 Mountain Lion / 10.9 Mavericks / 10.10 Yosemite or newer
 Architecture: x86_64
