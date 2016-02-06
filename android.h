@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 #ifdef GAME_OS_ANDROID
+    #include "message_log.h"
+    
     #include <SDL.h>
     #include <jni.h>
 #endif
