@@ -19,6 +19,7 @@ profiles/**
 /*.dll
 /*.depend
 /*.cscope_file_list
+/*.layout
 /*.save
 
 *Thumbs.db

@@ -29,13 +29,14 @@ using namespace std;
 #ifdef GAME_OS_ANDROID
     //This block of code was taken from SDL_android_main.c
     //I was having trouble compiling that file along with the game code to create the library for Android
-    //Simply copying that code here seems to fix things...
+    //In SDL2 2.0.3, simply copying that code here seemed to fix things...
+    //In SDL2 2.0.4, copying the same relevant code was a disaster, so I created this amalgam of the two
     extern "C"{
         /* Called before SDL_main() to initialize JNI bindings in SDL library */
         extern void SDL_Android_Init(JNIEnv* env, jclass cls);
 
         /* Start up the SDL app */
-        void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject obj)
+        JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject obj)
         {
             /* This interface could expand with ABI negotiation, calbacks, etc. */
             SDL_Android_Init(env, cls);
@@ -43,14 +44,21 @@ using namespace std;
             SDL_SetMainReady();
 
             /* Run the application code! */
-            int status;
             char *argv[2];
-            argv[0] = SDL_strdup("SDL_app");
+            /* Use the name "app_process" so PHYSFS_platformCalcBaseDir() works.
+               https://bitbucket.org/MartinFelis/love-android-sdl2/issue/23/release-build-crash-on-start
+             */
+            argv[0] = SDL_strdup("app_process");
             argv[1] = NULL;
-            status = SDL_main(1, argv);
+            int status = SDL_main(1, argv);
+
+            /* Release the argument. */
+            SDL_free(argv[0]);
 
             /* Do not issue an exit or the whole application will terminate instead of just the SDL thread */
             /* exit(status); */
+
+            return status;
         }
     }
 #endif
