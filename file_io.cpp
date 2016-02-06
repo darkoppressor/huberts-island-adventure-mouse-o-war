@@ -323,9 +323,14 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
         return false;
     }
 
-    void File_IO::create_directory(string path){
-        if(!exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0){
+    bool File_IO::create_directory(string path){
+        if(!exists(path) && mkdir(path.c_str(),S_IRWXU|S_IRWXG|S_IRWXO)!=0){
             update_error_log("Error creating directory '"+path+"': "+num_to_string(errno),false);
+
+			return false;
+        }
+        else{
+            return true;
         }
     }
 
@@ -341,7 +346,7 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
             }
         }
         else{
-            update_error_log("Error renaming file; '"+old_path+"' is not a regular file",false);
+            update_error_log("Error renaming file: '"+old_path+"' is not a regular file",false);
 
             return false;
         }
@@ -387,7 +392,7 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
             }
         }
         else{
-            update_error_log("Error copying file; '"+old_path+"' is not a regular file",false);
+            update_error_log("Error copying file: '"+old_path+"' is not a regular file",false);
 
             return false;
         }
@@ -405,13 +410,13 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
                 }
             }
             else{
-                update_error_log("Error removing file; '"+path+"' is not a regular file",false);
+                update_error_log("Error removing file: '"+path+"' is not a regular file",false);
 
                 return false;
             }
         }
         else{
-            update_error_log("Error removing file; '"+path+"' does not exist",false);
+            update_error_log("Error removing file: '"+path+"' does not exist",false);
 
             return false;
         }
@@ -607,19 +612,78 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
     }
 #else
     bool File_IO::exists(string path){
-        return boost::filesystem::exists(path);
+        try{
+            return boost::filesystem::exists(path);
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error checking existence of '"+path+"': "+error_message,false);
+
+            return false;
+        }
+        catch(...){
+            update_error_log("Error checking existence of '"+path+"'",false);
+
+            return false;
+        }
     }
 
     bool File_IO::is_directory(string path){
-        return boost::filesystem::is_directory(path);
+        try{
+            return boost::filesystem::is_directory(path);
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error checking directory status of '"+path+"': "+error_message,false);
+
+            return false;
+        }
+        catch(...){
+            update_error_log("Error checking directory status of '"+path+"'",false);
+
+            return false;
+        }
     }
 
     bool File_IO::is_regular_file(string path){
-        return boost::filesystem::is_regular_file(path);
+        try{
+            return boost::filesystem::is_regular_file(path);
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error checking regular file status of '"+path+"': "+error_message,false);
+
+            return false;
+        }
+        catch(...){
+            update_error_log("Error checking regular file status of '"+path+"'",false);
+
+            return false;
+        }
     }
 
-    void File_IO::create_directory(string path){
-        boost::filesystem::create_directory(path);
+    bool File_IO::create_directory(string path){
+        try{
+            if(!boost::filesystem::create_directory(path)){
+                update_error_log("Error creating directory '"+path+"': boost::filesystem::create_directory returned false",false);
+
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error creating directory '"+path+"': "+error_message,false);
+
+            return false;
+        }
+        catch(...){
+            update_error_log("Error creating directory '"+path+"'",false);
+
+            return false;
+        }
     }
 
     bool File_IO::rename_file(string old_path,string new_path){
@@ -666,7 +730,7 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
             }
         }
         else{
-            update_error_log("Error copying file; '"+old_path+"' is not a regular file",false);
+            update_error_log("Error copying file: '"+old_path+"' is not a regular file",false);
 
             return false;
         }
@@ -675,20 +739,40 @@ bool File_IO::save_atomic(string path,string data,bool backup,bool append,bool b
     }
 
     bool File_IO::remove_file(string path){
-        bool remove_result=boost::filesystem::remove(path);
+        try{
+            if(!boost::filesystem::remove(path)){
+                update_error_log("Error removing file: '"+path+"' does not exist",false);
 
-        if(!remove_result){
-            update_error_log("Error removing file; '"+path+"' does not exist",false);
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error removing file '"+path+"': "+error_message,false);
 
             return false;
         }
-        else{
-            return true;
+        catch(...){
+            update_error_log("Error removing file '"+path+"'",false);
+
+            return false;
         }
     }
 
     void File_IO::remove_directory(string path){
-        boost::filesystem::remove_all(path);
+        try{
+            boost::filesystem::remove_all(path);
+        }
+        catch(boost::filesystem::filesystem_error e){
+            string error_message=e.what();
+            update_error_log("Error removing directory '"+path+"': "+error_message,false);
+        }
+        catch(...){
+            update_error_log("Error removing directory '"+path+"'",false);
+        }
     }
 
     string File_IO::get_file_name(string path){

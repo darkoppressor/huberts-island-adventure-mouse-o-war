@@ -302,10 +302,6 @@ int main(int argc,char* args[]){
 
     #ifdef GAME_OS_ANDROID
         Android::initialize();
-
-        if(!File_IO::external_storage_available()){
-            return 1;
-        }
     #endif
 
     time_t seconds;
@@ -319,7 +315,9 @@ int main(int argc,char* args[]){
         return 1;
     }
 
-    profile.make_directories();
+    if(!profile.make_directories()){
+        return 1;
+    }
 
     //If there is no player name, create a default profile
     //I added this to basically remove the profile system from the game

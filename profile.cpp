@@ -25,6 +25,8 @@ Profile::Profile(){
     fov_radius_map=10;
 
     version_mismatch=false;
+
+    save_location_fallback=false;
 }
 
 void Profile::correct_slashes(string* str_input){
@@ -32,7 +34,7 @@ void Profile::correct_slashes(string* str_input){
 }
 
 string Profile::get_home_directory(){
-    string str_home="";
+    string str_home="./";
     string game_name="huberts-island-adventure-mouse-o-war";
 
     #ifdef GAME_DEMO
@@ -40,48 +42,94 @@ string Profile::get_home_directory(){
     #endif
 
     if(option_save_location==SAVE_LOCATION_HOME){
-        #ifdef GAME_OS_WINDOWS
-            str_home=getenv("USERPROFILE");
-            str_home+="/My Documents/My Games/";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
+        string pref_path=str_home;
 
-        #ifdef GAME_OS_LINUX
-            str_home=getenv("HOME");
-            str_home+="/.";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
+        char* ptr_pref_path=SDL_GetPrefPath("cheese-and-bacon-games",game_name.c_str());
 
-        #ifdef GAME_OS_OSX
-            FSRef fsref;
-            OSType folder_type=kApplicationSupportFolderType;
-            char path[PATH_MAX];
-            FSFindFolder(kUserDomain,folder_type,kCreateFolder,&fsref);
-            FSRefMakePath(&fsref,(uint8_t*)&path,PATH_MAX);
+        bool pref_path_loaded=false;
 
-            str_home=path;
-            str_home+="/";
-            str_home+=game_name;
-            str_home+="/";
-        #endif
+        if(ptr_pref_path!=0){
+            pref_path=SDL_strdup(ptr_pref_path);
 
-        #ifdef GAME_OS_ANDROID
-            if(File_IO::external_storage_available()){
-                const char* external_path=SDL_AndroidGetExternalStoragePath();
+            SDL_free(ptr_pref_path);
 
-                if(external_path!=0){
-                    str_home=external_path;
-                    str_home+="/";
+            pref_path_loaded=true;
+        }
+        else{
+            msg="Error getting pref path: ";
+            msg+=SDL_GetError();
+            update_error_log(msg,false);
+        }
+
+        if(pref_path_loaded){
+            save_location_fallback=false;
+
+            str_home=pref_path;
+        }
+        else{
+            save_location_fallback=true;
+
+            #ifdef GAME_OS_WINDOWS
+                str_home=getenv("USERPROFILE");
+                str_home+="/My Documents/My Games/";
+                str_home+=game_name;
+                str_home+="/";
+            #endif
+
+            #ifdef GAME_OS_LINUX
+                str_home=getenv("HOME");
+                str_home+="/.";
+                str_home+=game_name;
+                str_home+="/";
+            #endif
+
+            #ifdef GAME_OS_OSX
+                FSRef fsref;
+                OSType folder_type=kApplicationSupportFolderType;
+                char path[PATH_MAX];
+                FSFindFolder(kUserDomain,folder_type,kCreateFolder,&fsref);
+                FSRefMakePath(&fsref,(uint8_t*)&path,PATH_MAX);
+
+                str_home=path;
+                str_home+="/";
+                str_home+=game_name;
+                str_home+="/";
+            #endif
+
+            #ifdef GAME_OS_ANDROID
+                bool using_external_storage=false;
+
+                if(File_IO::external_storage_available()){
+                    const char* external_path=SDL_AndroidGetExternalStoragePath();
+
+                    if(external_path!=0){
+                        str_home=external_path;
+                        str_home+="/";
+
+                        using_external_storage=true;
+                    }
+                    else{
+                        msg="Error getting external storage path: ";
+                        msg+=SDL_GetError();
+                        update_error_log(msg,false);
+                    }
                 }
-                else{
-                    msg="Error getting external storage path: ";
-                    msg+=SDL_GetError();
-                    update_error_log(msg);
+
+                if(!using_external_storage){
+                    const char* internal_path=SDL_AndroidGetInternalStoragePath();
+
+                    if(internal_path!=0){
+                        str_home=internal_path;
+                        str_home+="/";
+                    }
+                    else{
+                        msg="Error getting internal storage path: ";
+                        msg+=SDL_GetError();
+                        update_error_log(msg,false);
+                    }
                 }
-            }
-        #endif
+            #endif
+        }
 
         correct_slashes(&str_home);
     }
@@ -92,12 +140,14 @@ string Profile::get_home_directory(){
 void Profile::make_home_directory(){
     if(option_save_location==SAVE_LOCATION_HOME){
         #ifdef GAME_OS_WINDOWS
-            string str_my_games=getenv("USERPROFILE");
-            str_my_games+="/My Documents/My Games";
+            if(save_location_fallback){
+                string str_my_games=getenv("USERPROFILE");
+                str_my_games+="/My Documents/My Games";
 
-            correct_slashes(&str_my_games);
+                correct_slashes(&str_my_games);
 
-            File_IO::create_directory(str_my_games);
+                File_IO::create_directory(str_my_games);
+            }
         #endif
 
         string str_home=get_home_directory();
@@ -111,10 +161,52 @@ void Profile::make_home_directory(){
     }
 }
 
-void Profile::make_directories(){
+bool Profile::check_save_location(){
+    if(option_save_location==SAVE_LOCATION_HOME){
+        string test=get_home_directory()+"test";
+
+        if(File_IO::create_directory(test)){
+            File_IO::remove_directory(test);
+
+            return true;
+        }
+        else{
+            //Fallback to the local save location
+            option_save_location=SAVE_LOCATION_LOCAL;
+
+            update_error_log("Error using save location 'home': Save test failed on directory '"+test+"'",false);
+        }
+    }
+
+    if(option_save_location==SAVE_LOCATION_LOCAL){
+        string test=get_home_directory()+"test";
+
+        if(File_IO::create_directory(test)){
+            File_IO::remove_directory(test);
+
+            return true;
+        }
+        else{
+            update_error_log("Error using save location 'local': Save test failed on directory '"+test+"'",false);
+
+            return false;
+        }
+    }
+    else{
+        update_error_log("Error using save location '"+num_to_string(option_save_location)+"': Save location type not recognized",false);
+
+        return false;
+    }
+}
+
+bool Profile::make_directories(){
     string temp="";
 
     make_home_directory();
+
+    if(!check_save_location()){
+        return false;
+    }
 
     File_IO::create_directory(get_home_directory()+"profiles");
     File_IO::create_directory(get_home_directory()+"profiles/backups");
@@ -143,6 +235,8 @@ void Profile::make_directories(){
             File_IO::create_directory(temp);
         }
     }
+
+    return true;
 }
 
 void Profile::delete_profile(int profile_to_delete){

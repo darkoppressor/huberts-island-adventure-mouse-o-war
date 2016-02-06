@@ -45,8 +45,12 @@ class Profile{
     //Create the home directory.
     void make_home_directory();
 
+    //Returns false if there is no valid save location
+    bool check_save_location();
+
     //Create the entire needed directory structure.
-    void make_directories();
+    //Returns false if the directory structure could not be created
+    bool make_directories();
 
     //Delete the passed profile.
     void delete_profile(int profile_to_delete);
@@ -167,6 +171,8 @@ class Profile{
     //If true, we just prevented loading a profile due to a version mismatch.
     //If false, ignore this.
     bool version_mismatch;
+
+    bool save_location_fallback;
 };
 
 #endif
