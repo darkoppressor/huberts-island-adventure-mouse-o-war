@@ -5,6 +5,7 @@
 #include "world.h"
 #include "collision.h"
 #include "counters.h"
+#include "button_events.h"
 
 using namespace std;
 
