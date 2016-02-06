@@ -139,6 +139,8 @@ string Profile::get_home_directory(){
 
 void Profile::make_home_directory(){
     if(option_save_location==SAVE_LOCATION_HOME){
+        string str_home=get_home_directory();
+
         #ifdef GAME_OS_WINDOWS
             if(save_location_fallback){
                 string str_my_games=getenv("USERPROFILE");
@@ -149,8 +151,6 @@ void Profile::make_home_directory(){
                 File_IO::create_directory(str_my_games);
             }
         #endif
-
-        string str_home=get_home_directory();
 
         //Remove the ending slash.
         str_home.erase(str_home.length()-1,1);
