@@ -401,7 +401,7 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
 
         //Physics:
 
-        max_speed=6.0;
+        max_speed=5.0;
         FLYING=true;
 
         //AI:
@@ -558,7 +558,7 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
 
         //Physics:
 
-        max_speed=5.5;
+        max_speed=4.5;
 
         //AI:
 
@@ -1212,7 +1212,7 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
 
         //Physics:
 
-        max_speed=6.0;
+        max_speed=5.0;
         FLYING=true;
 
         //AI:
