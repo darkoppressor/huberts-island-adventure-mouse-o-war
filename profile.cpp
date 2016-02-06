@@ -61,6 +61,10 @@ string Profile::get_home_directory(){
             update_error_log(msg,false);
         }
 
+        ///QQQ Not going to use the SDL_GetPrefPath location right now,
+        ///because everyone who has played already would have their saves in two places...
+        pref_path_loaded=false;
+
         if(pref_path_loaded){
             save_location_fallback=false;
 
