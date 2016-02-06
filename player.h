@@ -359,6 +359,10 @@ class Player: public Actor{
     //Returns false if the current game mode is singleplayer.
     bool game_mode_is_multiplayer();
 
+    //Returns true if the current game mode is adventure.
+    //Returns false if the current game mode is adventure.
+    bool game_mode_is_adventure();
+
     //Returns true if all human-controlled players are dead.
     bool all_humans_dead();
 

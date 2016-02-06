@@ -1209,13 +1209,25 @@ void Actor::finish_events(){
     }
 
     //Keep the actor in the level map's bounds.
-    if(x<0){
-        x=0;
 
-        //The actor has bumped into a wall, so stop moving.
-        run_speed=0.0;
-        moving_platform_x=0.0;
+    if(!is_player || !player.game_mode_is_adventure()){
+        if(x<0){
+            x=0;
+
+            //The actor has bumped into a wall, so stop moving.
+            run_speed=0.0;
+            moving_platform_x=0.0;
+        }
     }
+    else{
+        if(x+w<0){
+            button_event_return_to_world_map(0,0);
+
+            return;
+        }
+    }
+
+
     if(x+w>level.level_x){
         x=level.level_x-w;
 

@@ -4748,6 +4748,18 @@ bool Player::game_mode_is_multiplayer(){
     return multiplayer;
 }
 
+bool Player::game_mode_is_adventure(){
+    bool adventure=false;
+
+    if(game_in_progress){
+        if(game_mode==GAME_MODE_SP_ADVENTURE || game_mode==GAME_MODE_MP_ADVENTURE){
+            adventure=true;
+        }
+    }
+
+    return adventure;
+}
+
 bool Player::all_humans_dead(){
     bool all_dead=true;
 
