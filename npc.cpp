@@ -418,7 +418,7 @@ Npc::Npc(double get_x,double get_y,short get_type,bool make_traps){
         special_attack_range_y=8;
         special_attack_below_only=true;
         special_attack_frequency=600;
-        special_attack_pause_length=15;
+        special_attack_pause_length=30;
         special_attack_give_up_time=180;
     }
     //Replicator
