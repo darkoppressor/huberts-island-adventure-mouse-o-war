@@ -7,14 +7,14 @@
 namespace Version{
 
 	//Build date
-	static const char YEAR[]="2015";
-	static const char MONTH[]="12";
-	static const char DAY[]="30";
+	static const char YEAR[]="2016";
+	static const char MONTH[]="02";
+	static const char DAY[]="06";
 
 	//Version
 	static const int MAJOR=1;
 	static const int MINOR=5;
-	static const int MICRO=0;
+	static const int MICRO=1;
 
 	//Status
 	static const char STATUS[] = "";
