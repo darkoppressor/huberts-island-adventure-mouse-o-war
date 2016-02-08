@@ -33,11 +33,20 @@ struct Spawn_Coords{
 
 class Profile{
     private:
+
+    std::string CURRENT_WORKING_DIRECTORY;
+
     public:
     Profile();
 
     //Change any incorrect slashes to the correct type.
     void correct_slashes(std::string* str_input);
+
+    //Sets CURRENT_WORKING_DIRECTORY to the (absolute if possible) path to the current working directory
+    void set_cwd();
+
+    //Returns a string with the path to the (absolute if possible) current save location
+    std::string get_save_directory_absolute();
 
     //Returns a string with the home directory.
     std::string get_home_directory();

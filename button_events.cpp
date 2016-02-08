@@ -12,6 +12,13 @@
 
 using namespace std;
 
+void button_event_show_data_location(Window* parent_window,int special_data){
+    //Close windows.
+    window_manager.close_windows(0);
+
+    vector_windows[WINDOW_SHOW_DATA_LOCATION].turn_on();
+}
+
 //****************//
 // Open a window: //
 //****************//

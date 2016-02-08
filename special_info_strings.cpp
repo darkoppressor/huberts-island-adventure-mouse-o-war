@@ -1132,6 +1132,36 @@ special_info_return_data set_special_info_string(short special_info){
         ss.clear();ss.str("");ss<<"Bouncing About";text=ss.str();
         break;
 
+    case SPECIAL_INFO_SHOW_DATA_LOCATION:
+        string save_path=profile.get_save_directory_absolute();
+
+        vector<string> lines;
+        uint32_t spacing_x=font.spacing_x;
+        uint32_t window_width=760;
+
+        while(save_path.length()*spacing_x>window_width){
+            uint32_t i=window_width/spacing_x;
+            lines.push_back(string(save_path,0,i));
+            save_path.erase(save_path.begin(),save_path.begin()+i);
+        }
+
+        if(save_path.length()>0){
+            lines.push_back(save_path);
+        }
+
+        save_path="";
+
+        for(size_t i=0;i<lines.size();i++){
+            save_path+=lines[i];
+
+            if(i<lines.size()-1){
+                save_path+="\n";
+            }
+        }
+
+        text="Your save data is located here:\n\n"+save_path;
+        break;
+
     }
 
     special_info_return_data return_data;

@@ -1031,6 +1031,10 @@ void create_windows(){
     y_position+=30;
     vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,y_position,"",msg,&button_event_open_window_options_keys_3,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
 
+    msg="Save Location";
+    button_sound=10-1;
+    vector_windows[vector_windows.size()-1].create_button(15,window_height-back_button_space,"",msg,&button_event_show_data_location,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
+
     msg="Back to Main Menu";
     button_sound=11-1;
     vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,window_height-back_button_space,"",msg,&button_event_open_window_main_menu,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
@@ -2248,4 +2252,18 @@ void create_windows(){
     msg="Back to Game Mode Select";
     button_sound=12-1;
     vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,window_height-back_button_space,"",msg,&button_event_open_window_select_game_mode,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
+
+    //*********************//
+    // Show Data Location: //
+    //*********************//
+
+    window_width=800;
+    window_height=600;
+    vector_windows.push_back(Window(0,0,window_width,window_height,"",NO_SPECIAL_INPUT));
+
+    vector_windows[vector_windows.size()-1].create_information(15,40,"","",0,SPECIAL_INFO_SHOW_DATA_LOCATION);
+
+    msg="OK";
+    button_sound=12-1;
+    vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,window_height-back_button_space,"",msg,&button_event_close_window,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
 }

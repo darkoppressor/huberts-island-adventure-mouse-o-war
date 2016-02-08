@@ -6,6 +6,8 @@
 
 #include "window.h"
 
+void button_event_show_data_location(Window* parent_window,int special_data);
+
 //Open the corresponding window.
 void button_event_open_window_main_menu(Window* parent_window,int special_data);
 void button_event_open_window_inventory(Window* parent_window,int special_data);

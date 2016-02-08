@@ -22,6 +22,8 @@
 using namespace std;
 
 Profile::Profile(){
+    CURRENT_WORKING_DIRECTORY="./";
+
     fov_radius_map=10;
 
     version_mismatch=false;
@@ -31,6 +33,37 @@ Profile::Profile(){
 
 void Profile::correct_slashes(string* str_input){
     boost::algorithm::replace_all(*str_input,"\\","/");
+}
+
+void Profile::set_cwd(){
+    string cwd="./";
+
+    char* base_path=SDL_GetBasePath();
+
+    if(base_path!=0){
+        cwd=SDL_strdup(base_path);
+
+        SDL_free(base_path);
+    }
+    else{
+        msg="Error getting base path: ";
+        msg+=SDL_GetError();
+        update_error_log(msg,false);
+    }
+
+    correct_slashes(&cwd);
+
+    CURRENT_WORKING_DIRECTORY=cwd;
+}
+
+string Profile::get_save_directory_absolute(){
+    string save_path=get_home_directory();
+
+    if(save_path=="./"){
+        save_path=CURRENT_WORKING_DIRECTORY;
+    }
+
+    return save_path;
 }
 
 string Profile::get_home_directory(){

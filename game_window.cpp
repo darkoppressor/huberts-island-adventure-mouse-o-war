@@ -462,6 +462,8 @@ bool Game_Window::pre_initialize(){
             return false;
         }
 
+        profile.set_cwd();
+
         pre_initialized=true;
 
         return true;

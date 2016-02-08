@@ -639,13 +639,7 @@ bool save_location_save(){
 
     if(save.is_open()){
         save<<"//Sets the save location to use for user data.\n";
-        save<<"//0 - Local. Saves in the game directory.\n//1 - Home. Saves in:";
-        save<<"\n//Windows (Full Game) - <$USERPROFILE>/My Documents/My Games/huberts-island-adventure-mouse-o-war";
-        save<<"\n//Windows (Demo) - <$USERPROFILE>/My Documents/My Games/huberts-island-adventure-mouse-o-war-demo";
-        save<<"\n//Linux (Full Game) - <$HOME>/.huberts-island-adventure-mouse-o-war";
-        save<<"\n//Linux (Demo) - <$HOME>/.huberts-island-adventure-mouse-o-war-demo";
-        save<<"\n//OS X (Full Game) - /Users/<your name>/Library/Application Support/huberts-island-adventure-mouse-o-war";
-        save<<"\n//OS X (Demo) - /Users/<your name>/Library/Application Support/huberts-island-adventure-mouse-o-war-demo";
+        save<<"//0 - Local. Saves in the game directory.\n//1 - Home. Saves in a user-specific directory.";
         save<<"\n//Default: 1\n";
         save<<"save location:"<<option_save_location<<"\n\n";
 
