@@ -1314,7 +1314,7 @@ void Player::move(){
                         hint=true;
 
                         string tooltip_text="Press 'up' to read signs.";
-                        tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*12)/2.0,40);
+                        tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
 
                         break;
                     }
@@ -1329,7 +1329,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to use levers.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*12)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
 
                                 break;
                             }
@@ -1337,7 +1337,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to use the Shoppe-O-Matic.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*12)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
 
                                 break;
                             }
@@ -1345,7 +1345,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to configure your purchased toys.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*12)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
 
                                 break;
                             }
