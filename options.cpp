@@ -138,7 +138,7 @@ bool options_version_compatible(string name_to_check){
     else{
         update_error_log("Failed to load profile version!");
 
-        return false;
+        return true;
     }
 
     int major=0;
