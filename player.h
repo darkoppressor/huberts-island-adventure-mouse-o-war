@@ -120,7 +120,7 @@ class Player: public Actor{
     void handle_input_events();
 
     //When a command event occurs, it calls this function to actually execute the command.
-    void handle_command_event(short command);
+    void handle_command_event(short command,bool command_is_axis=false);
 
     void handle_tracers();
 
@@ -328,6 +328,9 @@ class Player: public Actor{
 
     //Returns whether or not the passed command is currently being given.
     bool command_state(short command);
+
+    void reset_gui_axis_nav_command(short command);
+    void reset_gui_axis_nav();
 
     //Returns a string with the name of the input bound to the passed command.
     std::string command_bound_input(short command,short player_index);
@@ -599,6 +602,8 @@ class Player: public Actor{
 
     //Player_Mp inputs.
     std::vector< std::vector<Input_Data> > mp_keys;
+
+    std::string gui_axis_nav_last_direction;
 
     //Stats:
     unsigned long stat_enemies_stunned;

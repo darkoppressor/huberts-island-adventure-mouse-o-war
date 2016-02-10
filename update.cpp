@@ -103,6 +103,8 @@ void input(){
         }
     }
 
+    player.reset_gui_axis_nav();
+
     hud_buttons_handle_input_states();
 
     window_inventory[0].handle_input_states();

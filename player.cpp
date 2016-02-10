@@ -155,6 +155,8 @@ void Player::reset(){
         mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(i,3);
     }
 
+    gui_axis_nav_last_direction="none";
+
     input_already_bound=-1;
     input_already_bound_player=-1;
     command_to_set=-1;

@@ -32,7 +32,7 @@ void Player::prepare_for_input(){
     set_solid_above();
 }
 
-void Player::handle_command_event(short command){
+void Player::handle_command_event(short command,bool command_is_axis){
     short current_window=window_manager.which_window_open();
     Window* ptr_window=NULL;
     if(current_window==WHICH_WINDOW_INVENTORY){
@@ -447,9 +447,11 @@ void Player::handle_command_event(short command){
         }
         break;
 
-    case COMMAND_UP: case COMMAND_LEFT:
+    case COMMAND_UP:
         //If a window is open.
-        if(ptr_window!=NULL){
+        if(ptr_window!=NULL && (!command_is_axis || gui_axis_nav_last_direction!="up")){
+            gui_axis_nav_last_direction="up";
+
             if(command_state(COMMAND_LOOK)){
                 if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
                     if(--window_setup_survival[0].level_list_selection<0){
@@ -490,51 +492,49 @@ void Player::handle_command_event(short command){
             }
         }
         else{
-            if(command==COMMAND_UP){
-                if(!LOOKING){
-                    //As long as the game is not paused and is in progress.
-                    if(!pause && game_in_progress && !bubble_mode){
-                        //If the current level is not the world map.
-                        if(!on_worldmap() && !DYING){
-                            bool trigger_used=false;
+            if(!LOOKING){
+                //As long as the game is not paused and is in progress.
+                if(!pause && game_in_progress && !bubble_mode){
+                    //If the current level is not the world map.
+                    if(!on_worldmap() && !DYING){
+                        bool trigger_used=false;
 
-                            for(int i=0;i<vector_triggers.size();i++){
-                                if(fabs(vector_triggers[i].x-x)<PROCESS_RANGE && fabs(vector_triggers[i].y-y)<PROCESS_RANGE){
-                                    //If the trigger is active, its user type is the player, and it is manually activated.
-                                    if(vector_triggers[i].active && !vector_triggers[i].trigger_method){
-                                        if(collision_check(x,y,w,h,vector_triggers[i].x,vector_triggers[i].y,vector_triggers[i].w,vector_triggers[i].h)){
-                                            vector_triggers[i].use();
-                                            play_positional_sound(sound_system.trigger_click,vector_triggers[i].x,vector_triggers[i].y);
+                        for(int i=0;i<vector_triggers.size();i++){
+                            if(fabs(vector_triggers[i].x-x)<PROCESS_RANGE && fabs(vector_triggers[i].y-y)<PROCESS_RANGE){
+                                //If the trigger is active, its user type is the player, and it is manually activated.
+                                if(vector_triggers[i].active && !vector_triggers[i].trigger_method){
+                                    if(collision_check(x,y,w,h,vector_triggers[i].x,vector_triggers[i].y,vector_triggers[i].w,vector_triggers[i].h)){
+                                        vector_triggers[i].use();
+                                        play_positional_sound(sound_system.trigger_click,vector_triggers[i].x,vector_triggers[i].y);
 
-                                            if(vector_triggers[i].render_trigger!=0){
-                                                stat_levers_pulled++;
-                                            }
-
-                                            trigger_used=true;
-                                            break;
+                                        if(vector_triggers[i].render_trigger!=0){
+                                            stat_levers_pulled++;
                                         }
+
+                                        trigger_used=true;
+                                        break;
                                     }
                                 }
                             }
+                        }
 
-                            if(!trigger_used){
-                                for(int i=0;i<vector_signs.size();i++){
-                                    if(fabs(vector_signs[i].x-x)<PROCESS_RANGE && fabs(vector_signs[i].y-y)<PROCESS_RANGE){
-                                        if(collision_check(x,y,w,h,vector_signs[i].x,vector_signs[i].y,SIGN_W,SIGN_H)){
-                                            short font_type=vector_signs[i].font_type;
-                                            if(translator && font_type!=0){
-                                                font_type=0;
+                        if(!trigger_used){
+                            for(int i=0;i<vector_signs.size();i++){
+                                if(fabs(vector_signs[i].x-x)<PROCESS_RANGE && fabs(vector_signs[i].y-y)<PROCESS_RANGE){
+                                    if(collision_check(x,y,w,h,vector_signs[i].x,vector_signs[i].y,SIGN_W,SIGN_H)){
+                                        short font_type=vector_signs[i].font_type;
+                                        if(translator && font_type!=0){
+                                            font_type=0;
 
-                                                play_positional_sound(sound_system.item_collect_translator,x,y);
-                                            }
-                                            else{
-                                                play_positional_sound(sound_system.read_sign,x,y);
-                                            }
-
-                                            window_message[0].set_message("",vector_signs[i].message,font_type);
-
-                                            break;
+                                            play_positional_sound(sound_system.item_collect_translator,x,y);
                                         }
+                                        else{
+                                            play_positional_sound(sound_system.read_sign,x,y);
+                                        }
+
+                                        window_message[0].set_message("",vector_signs[i].message,font_type);
+
+                                        break;
                                     }
                                 }
                             }
@@ -545,9 +545,11 @@ void Player::handle_command_event(short command){
         }
         break;
 
-    case COMMAND_DOWN: case COMMAND_RIGHT:
+    case COMMAND_DOWN:
         //If a window is open.
-        if(ptr_window!=NULL){
+        if(ptr_window!=NULL && (!command_is_axis || gui_axis_nav_last_direction!="down")){
+            gui_axis_nav_last_direction="down";
+
             if(command_state(COMMAND_LOOK)){
                 if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
                     if(++window_setup_survival[0].level_list_selection==window_setup_survival[0].levels.size()){
@@ -1189,6 +1191,27 @@ bool Player::command_state(short command){
     return false;
 }
 
+void Player::reset_gui_axis_nav_command(short command){
+    if(keys[command].type==INPUT_TYPE_JOYSTICK_AXIS){
+        for(int i=0;i<joystick.size();i++){
+            if(SDL_JoystickGetAttached(joystick[i].joy) && i==keys[command].which_joystick){
+                Sint16 axis_value=SDL_JoystickGetAxis(joystick[i].joy,keys[command].joy_axis);
+
+                if(axis_value>=JOYSTICK_NEUTRAL_NEGATIVE && axis_value<=JOYSTICK_NEUTRAL_POSITIVE){
+                    gui_axis_nav_last_direction="none";
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Player::reset_gui_axis_nav(){
+    reset_gui_axis_nav_command(COMMAND_UP);
+    reset_gui_axis_nav_command(COMMAND_DOWN);
+}
+
 string Player::command_bound_input(short command,short player_index){
     string string_to_return="None";
 
@@ -1495,11 +1518,11 @@ void Player::handle_input_events(){
             else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==SDL_JoystickInstanceID(joystick_ptr)){
                 if(event.jaxis.axis==keys[i].joy_axis){
                     if(!keys[i].joy_axis_direction && event.jaxis.value<JOYSTICK_NEUTRAL_NEGATIVE){
-                        handle_command_event(i);
+                        handle_command_event(i,true);
                         return;
                     }
                     else if(keys[i].joy_axis_direction && event.jaxis.value>JOYSTICK_NEUTRAL_POSITIVE){
-                        handle_command_event(i);
+                        handle_command_event(i,true);
                         return;
                     }
                 }
