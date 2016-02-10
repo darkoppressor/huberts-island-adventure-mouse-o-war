@@ -5269,40 +5269,40 @@ string Player::get_upgrade_description(string upgrade){
 
 uint64_t Player::get_upgrade_cost(string upgrade){
     if(upgrade=="monkeys"){
-        return 32000;
+        return 16000;
     }
     else if(upgrade=="infinite_jumps"){
-        return 128000;
+        return 64000;
     }
     /**else if(upgrade=="tiny_baddies"){
-        return 38400;
+        return 19200;
     }*/
     else if(upgrade=="player_shot_noclip"){
-        return 89600;
+        return 44800;
     }
     else if(upgrade=="xray_specs"){
-        return 48000;
+        return 24000;
     }
     else if(upgrade=="tophats"){
-        return 25600;
+        return 12800;
     }
     else if(upgrade=="candy_amount_1"){
-        return 38400;
+        return 19200;
     }
     else if(upgrade=="candy_amount_2"){
-        return 89600;
+        return 44800;
     }
     else if(upgrade=="candy_amount_3"){
-        return 160000;
+        return 80000;
     }
     else if(upgrade=="candy_drop"){
-        return 48000;
+        return 24000;
     }
     else if(upgrade=="candy_vac"){
-        return 32000;
+        return 16000;
     }
     else if(upgrade=="ammo_amount"){
-        return 38400;
+        return 19200;
     }
     else{
         return 0;
