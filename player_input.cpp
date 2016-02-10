@@ -27,6 +27,12 @@ bool Player::keystate(SDL_Scancode button){
 }
 
 void Player::prepare_for_input(){
+    if(returning_to_worldmap){
+        returning_to_worldmap=false;
+
+        button_event_return_to_world_map(0,0);
+    }
+
     crouching_at_frame_start=CROUCHING;
 
     set_solid_above();

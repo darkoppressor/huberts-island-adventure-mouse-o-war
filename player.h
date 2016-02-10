@@ -473,6 +473,9 @@ class Player: public Actor{
     //Is the player currently trying to enter a level on the world map?
     bool worldmap_enter_level;
 
+    //Is the player currently trying to return to the world map?
+    bool returning_to_worldmap;
+
     //The world map the player is currently on.
     short current_worldmap;
 

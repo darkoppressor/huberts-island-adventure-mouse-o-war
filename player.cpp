@@ -204,6 +204,8 @@ void Player::reset(){
 
     worldmap_enter_level=false;
 
+    returning_to_worldmap=false;
+
     x=0;
     y=0;
     facing=0;

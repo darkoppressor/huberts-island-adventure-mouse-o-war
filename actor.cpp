@@ -5,7 +5,6 @@
 #include "world.h"
 #include "collision.h"
 #include "counters.h"
-#include "button_events.h"
 
 using namespace std;
 
@@ -1222,7 +1221,7 @@ void Actor::finish_events(){
     }
     else{
         if(x+w<0){
-            button_event_return_to_world_map(0,0);
+            player.returning_to_worldmap=true;
 
             return;
         }
