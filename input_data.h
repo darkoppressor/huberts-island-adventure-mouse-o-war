@@ -4,6 +4,8 @@
 #ifndef input_data_h
 #define input_data_h
 
+#include <string>
+
 #include <SDL.h>
 
 class Input_Data{
@@ -17,6 +19,12 @@ class Input_Data{
     void set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_hat_direction);
     void set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_joy_ball_direction);
 
+    void reset_axis_last_direction();
+    void set_axis_last_direction_up();
+    void set_axis_last_direction_down();
+    bool was_axis_last_direction_up();
+    bool was_axis_last_direction_down();
+
     static Uint8 joy_instance_to_index(SDL_JoystickID instance_id);
 
     short type;
@@ -29,6 +37,8 @@ class Input_Data{
     short joy_hat_direction;
     Uint8 joy_ball;
     short joy_ball_direction;
+
+    std::string axis_last_direction;
 };
 
 #endif

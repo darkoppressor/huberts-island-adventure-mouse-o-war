@@ -26,6 +26,8 @@ Input_Data::Input_Data(SDL_Scancode get_key){
     joy_ball=NULL;
 
     joy_ball_direction=NONE;
+
+    axis_last_direction="none";
 }
 
 Input_Data::Input_Data(){
@@ -48,6 +50,8 @@ Input_Data::Input_Data(){
     joy_ball=NULL;
 
     joy_ball_direction=NONE;
+
+    axis_last_direction="none";
 }
 
 void Input_Data::set_joy_button(Uint8 get_joystick,Uint8 get_joy_button){
@@ -70,6 +74,8 @@ void Input_Data::set_joy_button(Uint8 get_joystick,Uint8 get_joy_button){
     joy_ball=NULL;
 
     joy_ball_direction=NONE;
+
+    axis_last_direction="none";
 }
 
 void Input_Data::set_joy_axis(Uint8 get_joystick,Uint8 get_joy_axis,bool get_joy_axis_direction){
@@ -92,6 +98,8 @@ void Input_Data::set_joy_axis(Uint8 get_joystick,Uint8 get_joy_axis,bool get_joy
     joy_ball=NULL;
 
     joy_ball_direction=NONE;
+
+    axis_last_direction="none";
 }
 
 void Input_Data::set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_hat_direction){
@@ -114,6 +122,8 @@ void Input_Data::set_joy_hat(Uint8 get_joystick,Uint8 get_joy_hat,short get_joy_
     joy_ball=NULL;
 
     joy_ball_direction=NONE;
+
+    axis_last_direction="none";
 }
 
 void Input_Data::set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_joy_ball_direction){
@@ -136,6 +146,40 @@ void Input_Data::set_joy_ball(Uint8 get_joystick,Uint8 get_joy_ball,short get_jo
     joy_ball=get_joy_ball;
 
     joy_ball_direction=get_joy_ball_direction;
+
+    axis_last_direction="none";
+}
+
+void Input_Data::reset_axis_last_direction(){
+    if(type==INPUT_TYPE_JOYSTICK_AXIS){
+        for(int i=0;i<joystick.size();i++){
+            if(SDL_JoystickGetAttached(joystick[i].joy) && i==which_joystick){
+                Sint16 axis_value=SDL_JoystickGetAxis(joystick[i].joy,joy_axis);
+
+                if(axis_value>=JOYSTICK_NEUTRAL_NEGATIVE && axis_value<=JOYSTICK_NEUTRAL_POSITIVE){
+                    axis_last_direction="none";
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Input_Data::set_axis_last_direction_up(){
+    axis_last_direction="up";
+}
+
+void Input_Data::set_axis_last_direction_down(){
+    axis_last_direction="down";
+}
+
+bool Input_Data::was_axis_last_direction_up(){
+    return axis_last_direction=="up";
+}
+
+bool Input_Data::was_axis_last_direction_down(){
+    return axis_last_direction=="down";
 }
 
 Uint8 Input_Data::joy_instance_to_index(SDL_JoystickID instance_id){

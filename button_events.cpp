@@ -481,154 +481,31 @@ void button_event_option_hardware_cursor(Window* parent_window,int special_data)
 }
 
 void button_event_default_keys_keyboard(Window* parent_window,int special_data){
-    player.keys.clear();
-    player.keys.push_back(Input_Data(SDL_SCANCODE_F10));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_I));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_M));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_F5));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_LEFT));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_UP));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_RIGHT));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_DOWN));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_L));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_RCTRL));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_SPACE));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_RSHIFT));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_PAUSE));
-    player.keys.push_back(Input_Data(SDL_SCANCODE_SLASH));
+    player.default_keys_keyboard();
 
     options_save();
 }
 
 void button_event_default_keys_1_keyboard(Window* parent_window,int special_data){
-    int player_index=0;
-
-    player.mp_keys[player_index].clear();
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_A));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_W));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_D));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_S));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_E));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_C));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_Q));
+    player.default_mp_keys_keyboard(0);
 
     options_save();
 }
 
 void button_event_default_keys_2_keyboard(Window* parent_window,int special_data){
-    int player_index=1;
-
-    player.mp_keys[player_index].clear();
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_H));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_U));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_K));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_J));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_G));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_B));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_Y));
+    player.default_mp_keys_keyboard(1);
 
     options_save();
 }
 
 void button_event_default_keys_3_keyboard(Window* parent_window,int special_data){
-    int player_index=2;
-
-    player.mp_keys[player_index].clear();
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_1));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_5));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_3));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_2));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_4));
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_0));
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data());
-    player.mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_6));
+    player.default_mp_keys_keyboard(2);
 
     options_save();
 }
 
 void button_event_default_keys_joystick(int player_index,int joystick_num){
-    if(player_index==-1){
-        player.keys.clear();
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,6);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,4);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,9);
-        player.keys.push_back(Input_Data());
-        ///player.keys[player.keys.size()-1].set_joy_axis(joystick_num,2,0);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_axis(joystick_num,0,0);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_axis(joystick_num,1,0);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_axis(joystick_num,0,1);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_axis(joystick_num,1,1);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,5);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,0);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,2);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,1);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,7);
-        player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_button(joystick_num,3);
-    }
-    else{
-        player.mp_keys[player_index].clear();
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,6);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,4);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,9);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_axis(-1,2,0);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_axis(joystick_num,0,0);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_axis(joystick_num,1,0);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_axis(joystick_num,0,1);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_axis(joystick_num,1,1);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,5);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(joystick_num,0);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(joystick_num,2);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,1);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(-1,7);
-        player.mp_keys[player_index].push_back(Input_Data());
-        player.mp_keys[player_index][player.mp_keys[player_index].size()-1].set_joy_button(joystick_num,3);
-    }
+    player.default_keys_joystick(player_index,joystick_num);
 
     options_save();
 }

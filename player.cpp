@@ -104,58 +104,14 @@ void Player::reset(){
     special_count_shots_this_level=0;
     special_count_kills_this_level=0;
 
-    //Note that commands must be setup here in the same order as command identifiers are setup in the enum in enumerations.h.
-    keys.clear();
-    keys.push_back(Input_Data(SDL_SCANCODE_F10));
-    keys.push_back(Input_Data(SDL_SCANCODE_I));
-    keys.push_back(Input_Data(SDL_SCANCODE_M));
-    keys.push_back(Input_Data(SDL_SCANCODE_F5));
-    keys.push_back(Input_Data(SDL_SCANCODE_LEFT));
-    keys.push_back(Input_Data(SDL_SCANCODE_UP));
-    keys.push_back(Input_Data(SDL_SCANCODE_RIGHT));
-    keys.push_back(Input_Data(SDL_SCANCODE_DOWN));
-    keys.push_back(Input_Data(SDL_SCANCODE_L));
-    keys.push_back(Input_Data(SDL_SCANCODE_RCTRL));
-    keys.push_back(Input_Data(SDL_SCANCODE_SPACE));
-    keys.push_back(Input_Data(SDL_SCANCODE_RSHIFT));
-    keys.push_back(Input_Data(SDL_SCANCODE_PAUSE));
-    keys.push_back(Input_Data(SDL_SCANCODE_SLASH));
+    default_keys_keyboard();
 
     mp_keys.clear();
     for(int i=0;i<3;i++){
         mp_keys.push_back(vector<Input_Data>());
 
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,6);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,4);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,9);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(-1,2,0);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,0,0);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,1,0);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,0,1);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_axis(i,1,1);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,5);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(i,0);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(i,2);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,1);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(-1,7);
-        mp_keys[mp_keys.size()-1].push_back(Input_Data());
-        mp_keys[mp_keys.size()-1][mp_keys[mp_keys.size()-1].size()-1].set_joy_button(i,3);
+        default_keys_joystick(i,i);
     }
-
-    gui_axis_nav_last_direction="none";
 
     input_already_bound=-1;
     input_already_bound_player=-1;
@@ -332,6 +288,145 @@ void Player::reset(){
         mp_level_properties.push_back(Level_Properties());
         mp_level_properties[mp_level_properties.size()-1].current_sub_level=0;
         mp_level_properties[mp_level_properties.size()-1].level_beaten=false;
+    }
+}
+
+void Player::default_keys_keyboard(){
+    //Note that commands must be setup here in the same order as command identifiers are setup in the enum in enumerations.h.
+    keys.clear();
+
+    keys.push_back(Input_Data(SDL_SCANCODE_F10));
+    keys.push_back(Input_Data(SDL_SCANCODE_I));
+    keys.push_back(Input_Data(SDL_SCANCODE_M));
+    keys.push_back(Input_Data(SDL_SCANCODE_F5));
+    keys.push_back(Input_Data(SDL_SCANCODE_A));
+    keys.push_back(Input_Data(SDL_SCANCODE_W));
+    keys.push_back(Input_Data(SDL_SCANCODE_D));
+    keys.push_back(Input_Data(SDL_SCANCODE_S));
+    keys.push_back(Input_Data(SDL_SCANCODE_L));
+    keys.push_back(Input_Data(SDL_SCANCODE_SPACE));
+    keys.push_back(Input_Data(SDL_SCANCODE_RETURN));
+    keys.push_back(Input_Data(SDL_SCANCODE_C));
+    keys.push_back(Input_Data(SDL_SCANCODE_P));
+    keys.push_back(Input_Data(SDL_SCANCODE_R));
+}
+
+void Player::default_mp_keys_keyboard(int player_index){
+    if(player_index>=0 && player_index<3){
+        mp_keys[player_index].clear();
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+
+        if(player_index==0){
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_LEFT));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_UP));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_RIGHT));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_DOWN));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_RCTRL));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_RSHIFT));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_DELETE));
+        }
+        else if(player_index==1){
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_H));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_U));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_K));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_J));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_B));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_N));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_V));
+        }
+        else if(player_index==2){
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_1));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_5));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_3));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_2));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_4));
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_0));
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data());
+            mp_keys[player_index].push_back(Input_Data(SDL_SCANCODE_KP_6));
+        }
+    }
+}
+
+void Player::default_keys_joystick(int player_index,int joystick_num){
+    if(player_index==-1){
+        keys.clear();
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_hat(joystick_num,0,SDL_HAT_LEFT);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_hat(joystick_num,0,SDL_HAT_RIGHT);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_button(joystick_num,6);
+        keys.push_back(Input_Data());
+        ///QQQ Leave screenshot unbound
+        ///keys[keys.size()-1].set_joy_axis(joystick_num,2,0);
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_axis(joystick_num,0,0);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_axis(joystick_num,1,0);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_axis(joystick_num,0,1);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_axis(joystick_num,1,1);
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_button(joystick_num,4);
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_button(joystick_num,0);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_axis(joystick_num,5,1);
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_hat(joystick_num,0,SDL_HAT_UP);
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_button(joystick_num,7);
+
+        keys.push_back(Input_Data());
+        keys[keys.size()-1].set_joy_button(joystick_num,5);
+    }
+    else if(player_index>=0 && player_index<3){
+        mp_keys[player_index].clear();
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_axis(joystick_num,0,0);
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_axis(joystick_num,1,0);
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_axis(joystick_num,0,1);
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_axis(joystick_num,1,1);
+
+        mp_keys[player_index].push_back(Input_Data());
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_button(joystick_num,0);
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_axis(joystick_num,5,1);
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index].push_back(Input_Data());
+
+        mp_keys[player_index].push_back(Input_Data());
+        mp_keys[player_index][mp_keys[player_index].size()-1].set_joy_button(joystick_num,5);
     }
 }
 
