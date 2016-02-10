@@ -9,7 +9,7 @@ using namespace std;
 
 Touch_Controller::Touch_Controller(){
     touch_controller_xy=true;
-    touch_controller_guide=false;
+    touch_controller_guide=true;
     touch_controller_shoulders=true;
 
     touch_finger_size=4.0;
