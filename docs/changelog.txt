@@ -1,3 +1,11 @@
+1.5.2 - 2016/02/10
+ - Adjusted controller deadzone
+ - Fixed save location being shown on achievements screen
+ - Decreased toy prices
+ - Changed default controls
+ - Fixed controller axis scrolling wildly around menus
+ - Fixed left edge worldmap exit bug
+
 1.5.1 - 2016/02/06
  - Improved error reporting/handling
  - Slowed down some very fast NPCs
