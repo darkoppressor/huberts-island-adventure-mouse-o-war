@@ -635,8 +635,8 @@ enum{
 //**************************//
 
 enum{
-    JOYSTICK_NEUTRAL_NEGATIVE=-8000,
-    JOYSTICK_NEUTRAL_POSITIVE=8000
+    JOYSTICK_NEUTRAL_NEGATIVE=-24000,
+    JOYSTICK_NEUTRAL_POSITIVE=24000
 };
 
 //*************//
