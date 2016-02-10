@@ -576,7 +576,7 @@ void button_event_default_keys_joystick(int player_index,int joystick_num){
         player.keys.push_back(Input_Data());
         player.keys[player.keys.size()-1].set_joy_button(joystick_num,9);
         player.keys.push_back(Input_Data());
-        player.keys[player.keys.size()-1].set_joy_axis(joystick_num,2,0);
+        ///player.keys[player.keys.size()-1].set_joy_axis(joystick_num,2,0);
         player.keys.push_back(Input_Data());
         player.keys[player.keys.size()-1].set_joy_axis(joystick_num,0,0);
         player.keys.push_back(Input_Data());
