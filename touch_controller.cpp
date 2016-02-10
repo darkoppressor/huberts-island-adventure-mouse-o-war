@@ -231,49 +231,49 @@ vector<SDL_Scancode> Touch_Controller::check_for_button_press(float x,float y){
     vector<SDL_Scancode> touch_buttons;
 
     if(Collision::check_circ(circle_touch,dpad_left)){
-        touch_buttons.push_back(SDL_SCANCODE_LEFT);
+        touch_buttons.push_back(SDL_SCANCODE_A);
     }
     else if(Collision::check_circ(circle_touch,dpad_up)){
-        touch_buttons.push_back(SDL_SCANCODE_UP);
+        touch_buttons.push_back(SDL_SCANCODE_W);
     }
     else if(Collision::check_circ(circle_touch,dpad_right)){
-        touch_buttons.push_back(SDL_SCANCODE_RIGHT);
+        touch_buttons.push_back(SDL_SCANCODE_D);
     }
     else if(Collision::check_circ(circle_touch,dpad_down)){
-        touch_buttons.push_back(SDL_SCANCODE_DOWN);
+        touch_buttons.push_back(SDL_SCANCODE_S);
     }
 
     else if(Collision::check_circ(circle_touch,dpad_left_up)){
-        touch_buttons.push_back(SDL_SCANCODE_LEFT);
-        touch_buttons.push_back(SDL_SCANCODE_UP);
+        touch_buttons.push_back(SDL_SCANCODE_A);
+        touch_buttons.push_back(SDL_SCANCODE_W);
     }
     else if(Collision::check_circ(circle_touch,dpad_up_right)){
-        touch_buttons.push_back(SDL_SCANCODE_UP);
-        touch_buttons.push_back(SDL_SCANCODE_RIGHT);
+        touch_buttons.push_back(SDL_SCANCODE_W);
+        touch_buttons.push_back(SDL_SCANCODE_D);
     }
     else if(Collision::check_circ(circle_touch,dpad_right_down)){
-        touch_buttons.push_back(SDL_SCANCODE_RIGHT);
-        touch_buttons.push_back(SDL_SCANCODE_DOWN);
+        touch_buttons.push_back(SDL_SCANCODE_D);
+        touch_buttons.push_back(SDL_SCANCODE_S);
     }
     else if(Collision::check_circ(circle_touch,dpad_down_left)){
-        touch_buttons.push_back(SDL_SCANCODE_DOWN);
-        touch_buttons.push_back(SDL_SCANCODE_LEFT);
+        touch_buttons.push_back(SDL_SCANCODE_S);
+        touch_buttons.push_back(SDL_SCANCODE_A);
     }
 
     else if(touch_controller_xy && Collision::check_circ(circle_touch,main_x)){
-        touch_buttons.push_back(SDL_SCANCODE_SPACE);
+        touch_buttons.push_back(SDL_SCANCODE_RETURN);
     }
     else if(touch_controller_xy && Collision::check_circ(circle_touch,main_y)){
-        touch_buttons.push_back(SDL_SCANCODE_SLASH);
+        touch_buttons.push_back(SDL_SCANCODE_I);
     }
     else if(Collision::check_circ(circle_touch,main_b)){
-        touch_buttons.push_back(SDL_SCANCODE_RSHIFT);
+        touch_buttons.push_back(SDL_SCANCODE_C);
     }
     else if(Collision::check_circ(circle_touch,main_a)){
-        touch_buttons.push_back(SDL_SCANCODE_RCTRL);
+        touch_buttons.push_back(SDL_SCANCODE_SPACE);
     }
 
-    else if(Collision::check_circ(circle_touch,main_x_y)){
+    /**else if(Collision::check_circ(circle_touch,main_x_y)){
         if(touch_controller_xy){
             touch_buttons.push_back(SDL_SCANCODE_SPACE);
             touch_buttons.push_back(SDL_SCANCODE_SLASH);
@@ -294,23 +294,23 @@ vector<SDL_Scancode> Touch_Controller::check_for_button_press(float x,float y){
     else if(touch_controller_xy && Collision::check_circ(circle_touch,main_a_x)){
         touch_buttons.push_back(SDL_SCANCODE_RCTRL);
         touch_buttons.push_back(SDL_SCANCODE_SPACE);
-    }
+    }*/
 
     else if(touch_controller_shoulders && Collision::check_circ(circle_touch,shoulder_left)){
-        touch_buttons.push_back(SDL_SCANCODE_M);
+        touch_buttons.push_back(SDL_SCANCODE_L);
     }
     else if(touch_controller_shoulders && Collision::check_circ(circle_touch,shoulder_right)){
-        touch_buttons.push_back(SDL_SCANCODE_L);
+        touch_buttons.push_back(SDL_SCANCODE_R);
     }
 
     else if(Collision::check_circ_rect(circle_touch,back_button)){
-        touch_buttons.push_back(SDL_SCANCODE_F10);
+        touch_buttons.push_back(SDL_SCANCODE_M);
     }
     else if(Collision::check_circ_rect(circle_touch,start)){
-        touch_buttons.push_back(SDL_SCANCODE_PAUSE);
+        touch_buttons.push_back(SDL_SCANCODE_P);
     }
     else if(touch_controller_guide && Collision::check_circ_rect(circle_touch,guide)){
-        touch_buttons.push_back(SDL_SCANCODE_I);
+        touch_buttons.push_back(SDL_SCANCODE_F10);
     }
 
     return touch_buttons;
