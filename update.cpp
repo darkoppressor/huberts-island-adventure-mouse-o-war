@@ -495,6 +495,8 @@ void animation(){
         //Animate the player.
         //If the player is on the world map.
         if(player.on_worldmap()){
+            player.animate_worldmap_level_rect();
+
             player.worldmap_animate();
 
             for(int i=0;i<mp_players.size();i++){
@@ -887,6 +889,14 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
     }
 
     if(!player.hide_gui && player.game_in_progress){
+        if(player.on_worldmap()){
+            if(tooltip_levelname.on){
+                for(int i=player.worldmap_level_rect_color_numbers.size()-1;i>=0;i--){
+                    render_rectangle_empty(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,return_gui_color(holiday,player.worldmap_level_rect_color_numbers[i]),12.0+i*12.0);
+                }
+            }
+        }
+
         if(!player.game_mode_is_multiplayer()){
             render_sprite(15-5+2,10+2,image.sprite_sheet_items,&sprites_item_ammo[0],1.0,1.0,1.0,0.0,COLOR_BLACK);
             render_sprite(15-5,10,image.sprite_sheet_items,&sprites_item_ammo[0],1.0,1.0,1.0);
@@ -975,7 +985,7 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
                         tooltip_text="Player 1: Press 'shoot' to end the game.";
                     }
 
-                    tooltip_hint.setup(tooltip_text,(player.camera_w-tooltip_text.length()*12)/2.0,40);
+                    tooltip_hint.setup(tooltip_text,(player.camera_w-tooltip_text.length()*font.spacing_x)/2.0,84);
                 }
             }
 

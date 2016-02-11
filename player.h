@@ -152,6 +152,8 @@ class Player: public Actor{
     //Animate the overlays.
     void animate_overlays();
 
+    void animate_worldmap_level_rect();
+
     //Handle camera movement.
     void set_camera();
 
@@ -844,6 +846,9 @@ class Player: public Actor{
 
     //The index of the camera-focused player.
     int camera_focused;
+
+    short counter_worldmap_level_rect;
+    std::vector<short> worldmap_level_rect_color_numbers;
 
     std::vector< std::vector<bool> > mp_level_data_items_collected;
     std::vector< std::vector<bool> > mp_level_data_doors_opened;

@@ -28,6 +28,8 @@ void render_sprite(double x,double y,image_data image_source,SDL_Rect* texture_c
 
 void render_rectangle(double x,double y,double w,double h,double opacity,short color_name);
 
+void render_rectangle_empty(double x,double y,double w,double h,double opacity,short color_name,double line_width);
+
 //Specifically for lighting stuff.
 void render_rectangle(double x,double y,double w,double h,double opacity,color_data colordata);
 

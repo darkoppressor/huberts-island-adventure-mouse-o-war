@@ -261,6 +261,12 @@ void Player::reset(){
     ptr_player_worldmap_footstep=return_character_sound_footstep();
     ptr_player_worldmap_footstep2=return_character_sound_footstep2();
 
+    counter_worldmap_level_rect=0;
+    worldmap_level_rect_color_numbers.clear();
+    worldmap_level_rect_color_numbers.push_back(3);
+    worldmap_level_rect_color_numbers.push_back(1);
+    worldmap_level_rect_color_numbers.push_back(1);
+
     new_game_plus=0;
 
     game_mode=GAME_MODE_SP_ADVENTURE;
@@ -1314,7 +1320,7 @@ void Player::move(){
                         hint=true;
 
                         string tooltip_text="Press 'up' to read signs.";
-                        tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
+                        tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,84);
 
                         break;
                     }
@@ -1329,7 +1335,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to use levers.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,84);
 
                                 break;
                             }
@@ -1337,7 +1343,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to use the Shoppe-O-Matic.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,84);
 
                                 break;
                             }
@@ -1345,7 +1351,7 @@ void Player::move(){
                                 hint=true;
 
                                 string tooltip_text="Press 'up' to configure your purchased toys.";
-                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,40);
+                                tooltip_hint.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,84);
 
                                 break;
                             }
@@ -3827,6 +3833,22 @@ void Player::animate_overlays(){
     }
     for(int i=0;i<overlay_rain.size();i++){
         overlay_rain[i].update(rain_x,rain_y);
+    }
+}
+
+void Player::animate_worldmap_level_rect(){
+    if(++counter_worldmap_level_rect>=25){
+        counter_worldmap_level_rect=0;
+
+        vector<short> new_colors;
+
+        new_colors.push_back(worldmap_level_rect_color_numbers.back());
+
+        for(int i=0;i<worldmap_level_rect_color_numbers.size()-1;i++){
+            new_colors.push_back(worldmap_level_rect_color_numbers[i]);
+        }
+
+        worldmap_level_rect_color_numbers=new_colors;
     }
 }
 

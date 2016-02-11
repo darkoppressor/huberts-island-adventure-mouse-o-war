@@ -161,6 +161,13 @@ void render_rectangle(double x,double y,double w,double h,double opacity,short c
     main_window.render_fill_rect(&rect);
 }
 
+void render_rectangle_empty(double x,double y,double w,double h,double opacity,short color_name,double line_width){
+    render_rectangle(x,y,w,line_width,opacity,color_name);
+    render_rectangle(x,y,line_width,h,opacity,color_name);
+    render_rectangle(x,y+h-line_width,w,line_width,opacity,color_name);
+    render_rectangle(x+w-line_width,y,line_width,h,opacity,color_name);
+}
+
 void render_rectangle(double x,double y,double w,double h,double opacity,color_data colordata){
     main_window.set_render_draw_blend_mode(SDL_BLENDMODE_BLEND);
 

@@ -413,7 +413,7 @@ void Player::worldmap_handle_events(){
                 if(collision_check(x,y,w,h,vector_items[i].x,vector_items[i].y,vector_items[i].w,vector_items[i].h)){
                     if(!tooltip_setup){
                         string tooltip_text=level.return_level_name(vector_items[i].type);
-                        tooltip_levelname.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,0);
+                        tooltip_levelname.setup(tooltip_text,(camera_w-tooltip_text.length()*font.spacing_x)/2.0,48);
 
                         if(option_hints){
                             tooltip_text="Press 'jump' or 'shoot' to enter a level.";
@@ -423,7 +423,7 @@ void Player::worldmap_handle_events(){
                                 tooltip_text+="\n\nVibrant Valley is full of helpful signs!";
                             }
 
-                            tooltip_hint.setup(tooltip_text,x_location,40);
+                            tooltip_hint.setup(tooltip_text,x_location,84);
                         }
 
                         tooltip_setup=true;
