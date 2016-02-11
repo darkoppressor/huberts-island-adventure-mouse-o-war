@@ -1,7 +1,7 @@
 You hold in your hands (or on your hard drive) a fresh, delicious copy of
 				Hubert's Island Adventure: Mouse o' War.
 
-							   Version: 1.5.2
+							   Version: 1.5.3
 
 To ensure you have the latest version of the game, see this link: http://cheeseandbacon.org/huberts-island/updates.php
 

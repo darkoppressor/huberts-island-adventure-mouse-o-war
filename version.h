@@ -14,7 +14,7 @@ namespace Version{
 	//Version
 	static const int MAJOR=1;
 	static const int MINOR=5;
-	static const int MICRO=2;
+	static const int MICRO=3;
 
 	//Status
 	static const char STATUS[] = "";

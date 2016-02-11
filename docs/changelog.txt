@@ -1,3 +1,8 @@
+1.5.3 - 2016/02/10
+ - Fixed missing guide button for touch controller
+ - Fixed centering of hint messages on screen
+ - Added rectangle on worldmap to indicate player is over a level entrance
+
 1.5.2 - 2016/02/10
  - Adjusted controller deadzone
  - Fixed save location being shown on achievements screen

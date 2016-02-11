@@ -165,7 +165,7 @@ bool options_version_compatible(string name_to_check){
     version_series.push_back(Version_Series(1,2,0,1,2,0));
     version_series.push_back(Version_Series(1,3,0,1,3,0));
     version_series.push_back(Version_Series(1,4,0,1,4,0));
-    version_series.push_back(Version_Series(1,5,0,1,5,2));
+    version_series.push_back(Version_Series(1,5,0,1,5,3));
 
     if(options_which_version_series(&version_series,major,minor,micro)!=options_which_version_series(&version_series,current_major,current_minor,current_micro)){
         string error_message="Version incompatibility! The profile '"+name_to_check+"' was started with version "+player.num_to_string(major)+"."+player.num_to_string(minor)+"."+player.num_to_string(micro)+".";
