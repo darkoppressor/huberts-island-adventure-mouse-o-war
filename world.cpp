@@ -2265,5 +2265,5 @@ void create_windows(){
 
     msg="OK";
     button_sound=12-1;
-    vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,window_height-back_button_space,"",msg,&button_event_close_window,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
+    vector_windows[vector_windows.size()-1].create_button((window_width-(msg.length()*font.spacing_x))/2,window_height-back_button_space,"",msg,&button_event_open_window_options,&sound_system.button_mouse_over[button_sound],&sound_system.button_event_fire[button_sound],BUTTON_VISIBLE);
 }
