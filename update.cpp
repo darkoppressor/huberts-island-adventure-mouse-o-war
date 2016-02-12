@@ -890,7 +890,7 @@ void render(int frame_rate,double ms_per_frame,int logic_frame_rate){
 
     if(!player.hide_gui && player.game_in_progress){
         if(player.on_worldmap()){
-            if(tooltip_levelname.on){
+            if(player.option_hints && tooltip_levelname.on){
                 for(int i=player.worldmap_level_rect_color_numbers.size()-1;i>=0;i--){
                     render_rectangle_empty(0,0,main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,1.0,return_gui_color(holiday,player.worldmap_level_rect_color_numbers[i]),12.0+i*12.0);
                 }
