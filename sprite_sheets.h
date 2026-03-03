@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef sprite_sheets_h
@@ -15,9 +15,9 @@
 
 #include <SDL.h>
 
-//Spritesheets:
+// Spritesheets:
 
-//Player:
+// Player:
 extern SDL_Rect sprites_player_worldmap_idle_up[];
 extern SDL_Rect sprites_player_worldmap_idle_down[];
 extern SDL_Rect sprites_player_worldmap_idle_left[];
@@ -81,18 +81,18 @@ extern SDL_Rect sprites_player_death[];
 extern SDL_Rect sprites_player_crouch_right[];
 extern SDL_Rect sprites_player_crouch_left[];
 
-//Powerups:
+// Powerups:
 extern std::vector<SDL_Rect> sprites_powerup_jump;
 
-//Tiles:
+// Tiles:
 extern SDL_Rect sprites_tiles[];
 extern SDL_Rect sprites_water_tiles[];
 extern SDL_Rect worldmap_sprites_tiles[];
 
-//Background Tiles:
+// Background Tiles:
 extern SDL_Rect sprites_tiles_background[];
 
-//Items:
+// Items:
 extern SDL_Rect sprites_item_leaf[];
 extern SDL_Rect sprites_item_cheese[];
 extern SDL_Rect sprites_item_ammo[];
@@ -125,8 +125,8 @@ extern SDL_Rect sprites_item_shot_homing[];
 extern SDL_Rect sprites_item_translator[];
 extern SDL_Rect sprites_item_j_wing[];
 
-//NPCs:
-struct npc_sprite_data{
+// NPCs:
+struct npc_sprite_data {
     std::vector<SDL_Rect> walk_right;
     std::vector<SDL_Rect> walk_left;
 
@@ -147,8 +147,8 @@ struct npc_sprite_data{
 
 extern std::vector<npc_sprite_data> SPRITES_NPC;
 
-//Traps:
-struct trap_sprite_data{
+// Traps:
+struct trap_sprite_data {
     std::vector<SDL_Rect> move;
 
     std::vector<SDL_Rect> idle_active;
@@ -157,52 +157,52 @@ struct trap_sprite_data{
 
 extern std::vector<trap_sprite_data> SPRITES_TRAP;
 
-//Shots:
-struct shot_sprite_data{
+// Shots:
+struct shot_sprite_data {
     std::vector<SDL_Rect> move;
 };
 
 extern std::vector<shot_sprite_data> SPRITES_SHOT;
 
-//Moving Platforms:
+// Moving Platforms:
 extern SDL_Rect sprites_moving_platform_left[];
 extern SDL_Rect sprites_moving_platform_right[];
 extern SDL_Rect sprites_moving_platform_up[];
 extern SDL_Rect sprites_moving_platform_down[];
 extern SDL_Rect sprites_moving_platform_idle[];
 
-//Triggers:
-struct trigger_data{
+// Triggers:
+struct trigger_data {
     std::vector<SDL_Rect> change_states;
 };
 extern std::vector<trigger_data> sprites_triggers;
 
-//Doors:
+// Doors:
 extern SDL_Rect sprites_doors[][NUMBER_OF_DOORS];
 extern SDL_Rect sprites_key_doors[][NUMBER_OF_KEY_DOORS];
 extern SDL_Rect sprites_door_standard[];
 
-//Signs:
+// Signs:
 extern SDL_Rect sprites_signs[];
 
-//Springs:
+// Springs:
 extern SDL_Rect sprites_spring[];
 
-//Boosters:
+// Boosters:
 extern SDL_Rect sprites_booster[];
 
-//Effects:
+// Effects:
 
-//Water Bubble Effect:
+// Water Bubble Effect:
 extern SDL_Rect sprites_effect_water_bubble[];
 
-//Water Splash Effect:
+// Water Splash Effect:
 extern SDL_Rect sprites_effect_water_splash[];
 
-//Survival
+// Survival
 extern std::vector<SDL_Rect> sprites_survival_spawn;
 
-//Interface
+// Interface
 extern std::vector<SDL_Rect> sprites_shot_types;
 extern std::vector<SDL_Rect> sprites_moon;
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "player.h"
@@ -11,1056 +11,1145 @@
 
 using namespace std;
 
-bool Player::mouse_allowed(){
-    if(!touch_controls){
+bool Player::mouse_allowed () {
+    if (!touch_controls) {
         return true;
-    }
-    else{
+    } else {
         return false;
     }
 }
 
-bool Player::keystate(SDL_Scancode button){
-    const uint8_t* keystates=SDL_GetKeyboardState(NULL);
+bool Player::keystate (SDL_Scancode button) {
+    const uint8_t* keystates = SDL_GetKeyboardState(NULL);
 
     return keystates[button] || (touch_controls && touch_controller.check_button_state(button));
 }
 
-void Player::prepare_for_input(){
-    if(returning_to_worldmap){
-        returning_to_worldmap=false;
+void Player::prepare_for_input () {
+    if (returning_to_worldmap) {
+        returning_to_worldmap = false;
 
-        button_event_return_to_world_map(0,0);
+        button_event_return_to_world_map(0, 0);
     }
 
-    crouching_at_frame_start=CROUCHING;
+    crouching_at_frame_start = CROUCHING;
 
     set_solid_above();
 }
 
-void Player::handle_command_event(short command){
-    short current_window=window_manager.which_window_open();
-    Window* ptr_window=NULL;
-    if(current_window==WHICH_WINDOW_INVENTORY){
-        ptr_window=&window_inventory[0];
-    }
-    else if(current_window==WHICH_WINDOW_MAP){
-        ptr_window=&window_map[0];
-    }
-    else if(current_window==WHICH_WINDOW_MESSAGE){
-        ptr_window=&window_message[0];
-    }
-    else if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
-        ptr_window=&window_setup_survival[0];
-    }
-    else if(current_window==WHICH_WINDOW_SHOP){
-        ptr_window=&window_shop[0];
-    }
-    else if(current_window==WHICH_WINDOW_UPGRADES){
-        ptr_window=&window_upgrades[0];
-    }
-    else if(current_window>=WHICH_WINDOW_LEVEL_INFO && current_window<WHICH_WINDOW_OTHER){
-        ptr_window=&windows_level_info[current_window-WHICH_WINDOW_LEVEL_INFO];
-    }
-    else if(current_window>=WHICH_WINDOW_OTHER){
-        ptr_window=&vector_windows[current_window-WHICH_WINDOW_OTHER];
+void Player::handle_command_event (short command) {
+    short current_window = window_manager.which_window_open();
+    Window* ptr_window = NULL;
+
+    if (current_window == WHICH_WINDOW_INVENTORY) {
+        ptr_window = &window_inventory[0];
+    } else if (current_window == WHICH_WINDOW_MAP) {
+        ptr_window = &window_map[0];
+    } else if (current_window == WHICH_WINDOW_MESSAGE) {
+        ptr_window = &window_message[0];
+    } else if (current_window == WHICH_WINDOW_SETUP_SURVIVAL) {
+        ptr_window = &window_setup_survival[0];
+    } else if (current_window == WHICH_WINDOW_SHOP) {
+        ptr_window = &window_shop[0];
+    } else if (current_window == WHICH_WINDOW_UPGRADES) {
+        ptr_window = &window_upgrades[0];
+    } else if (current_window >= WHICH_WINDOW_LEVEL_INFO && current_window < WHICH_WINDOW_OTHER) {
+        ptr_window = &windows_level_info[current_window - WHICH_WINDOW_LEVEL_INFO];
+    } else if (current_window >= WHICH_WINDOW_OTHER) {
+        ptr_window = &vector_windows[current_window - WHICH_WINDOW_OTHER];
     }
 
-    int button_check=0;
-    int last_check=-1;
+    int button_check = 0;
+    int last_check = -1;
 
-    switch(command){
+    switch (command) {
+        case COMMAND_TOGGLE_MAIN_MENU:
 
-    case COMMAND_TOGGLE_MAIN_MENU:
-        //If the game is in progress.
-        if(game_in_progress && !level.return_title_pause()){
-            //Close all windows.
-            window_manager.close_windows(&vector_windows[WINDOW_MAIN_MENU]);
+            // If the game is in progress.
+            if (game_in_progress && !level.return_title_pause()) {
+                // Close all windows.
+                window_manager.close_windows(&vector_windows[WINDOW_MAIN_MENU]);
 
-            window_manager.configure_main_menu();
+                window_manager.configure_main_menu();
 
-            vector_windows[WINDOW_MAIN_MENU].toggle_on();
+                vector_windows[WINDOW_MAIN_MENU].toggle_on();
 
-            window_manager.set_main_menu_current_button();
-        }
-        break;
+                window_manager.set_main_menu_current_button();
+            }
 
-    case COMMAND_TOGGLE_INVENTORY:
-        if(game_mode==GAME_MODE_SP_ADVENTURE || game_mode==GAME_MODE_MP_ADVENTURE){
-            //If the game is in progress.
-            if(game_in_progress && !level.return_title_pause()){
-                //Close all windows.
-                window_manager.close_windows(&window_inventory[0]);
+            break;
 
-                window_inventory[0].toggle_on();
+        case COMMAND_TOGGLE_INVENTORY:
 
-                if(window_inventory[0].return_on()){
-                    play_positional_sound(sound_system.inventory_open);
-                }
-                else{
-                    play_positional_sound(sound_system.inventory_close);
+            if (game_mode == GAME_MODE_SP_ADVENTURE || game_mode == GAME_MODE_MP_ADVENTURE) {
+                // If the game is in progress.
+                if (game_in_progress && !level.return_title_pause()) {
+                    // Close all windows.
+                    window_manager.close_windows(&window_inventory[0]);
+
+                    window_inventory[0].toggle_on();
+
+                    if (window_inventory[0].return_on()) {
+                        play_positional_sound(sound_system.inventory_open);
+                    } else {
+                        play_positional_sound(sound_system.inventory_close);
+                    }
                 }
             }
-        }
-        break;
 
-    case COMMAND_TOGGLE_MAP:
-        if(game_mode==GAME_MODE_SP_ADVENTURE){
-            //If the game is in progress.
-            if(game_in_progress && !level.return_title_pause()){
-                //Close all windows except this one.
-                window_manager.close_windows(&window_map[0]);
+            break;
 
-                if(!window_map[0].return_on()){
-                    profile.save_profile_global_data();
-                    profile.save_level_data();
-                }
+        case COMMAND_TOGGLE_MAP:
 
-                //Center the map camera on the player.
-                window_map[0].set_map_level(current_level,current_sub_level);
-                window_map[0].set_camera_coordinates(x/2.0+(w/2.0-window_map[0].map_camera_w)/2.0,y/2.0+(h/2.0-window_map[0].map_camera_h)/2.0);
+            if (game_mode == GAME_MODE_SP_ADVENTURE) {
+                // If the game is in progress.
+                if (game_in_progress && !level.return_title_pause()) {
+                    // Close all windows except this one.
+                    window_manager.close_windows(&window_map[0]);
 
-                window_map[0].toggle_on();
-
-                if(window_map[0].return_on()){
-                    play_positional_sound(sound_system.map_open);
-                }
-                else{
-                    play_positional_sound(sound_system.map_close);
-                }
-            }
-        }
-        break;
-
-    case COMMAND_SCREENSHOT:
-        main_window.screenshot();
-
-        play_positional_sound(sound_system.camera_lock);
-        break;
-
-    case COMMAND_LOOK:
-        //As long as the game is not paused and is in progress.
-        if(!pause && game_in_progress && !game_mode_is_multiplayer()){
-            //If the current level is not the world map.
-            if(!on_worldmap() && !DYING){
-                //If the player presses the look key and isn't already holding any direction key, in the air, or swimming, toggle look mode.
-                if(!LOOKING && !IN_AIR && !command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)){
-                    //Toggle look mode.
-                    LOOKING=true;
-
-                    play_positional_sound(sound_system.player_look_start);
-                }
-                //If the player presses the look key and isn't already in the air or swimming, toggle look mode.
-                else if(LOOKING){
-                    //Toggle look mode.
-                    LOOKING=false;
-
-                    play_positional_sound(sound_system.player_look_stop);
-                }
-            }
-        }
-        break;
-
-    case COMMAND_JUMP:
-        //If a window is open.
-        if(ptr_window!=NULL){
-            if(window_message[0].return_on()){
-                window_message[0].turn_off();
-            }
-            else{
-                if(current_button!=-1){
-                    int recall_current_button=current_button;
-
-                    ptr_window->buttons[recall_current_button].mouse_button_down();
-                    ptr_window->buttons[recall_current_button].mouse_button_up(ptr_window);
-                    ptr_window->buttons[recall_current_button].reset_clicked();
-                }
-            }
-        }
-        //As long as the game is not paused, and is in progress.
-        else if(!pause && game_in_progress && !bubble_mode){
-            //If the current level is the world map.
-            if(on_worldmap()){
-                //Enter level.
-                worldmap_enter_level=true;
-            }
-            //If the player is in a level.
-            else{
-                //As long as the player isn't dying.
-                if(!DYING){
-                    bool fell_through_cloud=false;
-
-                    //If all the conditions for falling through a cloud are met.
-                    if(command_state(COMMAND_JUMP) && command_state(COMMAND_DOWN) && !IN_AIR && !LOOKING && !SHOOTING && !CLIMBING){
-                        if(on_cloud){
-                            fall_through_cloud();
-                            fell_through_cloud=true;
-                        }
+                    if (!window_map[0].return_on()) {
+                        profile.save_profile_global_data();
+                        profile.save_level_data();
                     }
 
-                    //If all the conditions for a jump are met.
-                    if(!fell_through_cloud && !LOOKING && (cheat_jump || counter_jump_mode>0 || (extra_jumps>0 && ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)) ||
-                                                           ((!IN_AIR || (IN_AIR && counter_jump_mercy>0)) && !jump_state && ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)))){
-                        if(extra_jumps>0 && IN_AIR && counter_jump_mercy==0){
-                            if(!get_upgrade_state("infinite_jumps")){
-                                extra_jumps--;
+                    // Center the map camera on the player.
+                    window_map[0].set_map_level(current_level, current_sub_level);
+                    window_map[0].set_camera_coordinates(x / 2.0 + (w / 2.0 - window_map[0].map_camera_w) / 2.0,
+                                                         y / 2.0 + (h / 2.0 - window_map[0].map_camera_h) / 2.0);
+
+                    window_map[0].toggle_on();
+
+                    if (window_map[0].return_on()) {
+                        play_positional_sound(sound_system.map_open);
+                    } else {
+                        play_positional_sound(sound_system.map_close);
+                    }
+                }
+            }
+
+            break;
+
+        case COMMAND_SCREENSHOT:
+            main_window.screenshot();
+
+            play_positional_sound(sound_system.camera_lock);
+            break;
+
+        case COMMAND_LOOK:
+
+            // As long as the game is not paused and is in progress.
+            if (!pause && game_in_progress && !game_mode_is_multiplayer()) {
+                // If the current level is not the world map.
+                if (!on_worldmap() && !DYING) {
+                    // If the player presses the look key and isn't already holding any direction key, in the air, or
+                    // swimming, toggle look mode.
+                    if (!LOOKING && !IN_AIR && !command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) &&
+                        !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)) {
+                        // Toggle look mode.
+                        LOOKING = true;
+
+                        play_positional_sound(sound_system.player_look_start);
+                    }
+                    // If the player presses the look key and isn't already in the air or swimming, toggle look mode.
+                    else if (LOOKING) {
+                        // Toggle look mode.
+                        LOOKING = false;
+
+                        play_positional_sound(sound_system.player_look_stop);
+                    }
+                }
+            }
+
+            break;
+
+        case COMMAND_JUMP:
+
+            // If a window is open.
+            if (ptr_window != NULL) {
+                if (window_message[0].return_on()) {
+                    window_message[0].turn_off();
+                } else {
+                    if (current_button != -1) {
+                        int recall_current_button = current_button;
+
+                        ptr_window->buttons[recall_current_button].mouse_button_down();
+                        ptr_window->buttons[recall_current_button].mouse_button_up(ptr_window);
+                        ptr_window->buttons[recall_current_button].reset_clicked();
+                    }
+                }
+            }
+            // As long as the game is not paused, and is in progress.
+            else if (!pause && game_in_progress && !bubble_mode) {
+                // If the current level is the world map.
+                if (on_worldmap()) {
+                    // Enter level.
+                    worldmap_enter_level = true;
+                }
+                // If the player is in a level.
+                else {
+                    // As long as the player isn't dying.
+                    if (!DYING) {
+                        bool fell_through_cloud = false;
+
+                        // If all the conditions for falling through a cloud are met.
+                        if (command_state(COMMAND_JUMP) && command_state(COMMAND_DOWN) && !IN_AIR && !LOOKING &&
+                            !SHOOTING && !CLIMBING) {
+                            if (on_cloud) {
+                                fall_through_cloud();
+                                fell_through_cloud = true;
                             }
                         }
 
-                        counter_jump_mercy=0;
-
-                        if(CLIMBING){
-                            CLIMBING=false;
-                            climb_jump_timer=climb_jump_delay;
-                            CLIMBING_JUMP=true;
-                        }
-
-                        jump_state=true;
-
-                        if(!CLIMBING_JUMP){
-                            air_velocity=jump_max*-1;
-                            /**double p_angle=touched_slope_angle;
-                            if((p_angle>=0 && p_angle<=90) || (p_angle>=180 && p_angle<=270)){
-                                p_angle+=90;
+                        // If all the conditions for a jump are met.
+                        if (!fell_through_cloud && !LOOKING &&
+                            (cheat_jump || counter_jump_mode > 0 ||
+                             (extra_jumps > 0 && ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)) ||
+                             ((!IN_AIR || (IN_AIR && counter_jump_mercy > 0)) && !jump_state &&
+                              ((SWIMMING && SWIM_CAN_JUMP) || !SWIMMING)))) {
+                            if (extra_jumps > 0 && IN_AIR && counter_jump_mercy == 0) {
+                                if (!get_upgrade_state("infinite_jumps")) {
+                                    extra_jumps--;
+                                }
                             }
-                            else if((p_angle>90 && p_angle<180) || (p_angle>270 && p_angle<360)){
-                                p_angle-=90;
+
+                            counter_jump_mercy = 0;
+
+                            if (CLIMBING) {
+                                CLIMBING = false;
+                                climb_jump_timer = climb_jump_delay;
+                                CLIMBING_JUMP = true;
                             }
-                            run_speed+=jump_max*(cos(p_angle*(ENGINE_MATH_PI/180)));
-                            air_velocity=jump_max*-(sin(p_angle*(ENGINE_MATH_PI/180)));*/
-                        }
-                        else{
-                            air_velocity=climbing_jump_max*-1;
-                        }
 
-                        //The player has begun a jump, so set them to be in the air.
-                        IN_AIR=true;
-                        frame_jump=0;
+                            jump_state = true;
 
-                        //If the player is under the effect of a J Balloon.
-                        if(counter_jump_mode>0){
-                            play_positional_sound(sound_system.player_jump_j_balloon,x,y);
-                        }
-                        else{
-                            play_positional_sound(*ptr_player_jump,x,y);
-                        }
+                            if (!CLIMBING_JUMP) {
+                                air_velocity = jump_max * -1;
+                                /**double p_angle=touched_slope_angle;
+                                   if((p_angle>=0 && p_angle<=90) || (p_angle>=180 && p_angle<=270)){
+                                    p_angle+=90;
+                                   }
+                                   else if((p_angle>90 && p_angle<180) || (p_angle>270 && p_angle<360)){
+                                    p_angle-=90;
+                                   }
+                                   run_speed+=jump_max*(cos(p_angle*(ENGINE_MATH_PI/180)));
+                                   air_velocity=jump_max*-(sin(p_angle*(ENGINE_MATH_PI/180)));*/
+                            } else {
+                                air_velocity = climbing_jump_max * -1;
+                            }
 
-                        stat_total_jumps++;
+                            // The player has begun a jump, so set them to be in the air.
+                            IN_AIR = true;
+                            frame_jump = 0;
+
+                            // If the player is under the effect of a J Balloon.
+                            if (counter_jump_mode > 0) {
+                                play_positional_sound(sound_system.player_jump_j_balloon, x, y);
+                            } else {
+                                play_positional_sound(*ptr_player_jump, x, y);
+                            }
+
+                            stat_total_jumps++;
+                        }
+                    }
+                }
+            } else if (!pause && game_in_progress && bubble_mode) {
+                if (collision_check(x, y, w, h, camera_x, camera_y, camera_w, camera_h) && in_open_air()) {
+                    bubble_mode = false;
+                    air_velocity = -jump_min * 1.5;
+                    IN_AIR = true;
+                    run_speed = 0.0;
+
+                    // Prevent the constant bubble popping sound if we are moving the camera around with dev controls.
+                    if (cam_state == CAM_STICKY) {
+                        play_positional_sound(sound_system.player_bubble_pop);
                     }
                 }
             }
-        }
-        else if(!pause && game_in_progress && bubble_mode){
-            if(collision_check(x,y,w,h,camera_x,camera_y,camera_w,camera_h) && in_open_air()){
-                bubble_mode=false;
-                air_velocity=-jump_min*1.5;
-                IN_AIR=true;
-                run_speed=0.0;
 
-                //Prevent the constant bubble popping sound if we are moving the camera around with dev controls.
-                if(cam_state==CAM_STICKY){
-                    play_positional_sound(sound_system.player_bubble_pop);
+            break;
+
+        case COMMAND_SHOOT:
+
+            if (game_beginning_cutscene != 0) {
+                hud_buttons[0].mouse_button_down();
+                hud_buttons[0].mouse_button_up(0);
+                hud_buttons[0].reset_clicked();
+            } else if (ptr_window != NULL) {
+                window_manager.close_windows(0);
+
+                if (!game_in_progress) {
+                    vector_windows[WINDOW_MAIN_MENU].turn_on();
+
+                    // As part of the removal of the profile system, this ensures we skip the profile button
+                    player.current_button = 2;
                 }
             }
-        }
-        break;
+            // As long as the game is not paused and is in progress.
+            else if (!pause && game_in_progress && !bubble_mode) {
+                // If the current level is the world map.
+                if (on_worldmap()) {
+                    // Enter level.
+                    worldmap_enter_level = true;
+                }
+                // If the current level is not the world map.
+                else {
+                    // If the shooting key is pressed and the player has ammo.
+                    if (!SWIMMING && !LOOKING && !SHOOTING && !DYING) {
+                        crouch_stop();
 
-    case COMMAND_SHOOT:
-        if(game_beginning_cutscene!=0){
-            hud_buttons[0].mouse_button_down();
-            hud_buttons[0].mouse_button_up(0);
-            hud_buttons[0].reset_clicked();
-        }
-        else if(ptr_window!=NULL){
-            window_manager.close_windows(0);
-            if(!game_in_progress){
-                vector_windows[WINDOW_MAIN_MENU].turn_on();
+                        short shot_cost = 1;
 
-                //As part of the removal of the profile system, this ensures we skip the profile button
-                player.current_button=2;
-            }
-        }
-        //As long as the game is not paused and is in progress.
-        else if(!pause && game_in_progress && !bubble_mode){
-            //If the current level is the world map.
-            if(on_worldmap()){
-                //Enter level.
-                worldmap_enter_level=true;
-            }
-            //If the current level is not the world map.
-            else{
-                //If the shooting key is pressed and the player has ammo.
-                if(!SWIMMING && !LOOKING && !SHOOTING && !DYING){
-                    crouch_stop();
-
-                    short shot_cost=1;
-                    if(current_shot==SHOT_PLAYER){
-                        shot_cost=SHOT_COST_PLAYER;
-                    }
-                    else if(current_shot==SHOT_PLAYER_SPLODE){
-                        shot_cost=SHOT_COST_PLAYER_SPLODE;
-                    }
-                    else if(current_shot==SHOT_PLAYER_HOMING){
-                        shot_cost=SHOT_COST_PLAYER_HOMING;
-                    }
-
-                    //Pretty straightforward. If shoot_state is non-zero, then the player is holding a directional key, so shoot in the corresponding direction and subtract one ammo.
-                    //If the player is not holding any directional keys, shoot in the direction that the player is facing and subtract one ammo.
-                    //An exception is shooting downwards. Shooting down is only allowed while the player is in the air.
-
-                    if(shoot_state==UP){
-                        if(ammo>=shot_cost){
-                            vector_shots.push_back(Shot(x-4,y-13,90,current_shot,false));
-                            ammo-=shot_cost;
-                        }
-                        else{
-                            play_positional_sound(sound_system.player_no_ammo,x,y);
+                        if (current_shot == SHOT_PLAYER) {
+                            shot_cost = SHOT_COST_PLAYER;
+                        } else if (current_shot == SHOT_PLAYER_SPLODE) {
+                            shot_cost = SHOT_COST_PLAYER_SPLODE;
+                        } else if (current_shot == SHOT_PLAYER_HOMING) {
+                            shot_cost = SHOT_COST_PLAYER_HOMING;
                         }
 
-                        //The player is now shooting.
-                        SHOOTING=true;
-                        shoot_render_direction=UP;
-                        //Reset the shooting frame.
-                        frame_shoot=0;
-                        frame_counter_shoot=0;
+                        // Pretty straightforward. If shoot_state is non-zero, then the player is holding a directional
+                        // key, so shoot in the corresponding direction and subtract one ammo.
+                        // If the player is not holding any directional keys, shoot in the direction that the player is
+                        // facing and subtract one ammo.
+                        // An exception is shooting downwards. Shooting down is only allowed while the player is in the
+                        // air.
 
-                        stat_shots_fired++;
-                        special_count_shots_this_level++;
-
-                        //Reset other variables.
-                        frame=0;
-                        frame_counter=0;
-                        shoot_state=0;
-                        look_state=0;
-                    }
-                    else if(shoot_state==DOWN){
-                        if(IN_AIR || CLIMBING){
-                            if(ammo>=shot_cost){
-                                vector_shots.push_back(Shot(x-4,y+h-13,270,current_shot,false));
-                                ammo-=shot_cost;
-                            }
-                            else{
-                                play_positional_sound(sound_system.player_no_ammo,x,y);
+                        if (shoot_state == UP) {
+                            if (ammo >= shot_cost) {
+                                vector_shots.push_back(Shot(x - 4, y - 13, 90, current_shot, false));
+                                ammo -= shot_cost;
+                            } else {
+                                play_positional_sound(sound_system.player_no_ammo, x, y);
                             }
 
-                            //The player is now shooting.
-                            SHOOTING=true;
-                            shoot_render_direction=DOWN;
-                            //Reset the shooting frame.
-                            frame_shoot=0;
-                            frame_counter_shoot=0;
+                            // The player is now shooting.
+                            SHOOTING = true;
+                            shoot_render_direction = UP;
+                            // Reset the shooting frame.
+                            frame_shoot = 0;
+                            frame_counter_shoot = 0;
 
                             stat_shots_fired++;
                             special_count_shots_this_level++;
 
-                            //Reset other variables.
-                            frame=0;
-                            frame_counter=0;
-                            shoot_state=0;
-                            look_state=0;
-                        }
-                    }
-                    else if(facing==LEFT || facing==RIGHT){
-                        //If the player has any ammo remaining.
-                        if(ammo>=shot_cost){
-                            if(facing==LEFT){
-                                vector_shots.push_back(Shot(x-13,y+12,180,current_shot,false));
-                                ammo-=shot_cost;
+                            // Reset other variables.
+                            frame = 0;
+                            frame_counter = 0;
+                            shoot_state = 0;
+                            look_state = 0;
+                        } else if (shoot_state == DOWN) {
+                            if (IN_AIR || CLIMBING) {
+                                if (ammo >= shot_cost) {
+                                    vector_shots.push_back(Shot(x - 4, y + h - 13, 270, current_shot, false));
+                                    ammo -= shot_cost;
+                                } else {
+                                    play_positional_sound(sound_system.player_no_ammo, x, y);
+                                }
+
+                                // The player is now shooting.
+                                SHOOTING = true;
+                                shoot_render_direction = DOWN;
+                                // Reset the shooting frame.
+                                frame_shoot = 0;
+                                frame_counter_shoot = 0;
+
+                                stat_shots_fired++;
+                                special_count_shots_this_level++;
+
+                                // Reset other variables.
+                                frame = 0;
+                                frame_counter = 0;
+                                shoot_state = 0;
+                                look_state = 0;
                             }
-                            else if(facing==RIGHT){
-                                vector_shots.push_back(Shot(x+w-13,y+12,0,current_shot,false));
-                                ammo-=shot_cost;
+                        } else if (facing == LEFT || facing == RIGHT) {
+                            // If the player has any ammo remaining.
+                            if (ammo >= shot_cost) {
+                                if (facing == LEFT) {
+                                    vector_shots.push_back(Shot(x - 13, y + 12, 180, current_shot, false));
+                                    ammo -= shot_cost;
+                                } else if (facing == RIGHT) {
+                                    vector_shots.push_back(Shot(x + w - 13, y + 12, 0, current_shot, false));
+                                    ammo -= shot_cost;
+                                }
+                            } else {
+                                play_positional_sound(sound_system.player_no_ammo, x, y);
                             }
+
+                            // The player is now shooting.
+                            SHOOTING = true;
+
+                            if (facing == LEFT) {
+                                shoot_render_direction = LEFT;
+                            } else if (facing == RIGHT) {
+                                shoot_render_direction = RIGHT;
+                            }
+
+                            // Reset the shooting frame.
+                            frame_shoot = 0;
+                            frame_counter_shoot = 0;
+
+                            stat_shots_fired++;
+                            special_count_shots_this_level++;
+
+                            // Reset other variables.
+                            frame = 0;
+                            frame_counter = 0;
+                            shoot_state = 0;
+                            look_state = 0;
                         }
-                        else{
-                            play_positional_sound(sound_system.player_no_ammo,x,y);
+                    }
+                }
+            }
+
+            if (!pause && game_in_progress && game_mode_is_multiplayer() && !on_worldmap() && all_humans_dead()) {
+                for (int i = 0; i < mp_players.size(); i++) {
+                    if (!mp_players[i].DYING && !mp_players[i].bubble_mode) {
+                        mp_players[i].handle_death(mp_players[i].x, mp_players[i].y, mp_players[i].w, mp_players[i].h,
+                                                   true);
+                    }
+                }
+            }
+
+            break;
+
+        case COMMAND_CHANGE_CHARACTER:
+
+            if (game_in_progress && !game_mode_is_multiplayer()) {
+                toggle_character();
+
+                play_positional_sound(sound_system.player_change_shot, x, y);
+            }
+
+            break;
+
+        case COMMAND_PAUSE:
+
+            if (!level.return_title_pause() && window_manager.which_window_open() == -1) {
+                toggle_pause(!pause);
+
+                if (pause) {
+                    play_positional_sound(sound_system.pause);
+                } else {
+                    play_positional_sound(sound_system.unpause);
+                }
+            }
+
+            break;
+
+        case COMMAND_CHANGE_SHOT:
+
+            if (game_in_progress) {
+                if (!on_worldmap()) {
+                    if (shot_homing) {
+                        if (current_shot == SHOT_PLAYER) {
+                            current_shot = SHOT_PLAYER_HOMING;
+                        } else {
+                            current_shot = SHOT_PLAYER;
                         }
 
-                        //The player is now shooting.
-                        SHOOTING=true;
+                        play_positional_sound(sound_system.player_change_shot, x, y);
+                    } else {
+                        play_positional_sound(sound_system.player_no_ammo, x, y);
+                    }
+                }
+            }
 
-                        if(facing==LEFT){
-                            shoot_render_direction=LEFT;
+            break;
+
+        case COMMAND_UP:
+
+            // If a window is open.
+            if (ptr_window != NULL) {
+                if (command_state(COMMAND_LOOK)) {
+                    if (current_window == WHICH_WINDOW_SETUP_SURVIVAL) {
+                        if (--window_setup_survival[0].level_list_selection < 0) {
+                            window_setup_survival[0].level_list_selection = window_setup_survival[0].levels.size() - 1;
                         }
-                        else if(facing==RIGHT){
-                            shoot_render_direction=RIGHT;
+                    } else if (current_window == WHICH_WINDOW_SHOP) {
+                        if (--window_shop[0].upgrade_list_selection < 0) {
+                            window_shop[0].upgrade_list_selection = window_shop[0].upgrades.size() - 1;
+                        }
+                    } else if (current_window == WHICH_WINDOW_UPGRADES) {
+                        if (--window_upgrades[0].upgrade_list_selection < 0) {
+                            window_upgrades[0].upgrade_list_selection = window_upgrades[0].upgrades.size() - 1;
+                        }
+                    }
+                } else {
+                    if (current_button == -1) {
+                        current_button = ptr_window->buttons.size();
+                    }
+
+                    button_check = current_button;
+                    last_check = -1;
+
+                    do{
+                        if (--button_check < 1) {
+                            button_check = ptr_window->buttons.size() - 1;
                         }
 
-                        //Reset the shooting frame.
-                        frame_shoot=0;
-                        frame_counter_shoot=0;
+                        if (last_check == current_button) {
+                            button_check = current_button;
+                            break;
+                        }
 
-                        stat_shots_fired++;
-                        special_count_shots_this_level++;
+                        last_check = button_check;
+                    }while (!ptr_window->buttons[button_check].enabled);
 
-                        //Reset other variables.
-                        frame=0;
-                        frame_counter=0;
-                        shoot_state=0;
-                        look_state=0;
-                    }
+                    current_button = button_check;
                 }
-            }
-        }
+            } else {
+                if (!LOOKING) {
+                    // As long as the game is not paused and is in progress.
+                    if (!pause && game_in_progress && !bubble_mode) {
+                        // If the current level is not the world map.
+                        if (!on_worldmap() && !DYING) {
+                            bool trigger_used = false;
 
+                            for (int i = 0; i < vector_triggers.size(); i++) {
+                                if (fabs(vector_triggers[i].x - x) < PROCESS_RANGE &&
+                                    fabs(vector_triggers[i].y - y) < PROCESS_RANGE) {
+                                    // If the trigger is active, its user type is the player, and it is manually
+                                    // activated.
+                                    if (vector_triggers[i].active && !vector_triggers[i].trigger_method) {
+                                        if (collision_check(x, y, w, h, vector_triggers[i].x, vector_triggers[i].y,
+                                                            vector_triggers[i].w, vector_triggers[i].h)) {
+                                            vector_triggers[i].use();
+                                            play_positional_sound(sound_system.trigger_click, vector_triggers[i].x,
+                                                                  vector_triggers[i].y);
 
-        if(!pause && game_in_progress && game_mode_is_multiplayer() && !on_worldmap() && all_humans_dead()){
-            for(int i=0;i<mp_players.size();i++){
-                if(!mp_players[i].DYING && !mp_players[i].bubble_mode){
-                    mp_players[i].handle_death(mp_players[i].x,mp_players[i].y,mp_players[i].w,mp_players[i].h,true);
-                }
-            }
-        }
-        break;
+                                            if (vector_triggers[i].render_trigger != 0) {
+                                                stat_levers_pulled++;
+                                            }
 
-    case COMMAND_CHANGE_CHARACTER:
-        if(game_in_progress && !game_mode_is_multiplayer()){
-            toggle_character();
-
-            play_positional_sound(sound_system.player_change_shot,x,y);
-        }
-        break;
-
-    case COMMAND_PAUSE:
-        if(!level.return_title_pause() && window_manager.which_window_open()==-1){
-            toggle_pause(!pause);
-
-            if(pause){
-                play_positional_sound(sound_system.pause);
-            }
-            else{
-                play_positional_sound(sound_system.unpause);
-            }
-        }
-        break;
-
-    case COMMAND_CHANGE_SHOT:
-        if(game_in_progress){
-            if(!on_worldmap()){
-                if(shot_homing){
-                    if(current_shot==SHOT_PLAYER){
-                        current_shot=SHOT_PLAYER_HOMING;
-                    }
-                    else{
-                        current_shot=SHOT_PLAYER;
-                    }
-                    play_positional_sound(sound_system.player_change_shot,x,y);
-                }
-                else{
-                    play_positional_sound(sound_system.player_no_ammo,x,y);
-                }
-            }
-        }
-        break;
-
-    case COMMAND_UP:
-        //If a window is open.
-        if(ptr_window!=NULL){
-            if(command_state(COMMAND_LOOK)){
-                if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
-                    if(--window_setup_survival[0].level_list_selection<0){
-                        window_setup_survival[0].level_list_selection=window_setup_survival[0].levels.size()-1;
-                    }
-                }
-                else if(current_window==WHICH_WINDOW_SHOP){
-                    if(--window_shop[0].upgrade_list_selection<0){
-                        window_shop[0].upgrade_list_selection=window_shop[0].upgrades.size()-1;
-                    }
-                }
-                else if(current_window==WHICH_WINDOW_UPGRADES){
-                    if(--window_upgrades[0].upgrade_list_selection<0){
-                        window_upgrades[0].upgrade_list_selection=window_upgrades[0].upgrades.size()-1;
-                    }
-                }
-            }
-            else{
-                if(current_button==-1){
-                    current_button=ptr_window->buttons.size();
-                }
-
-                button_check=current_button;
-                last_check=-1;
-                do{
-                    if(--button_check<1){
-                        button_check=ptr_window->buttons.size()-1;
-                    }
-
-                    if(last_check==current_button){
-                        button_check=current_button;
-                        break;
-                    }
-
-                    last_check=button_check;
-                }while(!ptr_window->buttons[button_check].enabled);
-                current_button=button_check;
-            }
-        }
-        else{
-            if(!LOOKING){
-                //As long as the game is not paused and is in progress.
-                if(!pause && game_in_progress && !bubble_mode){
-                    //If the current level is not the world map.
-                    if(!on_worldmap() && !DYING){
-                        bool trigger_used=false;
-
-                        for(int i=0;i<vector_triggers.size();i++){
-                            if(fabs(vector_triggers[i].x-x)<PROCESS_RANGE && fabs(vector_triggers[i].y-y)<PROCESS_RANGE){
-                                //If the trigger is active, its user type is the player, and it is manually activated.
-                                if(vector_triggers[i].active && !vector_triggers[i].trigger_method){
-                                    if(collision_check(x,y,w,h,vector_triggers[i].x,vector_triggers[i].y,vector_triggers[i].w,vector_triggers[i].h)){
-                                        vector_triggers[i].use();
-                                        play_positional_sound(sound_system.trigger_click,vector_triggers[i].x,vector_triggers[i].y);
-
-                                        if(vector_triggers[i].render_trigger!=0){
-                                            stat_levers_pulled++;
+                                            trigger_used = true;
+                                            break;
                                         }
+                                    }
+                                }
+                            }
 
-                                        trigger_used=true;
-                                        break;
+                            if (!trigger_used) {
+                                for (int i = 0; i < vector_signs.size(); i++) {
+                                    if (fabs(vector_signs[i].x - x) < PROCESS_RANGE &&
+                                        fabs(vector_signs[i].y - y) < PROCESS_RANGE) {
+                                        if (collision_check(x, y, w, h, vector_signs[i].x, vector_signs[i].y, SIGN_W,
+                                                            SIGN_H)) {
+                                            short font_type = vector_signs[i].font_type;
+
+                                            if (translator && font_type != 0) {
+                                                font_type = 0;
+
+                                                play_positional_sound(sound_system.item_collect_translator, x, y);
+                                            } else {
+                                                play_positional_sound(sound_system.read_sign, x, y);
+                                            }
+
+                                            window_message[0].set_message("", vector_signs[i].message, font_type);
+
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
+                }
+            }
 
-                        if(!trigger_used){
-                            for(int i=0;i<vector_signs.size();i++){
-                                if(fabs(vector_signs[i].x-x)<PROCESS_RANGE && fabs(vector_signs[i].y-y)<PROCESS_RANGE){
-                                    if(collision_check(x,y,w,h,vector_signs[i].x,vector_signs[i].y,SIGN_W,SIGN_H)){
-                                        short font_type=vector_signs[i].font_type;
-                                        if(translator && font_type!=0){
-                                            font_type=0;
+            break;
 
-                                            play_positional_sound(sound_system.item_collect_translator,x,y);
-                                        }
-                                        else{
-                                            play_positional_sound(sound_system.read_sign,x,y);
-                                        }
+        case COMMAND_DOWN:
 
-                                        window_message[0].set_message("",vector_signs[i].message,font_type);
+            // If a window is open.
+            if (ptr_window != NULL) {
+                if (command_state(COMMAND_LOOK)) {
+                    if (current_window == WHICH_WINDOW_SETUP_SURVIVAL) {
+                        if (++window_setup_survival[0].level_list_selection == window_setup_survival[0].levels.size()) {
+                            window_setup_survival[0].level_list_selection = 0;
+                        }
+                    } else if (current_window == WHICH_WINDOW_SHOP) {
+                        if (++window_shop[0].upgrade_list_selection == window_shop[0].upgrades.size()) {
+                            window_shop[0].upgrade_list_selection = 0;
+                        }
+                    } else if (current_window == WHICH_WINDOW_UPGRADES) {
+                        if (++window_upgrades[0].upgrade_list_selection == window_upgrades[0].upgrades.size()) {
+                            window_upgrades[0].upgrade_list_selection = 0;
+                        }
+                    }
+                } else {
+                    if (current_button == -1) {
+                        current_button = 0;
+                    }
 
-                                        break;
-                                    }
-                                }
+                    button_check = current_button;
+                    last_check = -1;
+
+                    do{
+                        if (++button_check > ptr_window->buttons.size() - 1) {
+                            button_check = 1;
+
+                            if (ptr_window->buttons.size() == 1) {
+                                button_check = 0;
                             }
                         }
-                    }
-                }
-            }
-        }
-        break;
 
-    case COMMAND_DOWN:
-        //If a window is open.
-        if(ptr_window!=NULL){
-            if(command_state(COMMAND_LOOK)){
-                if(current_window==WHICH_WINDOW_SETUP_SURVIVAL){
-                    if(++window_setup_survival[0].level_list_selection==window_setup_survival[0].levels.size()){
-                        window_setup_survival[0].level_list_selection=0;
-                    }
-                }
-                else if(current_window==WHICH_WINDOW_SHOP){
-                    if(++window_shop[0].upgrade_list_selection==window_shop[0].upgrades.size()){
-                        window_shop[0].upgrade_list_selection=0;
-                    }
-                }
-                else if(current_window==WHICH_WINDOW_UPGRADES){
-                    if(++window_upgrades[0].upgrade_list_selection==window_upgrades[0].upgrades.size()){
-                        window_upgrades[0].upgrade_list_selection=0;
-                    }
-                }
-            }
-            else{
-                if(current_button==-1){
-                    current_button=0;
-                }
-
-                button_check=current_button;
-                last_check=-1;
-                do{
-                    if(++button_check>ptr_window->buttons.size()-1){
-                        button_check=1;
-                        if(ptr_window->buttons.size()==1){
-                            button_check=0;
+                        if (last_check == current_button) {
+                            button_check = current_button;
+                            break;
                         }
-                    }
 
-                    if(last_check==current_button){
-                        button_check=current_button;
-                        break;
-                    }
+                        last_check = button_check;
+                    }while (!ptr_window->buttons[button_check].enabled);
 
-                    last_check=button_check;
-                }while(!ptr_window->buttons[button_check].enabled);
-                current_button=button_check;
+                    current_button = button_check;
+                }
             }
-        }
-        break;
 
+            break;
     }
 }
 
-void Player::crouch_start(){
-    if(!CROUCHING && !water_running){
-        CROUCHING=true;
+void Player::crouch_start () {
+    if (!CROUCHING && !water_running) {
+        CROUCHING = true;
 
-        y+=PLAYER_CROUCH_H;
+        y += PLAYER_CROUCH_H;
 
-        //Set the player's dimensions to the crouching dimensions.
-        w=PLAYER_CROUCH_W;
-        h=PLAYER_CROUCH_H;
+        // Set the player's dimensions to the crouching dimensions.
+        w = PLAYER_CROUCH_W;
+        h = PLAYER_CROUCH_H;
     }
 }
 
-void Player::crouch_stop(){
-    if(CROUCHING && !solid_above){
-        //If the player is holding the down key, crouching will be activated.
-        CROUCHING=false;
+void Player::crouch_stop () {
+    if (CROUCHING && !solid_above) {
+        // If the player is holding the down key, crouching will be activated.
+        CROUCHING = false;
 
-        y-=PLAYER_CROUCH_H;
+        y -= PLAYER_CROUCH_H;
 
-        //Set the player's dimensions to the standard dimensions.
-        w=PLAYER_W;
-        h=PLAYER_H;
+        // Set the player's dimensions to the standard dimensions.
+        w = PLAYER_W;
+        h = PLAYER_H;
     }
 }
 
-void Player::handle_input_states(){
+void Player::handle_input_states () {
     handle_input_states_during_play();
 
-    //If the player is alive.
-    if(!DYING && !bubble_mode){
-        //Begin here not crouching.
+    // If the player is alive.
+    if (!DYING && !bubble_mode) {
+        // Begin here not crouching.
         crouch_stop();
 
-        //************************//
+        // ************************//
         // Handle direction keys: //
-        //************************//
+        // ************************//
 
-        climb_state=NONE;
+        climb_state = NONE;
 
-        //If the left directional key is pressed.
-        if(command_state(COMMAND_LEFT)){
-            //Set their move state to match the directional key.
-            move_state=LEFT;
+        // If the left directional key is pressed.
+        if (command_state(COMMAND_LEFT)) {
+            // Set their move state to match the directional key.
+            move_state = LEFT;
 
-            //Set their facing variable to match the directional key.
-            facing=LEFT;
+            // Set their facing variable to match the directional key.
+            facing = LEFT;
 
-            //When only one directional key is pressed, shoot_state and move_state are the same.
-            shoot_state=move_state;
+            // When only one directional key is pressed, shoot_state and move_state are the same.
+            shoot_state = move_state;
         }
 
-        //If the up directional key is pressed.
-        if(command_state(COMMAND_UP)){
-            move_state=UP;
+        // If the up directional key is pressed.
+        if (command_state(COMMAND_UP)) {
+            move_state = UP;
 
-            //When only one directional key is pressed, shoot_state and move_state are the same.
-            shoot_state=move_state;
+            // When only one directional key is pressed, shoot_state and move_state are the same.
+            shoot_state = move_state;
 
-            climb_state=move_state;
+            climb_state = move_state;
         }
 
-        //If the player is swimming and the jump key is pressed, mimic the up direction key's swimming function.
-        if(SWIMMING && command_state(COMMAND_JUMP)){
-            move_state=UP;
+        // If the player is swimming and the jump key is pressed, mimic the up direction key's swimming function.
+        if (SWIMMING && command_state(COMMAND_JUMP)) {
+            move_state = UP;
         }
 
-        //If the right directional key is pressed.
-        if(command_state(COMMAND_RIGHT)){
-            //Set their move state to match the directional key.
-            move_state=RIGHT;
+        // If the right directional key is pressed.
+        if (command_state(COMMAND_RIGHT)) {
+            // Set their move state to match the directional key.
+            move_state = RIGHT;
 
-            //Set their facing variable to match the directional key.
-            facing=RIGHT;
+            // Set their facing variable to match the directional key.
+            facing = RIGHT;
 
-            //When only one directional key is pressed, shoot_state and move_state are the same.
-            shoot_state=move_state;
+            // When only one directional key is pressed, shoot_state and move_state are the same.
+            shoot_state = move_state;
         }
 
-        //If the down directional key is pressed.
-        if(command_state(COMMAND_DOWN)){
-            move_state=DOWN;
+        // If the down directional key is pressed.
+        if (command_state(COMMAND_DOWN)) {
+            move_state = DOWN;
 
-            //When only one directional key is pressed, shoot_state and move_state are the same.
-            shoot_state=move_state;
+            // When only one directional key is pressed, shoot_state and move_state are the same.
+            shoot_state = move_state;
 
-            climb_state=move_state;
+            climb_state = move_state;
 
-            if(!SWIMMING && !CLIMBING && !LOOKING && !SHOOTING){
+            if (!SWIMMING && !CLIMBING && !LOOKING && !SHOOTING) {
                 crouch_start();
             }
         }
 
-        //*******************************************************//
+        // *******************************************************//
         // Handle multiple direction keys being pressed at once: //
-        //*******************************************************//
+        // *******************************************************//
 
-        //When swimming, 8 directions of movement are possible.
-        if(SWIMMING && !CLIMBING){
-            //Priorities:
-            //Movement: Left, Up, Right, Down.
+        // When swimming, 8 directions of movement are possible.
+        if (SWIMMING && !CLIMBING) {
+            // Priorities:
+            // Movement: Left, Up, Right, Down.
 
-            if(command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP))){
-                move_state=LEFT_UP;
-            }
-            if(command_state(COMMAND_RIGHT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP))){
-                move_state=RIGHT_UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=RIGHT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)){
-                move_state=LEFT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT;
-            }
-            if((command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT_UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_DOWN)){
-                move_state=LEFT_UP;
-            }
-            if((command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=RIGHT_UP;
-            }
-            if(command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=LEFT_UP;
+            if (command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP))) {
+                move_state = LEFT_UP;
             }
 
-            //If no directional keys are pressed, the player is not moving.
-            if(!command_state(COMMAND_LEFT) && (!command_state(COMMAND_UP) && !command_state(COMMAND_JUMP)) && !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)){
-                move_state=0;
+            if (command_state(COMMAND_RIGHT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP))) {
+                move_state = RIGHT_UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = RIGHT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)) {
+                move_state = LEFT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)) {
+                move_state = LEFT;
+            }
+
+            if ((command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_DOWN)) {
+                move_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) &&
+                command_state(COMMAND_RIGHT)) {
+                move_state = LEFT_UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)) {
+                move_state = LEFT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) &&
+                command_state(COMMAND_DOWN)) {
+                move_state = LEFT_UP;
+            }
+
+            if ((command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) && command_state(COMMAND_RIGHT) &&
+                command_state(COMMAND_DOWN)) {
+                move_state = RIGHT_UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && (command_state(COMMAND_UP) || command_state(COMMAND_JUMP)) &&
+                command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = LEFT_UP;
+            }
+
+            // If no directional keys are pressed, the player is not moving.
+            if (!command_state(COMMAND_LEFT) && (!command_state(COMMAND_UP) && !command_state(COMMAND_JUMP)) &&
+                !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)) {
+                move_state = 0;
+            }
+        }
+        // When on land or in the air, 4 directions of movement are possible.
+        else if (!SWIMMING && !CLIMBING) {
+            // Priorities:
+            // Movement: Left, Up, Right, Down.
+            // Shooting on the ground: Up, Left, Right, Down.
+            // Shooting in the air: Up, Down, Left, Right.
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP)) {
+                move_state = LEFT;
+                facing = LEFT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)) {
+                move_state = RIGHT;
+                facing = RIGHT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = RIGHT;
+                facing = RIGHT;
+
+                if (!IN_AIR) {
+                    shoot_state = RIGHT;
+                }
+
+                if (IN_AIR) {
+                    shoot_state = DOWN;
+                }
+
+                climb_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)) {
+                move_state = LEFT;
+                facing = LEFT;
+
+                if (!IN_AIR) {
+                    shoot_state = LEFT;
+                }
+
+                if (IN_AIR) {
+                    shoot_state = DOWN;
+                }
+
+                climb_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)) {
+                move_state = LEFT;
+                facing = LEFT;
+                shoot_state = LEFT;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                move_state = UP;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)) {
+                move_state = LEFT;
+                facing = LEFT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)) {
+                move_state = LEFT;
+                facing = LEFT;
+
+                if (!IN_AIR) {
+                    shoot_state = LEFT;
+                }
+
+                if (IN_AIR) {
+                    shoot_state = DOWN;
+                }
+
+                climb_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                move_state = LEFT;
+                facing = LEFT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = RIGHT;
+                facing = RIGHT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) &&
+                command_state(COMMAND_DOWN)) {
+                move_state = LEFT;
+                facing = LEFT;
+                shoot_state = UP;
+                climb_state = UP;
+            }
+
+            // If no directional keys are pressed, the player is not moving.
+            if (!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) &&
+                !command_state(COMMAND_DOWN)) {
+                move_state = 0;
+                shoot_state = 0;
+                climb_state = 0;
+                look_state = 0;
+            }
+        }
+        // When climbing, only 2 directions of movement are possible.
+        else if (CLIMBING && !SWIMMING) {
+            // Priorities:
+            // Movement: Up, Down.
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP)) {
+                move_state = UP;
+                facing = LEFT;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)) {
+                move_state = UP;
+                facing = RIGHT;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = DOWN;
+                facing = RIGHT;
+                shoot_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)) {
+                move_state = DOWN;
+                facing = LEFT;
+                shoot_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)) {
+                facing = LEFT;
+                shoot_state = LEFT;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                move_state = UP;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)) {
+                move_state = UP;
+                facing = LEFT;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)) {
+                move_state = DOWN;
+                facing = LEFT;
+                shoot_state = DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                move_state = UP;
+                facing = LEFT;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                move_state = UP;
+                facing = RIGHT;
+                shoot_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) &&
+                command_state(COMMAND_DOWN)) {
+                move_state = UP;
+                facing = LEFT;
+                shoot_state = UP;
+            }
+
+            // If no directional keys are pressed, the player is not moving.
+            if (!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) &&
+                !command_state(COMMAND_DOWN)) {
+                frame = 0;
+                frame_counter = 0;
+                move_state = 0;
+                shoot_state = 0;
+                look_state = 0;
             }
         }
 
-        //When on land or in the air, 4 directions of movement are possible.
-        else if(!SWIMMING && !CLIMBING){
-            //Priorities:
-            //Movement: Left, Up, Right, Down.
-            //Shooting on the ground: Up, Left, Right, Down.
-            //Shooting in the air: Up, Down, Left, Right.
+        if (LOOKING) {
+            // Reset the standard movement variables.
+            frame = 0;
+            frame_counter = 0;
+            move_state = 0;
+            climb_state = 0;
+        }
 
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP)){
-                move_state=LEFT;
-                facing=LEFT;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)){
-                move_state=RIGHT;
-                facing=RIGHT;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=RIGHT;
-                facing=RIGHT;
-                if(!IN_AIR){
-                    shoot_state=RIGHT;
-                }
-                if(IN_AIR){
-                    shoot_state=DOWN;
-                }
-                climb_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)){
-                move_state=LEFT;
-                facing=LEFT;
-                if(!IN_AIR){
-                    shoot_state=LEFT;
-                }
-                if(IN_AIR){
-                    shoot_state=DOWN;
-                }
-                climb_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT;
-                facing=LEFT;
-                shoot_state=LEFT;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT;
-                facing=LEFT;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)){
-                move_state=LEFT;
-                facing=LEFT;
-                if(!IN_AIR){
-                    shoot_state=LEFT;
-                }
-                if(IN_AIR){
-                    shoot_state=DOWN;
-                }
-                climb_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                move_state=LEFT;
-                facing=LEFT;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=RIGHT;
-                facing=RIGHT;
-                shoot_state=UP;
-                climb_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=LEFT;
-                facing=LEFT;
-                shoot_state=UP;
-                climb_state=UP;
+        // If look mode is on, and the player is not currently in the air or moving, the directional keys affect the
+        // look offsets instead of anything else.
+        if (LOOKING && move_state == 0 && !IN_AIR) {
+            if (command_state(COMMAND_LEFT)) {
+                look_state = LEFT;
             }
 
-            //If no directional keys are pressed, the player is not moving.
-            if(!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)){
-                move_state=0;
-                shoot_state=0;
-                climb_state=0;
-                look_state=0;
+            if (command_state(COMMAND_UP)) {
+                look_state = UP;
+            }
+
+            if (command_state(COMMAND_RIGHT)) {
+                look_state = RIGHT;
+            }
+
+            if (command_state(COMMAND_DOWN)) {
+                look_state = DOWN;
+            }
+
+            // Handle multiple directional keys being pressed at once.
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP)) {
+                look_state = LEFT_UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)) {
+                look_state = RIGHT_UP;
+            }
+
+            if (command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                look_state = RIGHT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)) {
+                look_state = LEFT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)) {
+                look_state = LEFT;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                look_state = UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)) {
+                look_state = LEFT_UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)) {
+                look_state = LEFT_DOWN;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)) {
+                look_state = LEFT_UP;
+            }
+
+            if (command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)) {
+                look_state = RIGHT_UP;
+            }
+
+            if (command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) &&
+                command_state(COMMAND_DOWN)) {
+                look_state = LEFT_UP;
+            }
+
+            // If no directional keys are pressed, we won't move the look offsets.
+            if (!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) &&
+                !command_state(COMMAND_DOWN)) {
+                look_state = 0;
             }
         }
 
-        //When climbing, only 2 directions of movement are possible.
-        else if(CLIMBING && !SWIMMING){
-            //Priorities:
-            //Movement: Up, Down.
+        if (CROUCHING) {
+            frame = 0;
+            frame_counter = 0;
 
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP)){
-                move_state=UP;
-                facing=LEFT;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)){
-                move_state=UP;
-                facing=RIGHT;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=DOWN;
-                facing=RIGHT;
-                shoot_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)){
-                move_state=DOWN;
-                facing=LEFT;
-                shoot_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)){
-                facing=LEFT;
-                shoot_state=LEFT;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)){
-                move_state=UP;
-                facing=LEFT;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)){
-                move_state=DOWN;
-                facing=LEFT;
-                shoot_state=DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-                facing=LEFT;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-                facing=RIGHT;
-                shoot_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                move_state=UP;
-                facing=LEFT;
-                shoot_state=UP;
+            if (!IN_AIR) {
+                move_state = 0;
             }
 
-            //If no directional keys are pressed, the player is not moving.
-            if(!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)){
-                frame=0;
-                frame_counter=0;
-                move_state=0;
-                shoot_state=0;
-                look_state=0;
-            }
+            look_state = 0;
         }
 
-        if(LOOKING){
-            //Reset the standard movement variables.
-            frame=0;
-            frame_counter=0;
-            move_state=0;
-            climb_state=0;
-        }
-
-        //If look mode is on, and the player is not currently in the air or moving, the directional keys affect the look offsets instead of anything else.
-        if(LOOKING && move_state==0 && !IN_AIR){
-            if(command_state(COMMAND_LEFT)){
-                look_state=LEFT;
-            }
-            if(command_state(COMMAND_UP)){
-                look_state=UP;
-            }
-            if(command_state(COMMAND_RIGHT)){
-                look_state=RIGHT;
-            }
-            if(command_state(COMMAND_DOWN)){
-                look_state=DOWN;
-            }
-
-            //Handle multiple directional keys being pressed at once.
-
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP)){
-                look_state=LEFT_UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_UP)){
-                look_state=RIGHT_UP;
-            }
-            if(command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                look_state=RIGHT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN)){
-                look_state=LEFT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_RIGHT)){
-                look_state=LEFT;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                look_state=UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT)){
-                look_state=LEFT_UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_DOWN) && command_state(COMMAND_RIGHT)){
-                look_state=LEFT_DOWN;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_DOWN)){
-                look_state=LEFT_UP;
-            }
-            if(command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                look_state=RIGHT_UP;
-            }
-            if(command_state(COMMAND_LEFT) && command_state(COMMAND_UP) && command_state(COMMAND_RIGHT) && command_state(COMMAND_DOWN)){
-                look_state=LEFT_UP;
-            }
-
-            //If no directional keys are pressed, we won't move the look offsets.
-            if(!command_state(COMMAND_LEFT) && !command_state(COMMAND_UP) && !command_state(COMMAND_RIGHT) && !command_state(COMMAND_DOWN)){
-                look_state=0;
-            }
-        }
-
-        if(CROUCHING){
-            frame=0;
-            frame_counter=0;
-            if(!IN_AIR){
-                move_state=0;
-            }
-            look_state=0;
-        }
-
-        //*****************//
+        // *****************//
         // Handle jumping: //
-        //*****************//
+        // *****************//
 
-        if(!command_state(COMMAND_JUMP) && jump_state){
-            jump_state=false;
+        if (!command_state(COMMAND_JUMP) && jump_state) {
+            jump_state = false;
 
-            if(!CLIMBING_JUMP && air_velocity<jump_min*-1){
-                air_velocity=jump_min*-1;
+            if (!CLIMBING_JUMP && air_velocity < jump_min * -1) {
+                air_velocity = jump_min * -1;
+            } else if (CLIMBING_JUMP && air_velocity < climbing_jump_min * -1) {
+                air_velocity = climbing_jump_min * -1;
             }
-            else if(CLIMBING_JUMP && air_velocity<climbing_jump_min*-1){
-                air_velocity=climbing_jump_min*-1;
-            }
 
-            CLIMBING_JUMP=false;
+            CLIMBING_JUMP = false;
         }
 
         after_input();
     }
 }
 
-void Player::handle_input_states_during_play(){
-    //If the player is alive and developer mode is on.
-    if(option_dev){
-        //******************//
+void Player::handle_input_states_during_play () {
+    // If the player is alive and developer mode is on.
+    if (option_dev) {
+        // ******************//
         // Camera controls: //
-        //******************//
+        // ******************//
 
-        //If the camera is unsticky, check for camera inputs.
-        if(cam_state!=CAM_STICKY){
-            //Handle camera directional keys being pressed.
-            if(keystate(SDL_SCANCODE_KP_1)){
-                cam_state=LEFT;
-            }
-            if(keystate(SDL_SCANCODE_KP_5)){
-                cam_state=UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_3)){
-                cam_state=RIGHT;
-            }
-            if(keystate(SDL_SCANCODE_KP_2)){
-                cam_state=DOWN;
+        // If the camera is unsticky, check for camera inputs.
+        if (cam_state != CAM_STICKY) {
+            // Handle camera directional keys being pressed.
+            if (keystate(SDL_SCANCODE_KP_1)) {
+                cam_state = LEFT;
             }
 
-            //Handle multiple camera directional keys being pressed at once.
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5)){
-                cam_state=LEFT_UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)){
-                cam_state=RIGHT_UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
-                cam_state=RIGHT_DOWN;
-            }
-            if(keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_1)){
-                cam_state=LEFT_DOWN;
-            }
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_3)){
-                cam_state=LEFT;
-            }
-            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)){
-                cam_state=UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)){
-                cam_state=LEFT_UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_3)){
-                cam_state=LEFT_DOWN;
-            }
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)){
-                cam_state=LEFT_UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
-                cam_state=RIGHT_UP;
-            }
-            if(keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)){
-                cam_state=LEFT_UP;
+            if (keystate(SDL_SCANCODE_KP_5)) {
+                cam_state = UP;
             }
 
-            //If no camera directional keys are pressed, stop the camera.
-            if(!keystate(SDL_SCANCODE_KP_1) && !keystate(SDL_SCANCODE_KP_5) && !keystate(SDL_SCANCODE_KP_3) && !keystate(SDL_SCANCODE_KP_2)){
-                cam_state=0;
+            if (keystate(SDL_SCANCODE_KP_3)) {
+                cam_state = RIGHT;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = DOWN;
+            }
+
+            // Handle multiple camera directional keys being pressed at once.
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5)) {
+                cam_state = LEFT_UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)) {
+                cam_state = RIGHT_UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = RIGHT_DOWN;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_1)) {
+                cam_state = LEFT_DOWN;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_3)) {
+                cam_state = LEFT;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3)) {
+                cam_state = LEFT_UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_2) && keystate(SDL_SCANCODE_KP_3)) {
+                cam_state = LEFT_DOWN;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = LEFT_UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) && keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = RIGHT_UP;
+            }
+
+            if (keystate(SDL_SCANCODE_KP_1) && keystate(SDL_SCANCODE_KP_5) && keystate(SDL_SCANCODE_KP_3) &&
+                keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = LEFT_UP;
+            }
+
+            // If no camera directional keys are pressed, stop the camera.
+            if (!keystate(SDL_SCANCODE_KP_1) && !keystate(SDL_SCANCODE_KP_5) && !keystate(SDL_SCANCODE_KP_3) &&
+                !keystate(SDL_SCANCODE_KP_2)) {
+                cam_state = 0;
             }
         }
     }
@@ -1069,31 +1158,36 @@ void Player::handle_input_states_during_play(){
     /// Debug/Test Code. ///
     ///******************///
 
-    //If developer mode is enabled and the dev key is pressed.
-    if(option_dev && keystate(SDL_SCANCODE_F1)){
-        if(keystate(SDL_SCANCODE_Q)){
-            vector_items.push_back(Item(x+(w-sprites_item_candy[0].w)/2.0,y-sprites_item_candy[0].h,true,random_range(ITEM_CANDY,ITEM_CANDY),0,false,40,80,80,160,false,60));
+    // If developer mode is enabled and the dev key is pressed.
+    if (option_dev && keystate(SDL_SCANCODE_F1)) {
+        if (keystate(SDL_SCANCODE_Q)) {
+            vector_items.push_back(Item(x + (w - sprites_item_candy[0].w) / 2.0, y - sprites_item_candy[0].h, true,
+                                        random_range(ITEM_CANDY, ITEM_CANDY), 0, false, 40, 80, 80, 160, false, 60));
 
-            for(int i=0;i<mp_players.size();i++){
-                vector_items.push_back(Item(mp_players[i].x+(mp_players[i].w-sprites_item_candy[0].w)/2.0,mp_players[i].y-sprites_item_candy[0].h,true,random_range(ITEM_CANDY,ITEM_CANDY),0,false,40,80,80,160,false,60));
+            for (int i = 0; i < mp_players.size(); i++) {
+                vector_items.push_back(Item(mp_players[i].x + (mp_players[i].w - sprites_item_candy[0].w) / 2.0,
+                                            mp_players[i].y - sprites_item_candy[0].h, true,
+                                            random_range(ITEM_CANDY, ITEM_CANDY), 0, false, 40, 80, 80, 160, false,
+                                            60));
             }
         }
     }
 
-    //If developer mode is enabled.
-    if(option_dev){
-        int mouse_x=0;
-        int mouse_y=0;
-        if(!pause && SDL_GetMouseState(0,0)&SDL_BUTTON(SDL_BUTTON_LEFT)){
-            main_window.get_mouse_state(&mouse_x,&mouse_y);
-            x=(int)(mouse_x+camera_x);
-            y=(int)(mouse_y+camera_y);
-            air_velocity=0;
+    // If developer mode is enabled.
+    if (option_dev) {
+        int mouse_x = 0;
+        int mouse_y = 0;
 
-            for(int i=0;i<mp_players.size();i++){
-                mp_players[i].x=(int)(mouse_x+camera_x);
-                mp_players[i].y=(int)(mouse_y+camera_y);
-                mp_players[i].air_velocity=0;
+        if (!pause && SDL_GetMouseState(0, 0) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            main_window.get_mouse_state(&mouse_x, &mouse_y);
+            x = (int) (mouse_x + camera_x);
+            y = (int) (mouse_y + camera_y);
+            air_velocity = 0;
+
+            for (int i = 0; i < mp_players.size(); i++) {
+                mp_players[i].x = (int) (mouse_x + camera_x);
+                mp_players[i].y = (int) (mouse_y + camera_y);
+                mp_players[i].air_velocity = 0;
             }
         }
     }
@@ -1103,242 +1197,269 @@ void Player::handle_input_states_during_play(){
     ///*************************///
 }
 
-bool Player::command_state(short command){
-    Sint16 axis_value=0;
-    Uint8 hat_value=SDL_HAT_CENTERED;
-    short ball_direction=NONE;
-    int ball_delta_x=0;
-    int ball_delta_y=0;
+bool Player::command_state (short command) {
+    Sint16 axis_value = 0;
+    Uint8 hat_value = SDL_HAT_CENTERED;
+    short ball_direction = NONE;
+    int ball_delta_x = 0;
+    int ball_delta_y = 0;
 
-    //If this command's bound input is a keyboard key, and the key is being pressed.
-    if(keys[command].type==INPUT_TYPE_KEYBOARD && keystate(keys[command].key)){
+    // If this command's bound input is a keyboard key, and the key is being pressed.
+    if (keys[command].type == INPUT_TYPE_KEYBOARD && keystate(keys[command].key)) {
         return true;
     }
 
-    //Check all available joysticks for input.
-    for(int i=0;i<joystick.size();i++){
-        //As long as this joystick is opened properly, and is the joystick associated with this command.
-        if(SDL_JoystickGetAttached(joystick[i].joy) && i==keys[command].which_joystick){
-            //If this command's bound input is a joystick button, and the button is being pressed.
-            if(keys[command].type==INPUT_TYPE_JOYSTICK_BUTTON && SDL_JoystickGetButton(joystick[i].joy,keys[command].joy_button)){
+    // Check all available joysticks for input.
+    for (int i = 0; i < joystick.size(); i++) {
+        // As long as this joystick is opened properly, and is the joystick associated with this command.
+        if (SDL_JoystickGetAttached(joystick[i].joy) && i == keys[command].which_joystick) {
+            // If this command's bound input is a joystick button, and the button is being pressed.
+            if (keys[command].type == INPUT_TYPE_JOYSTICK_BUTTON && SDL_JoystickGetButton(joystick[i].joy,
+                                                                                          keys[command].joy_button)) {
                 return true;
             }
+            // If this command's bound input is a joystick axis.
+            else if (keys[command].type == INPUT_TYPE_JOYSTICK_AXIS) {
+                // Get the current value of this command's bound axis.
+                axis_value = SDL_JoystickGetAxis(joystick[i].joy, keys[command].joy_axis);
 
-            //If this command's bound input is a joystick axis.
-            else if(keys[command].type==INPUT_TYPE_JOYSTICK_AXIS){
-                //Get the current value of this command's bound axis.
-                axis_value=SDL_JoystickGetAxis(joystick[i].joy,keys[command].joy_axis);
-
-                //If the axis is outside of the neutral zone and held in the correct direction.
-                if(!keys[command].joy_axis_direction && axis_value<JOYSTICK_NEUTRAL_NEGATIVE){
+                // If the axis is outside of the neutral zone and held in the correct direction.
+                if (!keys[command].joy_axis_direction && axis_value < JOYSTICK_NEUTRAL_NEGATIVE) {
                     return true;
-                }
-                else if(keys[command].joy_axis_direction && axis_value>JOYSTICK_NEUTRAL_POSITIVE){
-                    return true;
-                }
-            }
-
-            //If this command's bound input is a joystick hat.
-            else if(keys[command].type==INPUT_TYPE_JOYSTICK_HAT){
-                //Get the current value of this command's bound hat.
-                hat_value=SDL_JoystickGetHat(joystick[i].joy,keys[command].joy_hat);
-
-                //If the hat is held in the correct direction.
-                if(hat_value==keys[command].joy_hat_direction){
+                } else if (keys[command].joy_axis_direction && axis_value > JOYSTICK_NEUTRAL_POSITIVE) {
                     return true;
                 }
             }
+            // If this command's bound input is a joystick hat.
+            else if (keys[command].type == INPUT_TYPE_JOYSTICK_HAT) {
+                // Get the current value of this command's bound hat.
+                hat_value = SDL_JoystickGetHat(joystick[i].joy, keys[command].joy_hat);
 
-            //If this command's bound input is a joystick ball.
-            else if(keys[command].type==INPUT_TYPE_JOYSTICK_BALL){
-                //Get the current delta movement of this command's bound ball.
-                SDL_JoystickGetBall(joystick[i].joy,keys[command].joy_ball,&ball_delta_x,&ball_delta_y);
+                // If the hat is held in the correct direction.
+                if (hat_value == keys[command].joy_hat_direction) {
+                    return true;
+                }
+            }
+            // If this command's bound input is a joystick ball.
+            else if (keys[command].type == INPUT_TYPE_JOYSTICK_BALL) {
+                // Get the current delta movement of this command's bound ball.
+                SDL_JoystickGetBall(joystick[i].joy, keys[command].joy_ball, &ball_delta_x, &ball_delta_y);
 
-                //Set the ball's direction using the deltas.
-                if(ball_delta_x<0 && ball_delta_y<0){
-                    ball_direction=LEFT_UP;
-                }
-                else if(ball_delta_x<0 && ball_delta_y>0){
-                    ball_direction=LEFT_DOWN;
-                }
-                else if(ball_delta_x>0 && ball_delta_y<0){
-                    ball_direction=RIGHT_UP;
-                }
-                else if(ball_delta_x>0 && ball_delta_y>0){
-                    ball_direction=RIGHT_DOWN;
-                }
-                else if(ball_delta_x<0){
-                    ball_direction=LEFT;
-                }
-                else if(ball_delta_x>0){
-                    ball_direction=RIGHT;
-                }
-                else if(ball_delta_y<0){
-                    ball_direction=UP;
-                }
-                else if(ball_delta_y>0){
-                    ball_direction=DOWN;
+                // Set the ball's direction using the deltas.
+                if (ball_delta_x < 0 && ball_delta_y < 0) {
+                    ball_direction = LEFT_UP;
+                } else if (ball_delta_x < 0 && ball_delta_y > 0) {
+                    ball_direction = LEFT_DOWN;
+                } else if (ball_delta_x > 0 && ball_delta_y < 0) {
+                    ball_direction = RIGHT_UP;
+                } else if (ball_delta_x > 0 && ball_delta_y > 0) {
+                    ball_direction = RIGHT_DOWN;
+                } else if (ball_delta_x < 0) {
+                    ball_direction = LEFT;
+                } else if (ball_delta_x > 0) {
+                    ball_direction = RIGHT;
+                } else if (ball_delta_y < 0) {
+                    ball_direction = UP;
+                } else if (ball_delta_y > 0) {
+                    ball_direction = DOWN;
                 }
 
-                //If the ball has moved in the correct direction.
-                if(ball_direction==keys[command].joy_ball_direction){
+                // If the ball has moved in the correct direction.
+                if (ball_direction == keys[command].joy_ball_direction) {
                     return true;
                 }
             }
         }
     }
 
-    //If neither the key nor the joystick input bound to this command are active,
-    //return false to let the game know this command is not currently being given.
+    // If neither the key nor the joystick input bound to this command are active,
+    // return false to let the game know this command is not currently being given.
     return false;
 }
 
-void Player::reset_axis_last_directions(){
-    for(int i=0;i<keys.size();i++){
+void Player::reset_axis_last_directions () {
+    for (int i = 0; i < keys.size(); i++) {
         keys[i].reset_axis_last_direction();
     }
 }
 
-string Player::command_bound_input(short command,short player_index){
-    string string_to_return="None";
+string Player::command_bound_input (short command, short player_index) {
+    string string_to_return = "None";
 
-    if(player_index==-1){
-        //If this command's bound input is a keyboard key.
-        if(keys[command].type==INPUT_TYPE_KEYBOARD){
-            ss.clear();ss.str("");ss<<SDL_GetScancodeName(keys[command].key);string_to_return=ss.str();
+    if (player_index == -1) {
+        // If this command's bound input is a keyboard key.
+        if (keys[command].type == INPUT_TYPE_KEYBOARD) {
+            ss.clear();
+            ss.str("");
+            ss << SDL_GetScancodeName(keys[command].key);
+            string_to_return = ss.str();
         }
-        //If this command's bound input is a joystick button.
-        else if(keys[command].type==INPUT_TYPE_JOYSTICK_BUTTON){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)keys[command].which_joystick;ss<<" Button ";ss<<(int)keys[command].joy_button;string_to_return=ss.str();
+        // If this command's bound input is a joystick button.
+        else if (keys[command].type == INPUT_TYPE_JOYSTICK_BUTTON) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) keys[command].which_joystick;
+            ss << " Button ";
+            ss << (int) keys[command].joy_button;
+            string_to_return = ss.str();
         }
-        //If this command's bound input is a joystick axis.
-        else if(keys[command].type==INPUT_TYPE_JOYSTICK_AXIS){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)keys[command].which_joystick;ss<<" Axis ";ss<<(int)keys[command].joy_axis;ss<<" ";ss<<keys[command].joy_axis_direction;string_to_return=ss.str();
+        // If this command's bound input is a joystick axis.
+        else if (keys[command].type == INPUT_TYPE_JOYSTICK_AXIS) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) keys[command].which_joystick;
+            ss << " Axis ";
+            ss << (int) keys[command].joy_axis;
+            ss << " ";
+            ss << keys[command].joy_axis_direction;
+            string_to_return = ss.str();
         }
-        //If this command's bound input is a joystick hat.
-        else if(keys[command].type==INPUT_TYPE_JOYSTICK_HAT){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)keys[command].which_joystick;ss<<" Hat ";ss<<(int)keys[command].joy_hat;ss<<" ";string_to_return=ss.str();
-            if(keys[command].joy_hat_direction==SDL_HAT_LEFT){
-                string_to_return+="Left";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_UP){
-                string_to_return+="Up";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_RIGHT){
-                string_to_return+="Right";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_DOWN){
-                string_to_return+="Down";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_LEFTUP){
-                string_to_return+="Left Up";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_LEFTDOWN){
-                string_to_return+="Left Down";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_RIGHTUP){
-                string_to_return+="Right Up";
-            }
-            else if(keys[command].joy_hat_direction==SDL_HAT_RIGHTDOWN){
-                string_to_return+="Right Down";
-            }
-        }
-        //If this command's bound input is a joystick ball.
-        else if(keys[command].type==INPUT_TYPE_JOYSTICK_BALL){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)keys[command].which_joystick;ss<<" Ball ";ss<<(int)keys[command].joy_ball;ss<<" ";string_to_return=ss.str();
-            if(keys[command].joy_ball_direction==LEFT){
-                string_to_return+="Left";
-            }
-            else if(keys[command].joy_ball_direction==UP){
-                string_to_return+="Up";
-            }
-            else if(keys[command].joy_ball_direction==RIGHT){
-                string_to_return+="Right";
-            }
-            else if(keys[command].joy_ball_direction==DOWN){
-                string_to_return+="Down";
-            }
-            else if(keys[command].joy_ball_direction==LEFT_UP){
-                string_to_return+="Left Up";
-            }
-            else if(keys[command].joy_ball_direction==LEFT_DOWN){
-                string_to_return+="Left Down";
-            }
-            else if(keys[command].joy_ball_direction==RIGHT_UP){
-                string_to_return+="Right Up";
-            }
-            else if(keys[command].joy_ball_direction==RIGHT_DOWN){
-                string_to_return+="Right Down";
+        // If this command's bound input is a joystick hat.
+        else if (keys[command].type == INPUT_TYPE_JOYSTICK_HAT) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) keys[command].which_joystick;
+            ss << " Hat ";
+            ss << (int) keys[command].joy_hat;
+            ss << " ";
+            string_to_return = ss.str();
+
+            if (keys[command].joy_hat_direction == SDL_HAT_LEFT) {
+                string_to_return += "Left";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_UP) {
+                string_to_return += "Up";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_RIGHT) {
+                string_to_return += "Right";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_DOWN) {
+                string_to_return += "Down";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_LEFTUP) {
+                string_to_return += "Left Up";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_LEFTDOWN) {
+                string_to_return += "Left Down";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_RIGHTUP) {
+                string_to_return += "Right Up";
+            } else if (keys[command].joy_hat_direction == SDL_HAT_RIGHTDOWN) {
+                string_to_return += "Right Down";
             }
         }
-    }
-    else{
-        //If this command's bound input is a keyboard key.
-        if(mp_keys[player_index][command].type==INPUT_TYPE_KEYBOARD){
-            ss.clear();ss.str("");ss<<SDL_GetScancodeName(mp_keys[player_index][command].key);string_to_return=ss.str();
-        }
-        //If this command's bound input is a joystick button.
-        else if(mp_keys[player_index][command].type==INPUT_TYPE_JOYSTICK_BUTTON){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)mp_keys[player_index][command].which_joystick;ss<<" Button ";ss<<(int)mp_keys[player_index][command].joy_button;string_to_return=ss.str();
-        }
-        //If this command's bound input is a joystick axis.
-        else if(mp_keys[player_index][command].type==INPUT_TYPE_JOYSTICK_AXIS){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)mp_keys[player_index][command].which_joystick;ss<<" Axis ";ss<<(int)mp_keys[player_index][command].joy_axis;ss<<" ";ss<<mp_keys[player_index][command].joy_axis_direction;string_to_return=ss.str();
-        }
-        //If this command's bound input is a joystick hat.
-        else if(mp_keys[player_index][command].type==INPUT_TYPE_JOYSTICK_HAT){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)mp_keys[player_index][command].which_joystick;ss<<" Hat ";ss<<(int)mp_keys[player_index][command].joy_hat;ss<<" ";string_to_return=ss.str();
-            if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_LEFT){
-                string_to_return+="Left";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_UP){
-                string_to_return+="Up";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_RIGHT){
-                string_to_return+="Right";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_DOWN){
-                string_to_return+="Down";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_LEFTUP){
-                string_to_return+="Left Up";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_LEFTDOWN){
-                string_to_return+="Left Down";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_RIGHTUP){
-                string_to_return+="Right Up";
-            }
-            else if(mp_keys[player_index][command].joy_hat_direction==SDL_HAT_RIGHTDOWN){
-                string_to_return+="Right Down";
+        // If this command's bound input is a joystick ball.
+        else if (keys[command].type == INPUT_TYPE_JOYSTICK_BALL) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) keys[command].which_joystick;
+            ss << " Ball ";
+            ss << (int) keys[command].joy_ball;
+            ss << " ";
+            string_to_return = ss.str();
+
+            if (keys[command].joy_ball_direction == LEFT) {
+                string_to_return += "Left";
+            } else if (keys[command].joy_ball_direction == UP) {
+                string_to_return += "Up";
+            } else if (keys[command].joy_ball_direction == RIGHT) {
+                string_to_return += "Right";
+            } else if (keys[command].joy_ball_direction == DOWN) {
+                string_to_return += "Down";
+            } else if (keys[command].joy_ball_direction == LEFT_UP) {
+                string_to_return += "Left Up";
+            } else if (keys[command].joy_ball_direction == LEFT_DOWN) {
+                string_to_return += "Left Down";
+            } else if (keys[command].joy_ball_direction == RIGHT_UP) {
+                string_to_return += "Right Up";
+            } else if (keys[command].joy_ball_direction == RIGHT_DOWN) {
+                string_to_return += "Right Down";
             }
         }
-        //If this command's bound input is a joystick ball.
-        else if(mp_keys[player_index][command].type==INPUT_TYPE_JOYSTICK_BALL){
-            ss.clear();ss.str("");ss<<"Joystick ";ss<<(int)mp_keys[player_index][command].which_joystick;ss<<" Ball ";ss<<(int)mp_keys[player_index][command].joy_ball;ss<<" ";string_to_return=ss.str();
-            if(mp_keys[player_index][command].joy_ball_direction==LEFT){
-                string_to_return+="Left";
+    } else {
+        // If this command's bound input is a keyboard key.
+        if (mp_keys[player_index][command].type == INPUT_TYPE_KEYBOARD) {
+            ss.clear();
+            ss.str("");
+            ss << SDL_GetScancodeName(mp_keys[player_index][command].key);
+            string_to_return = ss.str();
+        }
+        // If this command's bound input is a joystick button.
+        else if (mp_keys[player_index][command].type == INPUT_TYPE_JOYSTICK_BUTTON) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) mp_keys[player_index][command].which_joystick;
+            ss << " Button ";
+            ss << (int) mp_keys[player_index][command].joy_button;
+            string_to_return = ss.str();
+        }
+        // If this command's bound input is a joystick axis.
+        else if (mp_keys[player_index][command].type == INPUT_TYPE_JOYSTICK_AXIS) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) mp_keys[player_index][command].which_joystick;
+            ss << " Axis ";
+            ss << (int) mp_keys[player_index][command].joy_axis;
+            ss << " ";
+            ss << mp_keys[player_index][command].joy_axis_direction;
+            string_to_return = ss.str();
+        }
+        // If this command's bound input is a joystick hat.
+        else if (mp_keys[player_index][command].type == INPUT_TYPE_JOYSTICK_HAT) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) mp_keys[player_index][command].which_joystick;
+            ss << " Hat ";
+            ss << (int) mp_keys[player_index][command].joy_hat;
+            ss << " ";
+            string_to_return = ss.str();
+
+            if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_LEFT) {
+                string_to_return += "Left";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_UP) {
+                string_to_return += "Up";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_RIGHT) {
+                string_to_return += "Right";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_DOWN) {
+                string_to_return += "Down";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_LEFTUP) {
+                string_to_return += "Left Up";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_LEFTDOWN) {
+                string_to_return += "Left Down";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_RIGHTUP) {
+                string_to_return += "Right Up";
+            } else if (mp_keys[player_index][command].joy_hat_direction == SDL_HAT_RIGHTDOWN) {
+                string_to_return += "Right Down";
             }
-            else if(mp_keys[player_index][command].joy_ball_direction==UP){
-                string_to_return+="Up";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==RIGHT){
-                string_to_return+="Right";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==DOWN){
-                string_to_return+="Down";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==LEFT_UP){
-                string_to_return+="Left Up";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==LEFT_DOWN){
-                string_to_return+="Left Down";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==RIGHT_UP){
-                string_to_return+="Right Up";
-            }
-            else if(mp_keys[player_index][command].joy_ball_direction==RIGHT_DOWN){
-                string_to_return+="Right Down";
+        }
+        // If this command's bound input is a joystick ball.
+        else if (mp_keys[player_index][command].type == INPUT_TYPE_JOYSTICK_BALL) {
+            ss.clear();
+            ss.str("");
+            ss << "Joystick ";
+            ss << (int) mp_keys[player_index][command].which_joystick;
+            ss << " Ball ";
+            ss << (int) mp_keys[player_index][command].joy_ball;
+            ss << " ";
+            string_to_return = ss.str();
+
+            if (mp_keys[player_index][command].joy_ball_direction == LEFT) {
+                string_to_return += "Left";
+            } else if (mp_keys[player_index][command].joy_ball_direction == UP) {
+                string_to_return += "Up";
+            } else if (mp_keys[player_index][command].joy_ball_direction == RIGHT) {
+                string_to_return += "Right";
+            } else if (mp_keys[player_index][command].joy_ball_direction == DOWN) {
+                string_to_return += "Down";
+            } else if (mp_keys[player_index][command].joy_ball_direction == LEFT_UP) {
+                string_to_return += "Left Up";
+            } else if (mp_keys[player_index][command].joy_ball_direction == LEFT_DOWN) {
+                string_to_return += "Left Down";
+            } else if (mp_keys[player_index][command].joy_ball_direction == RIGHT_UP) {
+                string_to_return += "Right Up";
+            } else if (mp_keys[player_index][command].joy_ball_direction == RIGHT_DOWN) {
+                string_to_return += "Right Down";
             }
         }
     }
@@ -1346,33 +1467,30 @@ string Player::command_bound_input(short command,short player_index){
     return string_to_return;
 }
 
-void Player::handle_input_events(){
-    if(event.type==SDL_QUIT){
+void Player::handle_input_events () {
+    if (event.type == SDL_QUIT) {
         quit_game();
 
         return;
-    }
-    else if(event.type==SDL_JOYDEVICEADDED){
-        SDL_Joystick* joystick_ptr=0;
+    } else if (event.type == SDL_JOYDEVICEADDED) {
+        SDL_Joystick* joystick_ptr = 0;
 
-        if((joystick_ptr=SDL_JoystickOpen(event.jdevice.which))!=0){
+        if ((joystick_ptr = SDL_JoystickOpen(event.jdevice.which)) != 0) {
             joystick.push_back(joy_stick());
-            joystick.back().joy=joystick_ptr;
-        }
-        else{
+            joystick.back().joy = joystick_ptr;
+        } else {
             update_error_log("Joystick detected, but not supported by the game controller interface.");
         }
 
         return;
-    }
-    else if(event.type==SDL_JOYDEVICEREMOVED){
-        for(int i=0;i<joystick.size();i++){
-            if(SDL_JoystickInstanceID(joystick[i].joy)==event.jdevice.which){
-                if(SDL_JoystickGetAttached(joystick[i].joy)){
+    } else if (event.type == SDL_JOYDEVICEREMOVED) {
+        for (int i = 0; i < joystick.size(); i++) {
+            if (SDL_JoystickInstanceID(joystick[i].joy) == event.jdevice.which) {
+                if (SDL_JoystickGetAttached(joystick[i].joy)) {
                     SDL_JoystickClose(joystick[i].joy);
                 }
 
-                joystick.erase(joystick.begin()+i);
+                joystick.erase(joystick.begin() + i);
 
                 break;
             }
@@ -1380,86 +1498,80 @@ void Player::handle_input_events(){
 
         return;
     }
-
-    //Toggle main menu.
-    else if(event.type==SDL_KEYDOWN){
-        if(event.key.keysym.scancode==SDL_SCANCODE_ESCAPE){
-            //If the escape key is pressed, stop setting the command.
-            if(command_to_set!=-1){
-                command_to_set=-1;
+    // Toggle main menu.
+    else if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            // If the escape key is pressed, stop setting the command.
+            if (command_to_set != -1) {
+                command_to_set = -1;
             }
-            //If the game is in progress.
-            else if(game_in_progress && command_to_set==-1){
+            // If the game is in progress.
+            else if (game_in_progress && command_to_set == -1) {
                 handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
             }
-            //If the game is not in progress and there is not command being set.
-            else if(!game_in_progress && command_to_set==-1){
-                //Close all windows.
+            // If the game is not in progress and there is not command being set.
+            else if (!game_in_progress && command_to_set == -1) {
+                // Close all windows.
                 window_manager.close_windows(0);
 
-                //If a profile exists.
-                if(player.name!="\x1F"){
+                // If a profile exists.
+                if (player.name != "\x1F") {
                     vector_windows[WINDOW_MAIN_MENU].turn_on();
 
                     window_manager.set_main_menu_current_button();
                 }
-                //If no profile exists.
-                else{
-                    //Keep the Create Profile window open.
+                // If no profile exists.
+                else {
+                    // Keep the Create Profile window open.
                     vector_windows[WINDOW_CREATE_PROFILE].turn_on();
                 }
             }
 
             return;
-        }
-        else if(event.key.keysym.scancode==SDL_SCANCODE_AC_BACK){
-            //If the game is in progress.
-            if(game_in_progress && command_to_set==-1){
-                if(window_manager.which_window_open()!=-1){
+        } else if (event.key.keysym.scancode == SDL_SCANCODE_AC_BACK) {
+            // If the game is in progress.
+            if (game_in_progress && command_to_set == -1) {
+                if (window_manager.which_window_open() != -1) {
                     window_manager.close_windows(0);
-                }
-                else{
+                } else {
                     quit_game();
                 }
             }
-            //If the game is not in progress and there is not command being set.
-            else if(!game_in_progress && command_to_set==-1){
-                if(window_manager.which_window_open()!=-1){
+            // If the game is not in progress and there is not command being set.
+            else if (!game_in_progress && command_to_set == -1) {
+                if (window_manager.which_window_open() != -1) {
                     window_manager.close_windows(0);
 
                     handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
-                }
-                else{
+                } else {
                     quit_game();
                 }
             }
 
             return;
-        }
-        else if(event.key.keysym.scancode==SDL_SCANCODE_MENU){
-            //If the game is in progress.
-            if(game_in_progress && command_to_set==-1){
-                if(window_manager.which_window_open()!=-1){
+        } else if (event.key.keysym.scancode == SDL_SCANCODE_MENU) {
+            // If the game is in progress.
+            if (game_in_progress && command_to_set == -1) {
+                if (window_manager.which_window_open() != -1) {
                     window_manager.close_windows(0);
-                }
-                else{
+                } else {
                     handle_command_event(COMMAND_TOGGLE_MAIN_MENU);
                 }
             }
-            //If the game is not in progress and there is not command being set.
-            else if(!game_in_progress && command_to_set==-1){
-                //Close all windows.
+            // If the game is not in progress and there is not command being set.
+            else if (!game_in_progress && command_to_set == -1) {
+                // Close all windows.
                 window_manager.close_windows(0);
 
-                //If a profile exists.
-                if(player.name!="\x1F"){
+                // If a profile exists.
+                if (player.name != "\x1F") {
                     vector_windows[WINDOW_MAIN_MENU].turn_on();
 
                     window_manager.set_main_menu_current_button();
                 }
-                //If no profile exists.
-                else{
-                    //Keep the Create Profile window open.
+                // If no profile exists.
+                else {
+                    // Keep the Create Profile window open.
                     vector_windows[WINDOW_CREATE_PROFILE].turn_on();
                 }
             }
@@ -1468,56 +1580,62 @@ void Player::handle_input_events(){
         }
     }
 
-    bool allow_input_event=true;
+    bool allow_input_event = true;
 
-    //If a command is being set.
-    if(command_to_set!=-1){
-        allow_input_event=false;
+    // If a command is being set.
+    if (command_to_set != -1) {
+        allow_input_event = false;
     }
 
     check_for_command_set();
 
-    //As long as the player's input events are not being blocked.
-    if(allow_input_event){
-        //Look through all commands, and see if any should be triggered by this input event.
-        for(int i=0;i<keys.size();i++){
-            SDL_Joystick* joystick_ptr=0;
+    // As long as the player's input events are not being blocked.
+    if (allow_input_event) {
+        // Look through all commands, and see if any should be triggered by this input event.
+        for (int i = 0; i < keys.size(); i++) {
+            SDL_Joystick* joystick_ptr = 0;
 
-            if(keys[i].which_joystick<joystick.size()){
-                joystick_ptr=joystick[keys[i].which_joystick].joy;
+            if (keys[i].which_joystick < joystick.size()) {
+                joystick_ptr = joystick[keys[i].which_joystick].joy;
             }
 
-            //If the input type is a keyboard keypress, and the event is a keyboard keypress.
-            if(keys[i].type==INPUT_TYPE_KEYBOARD && event.type==SDL_KEYDOWN){
-                if(event.key.keysym.scancode==keys[i].key){
+            // If the input type is a keyboard keypress, and the event is a keyboard keypress.
+            if (keys[i].type == INPUT_TYPE_KEYBOARD && event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.scancode == keys[i].key) {
                     handle_command_event(i);
+
                     return;
                 }
             }
-            //If the input type is a joystick button press, and the event is a joystick button press, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BUTTON && event.type==SDL_JOYBUTTONDOWN && event.jbutton.which==SDL_JoystickInstanceID(joystick_ptr)){
-                if(event.jbutton.button==keys[i].joy_button){
+            // If the input type is a joystick button press, and the event is a joystick button press, and the event
+            // joystick is the command's bound joystick.
+            else if (keys[i].type == INPUT_TYPE_JOYSTICK_BUTTON && event.type == SDL_JOYBUTTONDOWN &&
+                     event.jbutton.which == SDL_JoystickInstanceID(joystick_ptr)) {
+                if (event.jbutton.button == keys[i].joy_button) {
                     handle_command_event(i);
+
                     return;
                 }
             }
-            //If the input type is a joystick axis motion, and the event is a joystick axis motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_AXIS && event.type==SDL_JOYAXISMOTION && event.jaxis.which==SDL_JoystickInstanceID(joystick_ptr)){
-                if(event.jaxis.axis==keys[i].joy_axis){
-                    if(!keys[i].was_axis_last_direction_up() && event.jaxis.value<JOYSTICK_NEUTRAL_NEGATIVE){
+            // If the input type is a joystick axis motion, and the event is a joystick axis motion, and the event
+            // joystick is the command's bound joystick.
+            else if (keys[i].type == INPUT_TYPE_JOYSTICK_AXIS && event.type == SDL_JOYAXISMOTION &&
+                     event.jaxis.which == SDL_JoystickInstanceID(joystick_ptr)) {
+                if (event.jaxis.axis == keys[i].joy_axis) {
+                    if (!keys[i].was_axis_last_direction_up() && event.jaxis.value < JOYSTICK_NEUTRAL_NEGATIVE) {
                         keys[i].set_axis_last_direction_up();
 
-                        if(!keys[i].joy_axis_direction){
+                        if (!keys[i].joy_axis_direction) {
                             handle_command_event(i);
 
                             return;
                         }
                     }
 
-                    if(!keys[i].was_axis_last_direction_down() && event.jaxis.value>JOYSTICK_NEUTRAL_POSITIVE){
+                    if (!keys[i].was_axis_last_direction_down() && event.jaxis.value > JOYSTICK_NEUTRAL_POSITIVE) {
                         keys[i].set_axis_last_direction_down();
 
-                        if(keys[i].joy_axis_direction){
+                        if (keys[i].joy_axis_direction) {
                             handle_command_event(i);
 
                             return;
@@ -1525,100 +1643,103 @@ void Player::handle_input_events(){
                     }
                 }
             }
-            //If the input type is a joystick hat motion, and the event is a joystick hat motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_HAT && event.type==SDL_JOYHATMOTION && event.jhat.which==SDL_JoystickInstanceID(joystick_ptr)){
-                if(event.jhat.hat==keys[i].joy_hat){
-                    if(keys[i].joy_hat_direction==event.jhat.value){
+            // If the input type is a joystick hat motion, and the event is a joystick hat motion, and the event
+            // joystick is the command's bound joystick.
+            else if (keys[i].type == INPUT_TYPE_JOYSTICK_HAT && event.type == SDL_JOYHATMOTION &&
+                     event.jhat.which == SDL_JoystickInstanceID(joystick_ptr)) {
+                if (event.jhat.hat == keys[i].joy_hat) {
+                    if (keys[i].joy_hat_direction == event.jhat.value) {
                         handle_command_event(i);
+
                         return;
                     }
                 }
             }
-            //If the input type is a joystick ball motion, and the event is a joystick ball motion, and the event joystick is the command's bound joystick.
-            else if(keys[i].type==INPUT_TYPE_JOYSTICK_BALL && event.type==SDL_JOYBALLMOTION && event.jball.which==SDL_JoystickInstanceID(joystick_ptr)){
-                if(event.jball.ball==keys[i].joy_ball){
-                    short ball_direction=NONE;
+            // If the input type is a joystick ball motion, and the event is a joystick ball motion, and the event
+            // joystick is the command's bound joystick.
+            else if (keys[i].type == INPUT_TYPE_JOYSTICK_BALL && event.type == SDL_JOYBALLMOTION &&
+                     event.jball.which == SDL_JoystickInstanceID(joystick_ptr)) {
+                if (event.jball.ball == keys[i].joy_ball) {
+                    short ball_direction = NONE;
 
-                    //Set the ball's direction using the deltas.
-                    if(event.jball.xrel<0 && event.jball.yrel<0){
-                        ball_direction=LEFT_UP;
-                    }
-                    else if(event.jball.xrel<0 && event.jball.yrel>0){
-                        ball_direction=LEFT_DOWN;
-                    }
-                    else if(event.jball.xrel>0 && event.jball.yrel<0){
-                        ball_direction=RIGHT_UP;
-                    }
-                    else if(event.jball.xrel>0 && event.jball.yrel>0){
-                        ball_direction=RIGHT_DOWN;
-                    }
-                    else if(event.jball.xrel<0){
-                        ball_direction=LEFT;
-                    }
-                    else if(event.jball.xrel>0){
-                        ball_direction=RIGHT;
-                    }
-                    else if(event.jball.yrel<0){
-                        ball_direction=UP;
-                    }
-                    else if(event.jball.yrel>0){
-                        ball_direction=DOWN;
+                    // Set the ball's direction using the deltas.
+                    if (event.jball.xrel < 0 && event.jball.yrel < 0) {
+                        ball_direction = LEFT_UP;
+                    } else if (event.jball.xrel < 0 && event.jball.yrel > 0) {
+                        ball_direction = LEFT_DOWN;
+                    } else if (event.jball.xrel > 0 && event.jball.yrel < 0) {
+                        ball_direction = RIGHT_UP;
+                    } else if (event.jball.xrel > 0 && event.jball.yrel > 0) {
+                        ball_direction = RIGHT_DOWN;
+                    } else if (event.jball.xrel < 0) {
+                        ball_direction = LEFT;
+                    } else if (event.jball.xrel > 0) {
+                        ball_direction = RIGHT;
+                    } else if (event.jball.yrel < 0) {
+                        ball_direction = UP;
+                    } else if (event.jball.yrel > 0) {
+                        ball_direction = DOWN;
                     }
 
-                    //If the ball has moved in the correct direction.
-                    if(ball_direction==keys[i].joy_ball_direction){
+                    // If the ball has moved in the correct direction.
+                    if (ball_direction == keys[i].joy_ball_direction) {
                         handle_command_event(i);
+
                         return;
                     }
                 }
             }
         }
 
-        if(event.type==SDL_KEYDOWN){
-            //Toggle fullscreen.
-            if((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) && event.key.keysym.scancode==SDL_SCANCODE_RETURN){
+        if (event.type == SDL_KEYDOWN) {
+            // Toggle fullscreen.
+            if ((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) &&
+                event.key.keysym.scancode == SDL_SCANCODE_RETURN) {
                 toggle_fullscreen();
 
                 return;
             }
 
-            //Quit the game.
-            if((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) && event.key.keysym.scancode==SDL_SCANCODE_F4){
+            // Quit the game.
+            if ((keystate(SDL_SCANCODE_LALT) || keystate(SDL_SCANCODE_RALT)) &&
+                event.key.keysym.scancode == SDL_SCANCODE_F4) {
                 quit_game();
 
                 return;
             }
 
-            //Toggle dev mode.
-            if((keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode==SDL_SCANCODE_V) ||
-               (keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_V) && event.key.keysym.scancode==SDL_SCANCODE_E) ||
-               (keystate(SDL_SCANCODE_V) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode==SDL_SCANCODE_D)){
-                option_dev=!option_dev;
+            // Toggle dev mode.
+            if ((keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode == SDL_SCANCODE_V) ||
+                (keystate(SDL_SCANCODE_D) && keystate(SDL_SCANCODE_V) && event.key.keysym.scancode == SDL_SCANCODE_E) ||
+                (keystate(SDL_SCANCODE_V) && keystate(SDL_SCANCODE_E) && event.key.keysym.scancode == SDL_SCANCODE_D)) {
+                option_dev = !option_dev;
                 options_save();
 
                 return;
             }
 
-            if(window_manager.which_window_open()==WHICH_WINDOW_OTHER+WINDOW_SOUND_TEST){
+            if (window_manager.which_window_open() == WHICH_WINDOW_OTHER + WINDOW_SOUND_TEST) {
                 int music_keys[12];
-                music_keys[0]=SDL_SCANCODE_Q;
-                music_keys[1]=SDL_SCANCODE_W;
-                music_keys[2]=SDL_SCANCODE_E;
-                music_keys[3]=SDL_SCANCODE_R;
-                music_keys[4]=SDL_SCANCODE_T;
-                music_keys[5]=SDL_SCANCODE_Y;
-                music_keys[6]=SDL_SCANCODE_U;
-                music_keys[7]=SDL_SCANCODE_I;
-                music_keys[8]=SDL_SCANCODE_O;
-                music_keys[9]=SDL_SCANCODE_P;
-                music_keys[10]=SDL_SCANCODE_LEFTBRACKET;
-                music_keys[11]=SDL_SCANCODE_RIGHTBRACKET;
 
-                for(int i=0;i<12;i++){
-                    if(event.key.keysym.scancode==music_keys[i]){
-                        current_button=i+1;
+                music_keys[0] = SDL_SCANCODE_Q;
+                music_keys[1] = SDL_SCANCODE_W;
+                music_keys[2] = SDL_SCANCODE_E;
+                music_keys[3] = SDL_SCANCODE_R;
+                music_keys[4] = SDL_SCANCODE_T;
+                music_keys[5] = SDL_SCANCODE_Y;
+                music_keys[6] = SDL_SCANCODE_U;
+                music_keys[7] = SDL_SCANCODE_I;
+                music_keys[8] = SDL_SCANCODE_O;
+                music_keys[9] = SDL_SCANCODE_P;
+                music_keys[10] = SDL_SCANCODE_LEFTBRACKET;
+                music_keys[11] = SDL_SCANCODE_RIGHTBRACKET;
+
+                for (int i = 0; i < 12; i++) {
+                    if (event.key.keysym.scancode == music_keys[i]) {
+                        current_button = i + 1;
                         vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_down();
-                        vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_up(&vector_windows[WINDOW_SOUND_TEST]);
+                        vector_windows[WINDOW_SOUND_TEST].buttons[current_button].mouse_button_up(
+                            &vector_windows[WINDOW_SOUND_TEST]);
                         vector_windows[WINDOW_SOUND_TEST].buttons[current_button].reset_clicked();
 
                         return;
@@ -1626,63 +1747,65 @@ void Player::handle_input_events(){
                 }
             }
 
-            if(player.game_in_progress){
-                //If the player is alive and developer mode is on.
-                if(option_dev){
-                    //******************//
+            if (player.game_in_progress) {
+                // If the player is alive and developer mode is on.
+                if (option_dev) {
+                    // ******************//
                     // Camera controls: //
-                    //******************//
+                    // ******************//
 
-                    //If numpad 0 is pressed, toggle the camera's stickiness and play the appropriate sound.
-                    if(event.key.keysym.scancode==SDL_SCANCODE_KP_0){
-                        if(cam_state==CAM_STICKY){
-                            cam_state=NONE;
+                    // If numpad 0 is pressed, toggle the camera's stickiness and play the appropriate sound.
+                    if (event.key.keysym.scancode == SDL_SCANCODE_KP_0) {
+                        if (cam_state == CAM_STICKY) {
+                            cam_state = NONE;
                             play_positional_sound(sound_system.camera_unlock);
-                        }
-                        else{
-                            //Reset the look offsets.
-                            look_offset_x=0;
-                            look_offset_y=0;
-                            LOOKING=false;
+                        } else {
+                            // Reset the look offsets.
+                            look_offset_x = 0;
+                            look_offset_y = 0;
+                            LOOKING = false;
 
-                            camera_trap_x=x;
-                            if(!on_worldmap()){
-                                camera_trap_y=y+h-CAMERA_TRAP_H;
-                            }
-                            else{
-                                camera_trap_y=y+h-CAMERA_TRAP_WORLDMAP_H;
+                            camera_trap_x = x;
+
+                            if (!on_worldmap()) {
+                                camera_trap_y = y + h - CAMERA_TRAP_H;
+                            } else {
+                                camera_trap_y = y + h - CAMERA_TRAP_WORLDMAP_H;
                             }
 
-                            cam_state=CAM_STICKY;
+                            cam_state = CAM_STICKY;
                             play_positional_sound(sound_system.camera_lock);
                         }
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_KP_7 && cam_state!=CAM_STICKY){
-                        if(camera_speed==24){
-                            camera_speed=96;
-                        }
-                        else{
-                            camera_speed=24;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_KP_7 && cam_state != CAM_STICKY) {
+                        if (camera_speed == 24) {
+                            camera_speed = 96;
+                        } else {
+                            camera_speed = 24;
                         }
 
                         return;
                     }
                 }
 
-                if((keystate(SDL_SCANCODE_RALT) || keystate(SDL_SCANCODE_LALT)) && event.key.keysym.scancode==SDL_SCANCODE_Z){
-                    hide_gui=!hide_gui;
+                if ((keystate(SDL_SCANCODE_RALT) || keystate(SDL_SCANCODE_LALT)) &&
+                    event.key.keysym.scancode == SDL_SCANCODE_Z) {
+                    hide_gui = !hide_gui;
 
                     return;
                 }
 
-                if(game_mode==GAME_MODE_SP_ADVENTURE){
-                    if((keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_A) && event.key.keysym.scancode==SDL_SCANCODE_T) ||
-                       (keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_T) && event.key.keysym.scancode==SDL_SCANCODE_A) ||
-                       (keystate(SDL_SCANCODE_T) && keystate(SDL_SCANCODE_A) && event.key.keysym.scancode==SDL_SCANCODE_B)){
-                        ammo+=99;
+                if (game_mode == GAME_MODE_SP_ADVENTURE) {
+                    if ((keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_A) &&
+                         event.key.keysym.scancode == SDL_SCANCODE_T) ||
+                        (keystate(SDL_SCANCODE_B) && keystate(SDL_SCANCODE_T) &&
+                         event.key.keysym.scancode == SDL_SCANCODE_A) ||
+                        (keystate(SDL_SCANCODE_T) && keystate(SDL_SCANCODE_A) &&
+                         event.key.keysym.scancode == SDL_SCANCODE_B)) {
+                        ammo += 99;
                         profile.save_inventory();
 
                         return;
@@ -1693,45 +1816,47 @@ void Player::handle_input_events(){
                 /// Debug/Test Code. ///
                 ///******************///
 
-                //If developer mode is enabled and the dev key is pressed.
-                if(option_dev && keystate(SDL_SCANCODE_F1)){
-                    if(event.key.keysym.scancode==SDL_SCANCODE_L){
+                // If developer mode is enabled and the dev key is pressed.
+                if (option_dev && keystate(SDL_SCANCODE_F1)) {
+                    if (event.key.keysym.scancode == SDL_SCANCODE_L) {
                         levelshot();
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_A){
-                        ammo+=99999;
-                        for(int i=0;i<mp_players.size();i++){
-                            mp_players[i].ammo+=99999;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_A) {
+                        ammo += 99999;
+
+                        for (int i = 0; i < mp_players.size(); i++) {
+                            mp_players[i].ammo += 99999;
                         }
 
-                        score+=999999;
+                        score += 999999;
 
-                        for(short i=ITEM_SWIMMING_GEAR;i<ITEM_END;i++){
-                            if(i!=ITEM_J_BALLOON && i!=ITEM_AMMO_BARREL && i!=ITEM_CANDY){
-                                if(!check_inventory(i)){
-                                    //Find the next available inventory slot.
-                                    short next_available_slot=next_available_inventory_slot();
+                        for (short i = ITEM_SWIMMING_GEAR; i < ITEM_END; i++) {
+                            if (i != ITEM_J_BALLOON && i != ITEM_AMMO_BARREL && i != ITEM_CANDY) {
+                                if (!check_inventory(i)) {
+                                    // Find the next available inventory slot.
+                                    short next_available_slot = next_available_inventory_slot();
 
-                                    //If there is a free inventory slot.
-                                    if(next_available_slot!=-1){
+                                    // If there is a free inventory slot.
+                                    if (next_available_slot != -1) {
                                         inventory.push_back(inventory_item());
 
-                                        inventory[inventory.size()-1].type=i;
+                                        inventory[inventory.size() - 1].type = i;
 
-                                        inventory[inventory.size()-1].slot=next_available_slot;
+                                        inventory[inventory.size() - 1].slot = next_available_slot;
 
-                                        inventory[inventory.size()-1].name=name_inventory_item(i);
+                                        inventory[inventory.size() - 1].name = name_inventory_item(i);
 
-                                        //Create an inventory item notification slider.
-                                        sliders.push_back(Slider(i,false));
+                                        // Create an inventory item notification slider.
+                                        sliders.push_back(Slider(i, false));
 
-                                        if(i==ITEM_SWIMMING_GEAR){
-                                            oxygen=oxygen_max_capacity;
-                                            for(int mps=0;mps<mp_players.size();mps++){
-                                                mp_players[mps].oxygen=mp_players[mps].oxygen_max_capacity;
+                                        if (i == ITEM_SWIMMING_GEAR) {
+                                            oxygen = oxygen_max_capacity;
+
+                                            for (int mps = 0; mps < mp_players.size(); mps++) {
+                                                mp_players[mps].oxygen = mp_players[mps].oxygen_max_capacity;
                                             }
                                         }
                                     }
@@ -1740,95 +1865,103 @@ void Player::handle_input_events(){
                         }
 
                         check_special_items();
-                        for(int mps=0;mps<mp_players.size();mps++){
+
+                        for (int mps = 0; mps < mp_players.size(); mps++) {
                             mp_players[mps].check_special_items();
                         }
 
                         return;
                     }
 
-                    short npc_type=0;
+                    short npc_type = 0;
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_C){
-                        npc_type=NPC_COW;
-                    }
-                    if(event.key.keysym.scancode==SDL_SCANCODE_B){
-                        npc_type=NPC_BOUNCING_BALL;
-                    }
-                    if(event.key.keysym.scancode==SDL_SCANCODE_W){
-                        npc_type=NPC_SALLY;
-                    }
-                    if(event.key.keysym.scancode==SDL_SCANCODE_V){
-                        npc_type=NPC_MECHSUIT_MOUSE;
-                    }
-                    if(event.key.keysym.scancode==SDL_SCANCODE_R){
-                        npc_type=NPC_REPLICATOR;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_C) {
+                        npc_type = NPC_COW;
                     }
 
-                    if(npc_type!=0){
-                        for(short i=0;i<1;i++){
-                            vector_npcs.push_back(Npc(x,y,npc_type));
+                    if (event.key.keysym.scancode == SDL_SCANCODE_B) {
+                        npc_type = NPC_BOUNCING_BALL;
+                    }
+
+                    if (event.key.keysym.scancode == SDL_SCANCODE_W) {
+                        npc_type = NPC_SALLY;
+                    }
+
+                    if (event.key.keysym.scancode == SDL_SCANCODE_V) {
+                        npc_type = NPC_MECHSUIT_MOUSE;
+                    }
+
+                    if (event.key.keysym.scancode == SDL_SCANCODE_R) {
+                        npc_type = NPC_REPLICATOR;
+                    }
+
+                    if (npc_type != 0) {
+                        for (short i = 0; i < 1; i++) {
+                            vector_npcs.push_back(Npc(x, y, npc_type));
                         }
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_G){
-                        invulnerable=!invulnerable;
-                        for(int i=0;i<mp_players.size();i++){
-                            mp_players[i].invulnerable=!mp_players[i].invulnerable;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_G) {
+                        invulnerable = !invulnerable;
+
+                        for (int i = 0; i < mp_players.size(); i++) {
+                            mp_players[i].invulnerable = !mp_players[i].invulnerable;
                         }
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_T){
-                        show_tracers=!show_tracers;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_T) {
+                        show_tracers = !show_tracers;
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_P){
-                        show_paths=!show_paths;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_P) {
+                        show_paths = !show_paths;
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_J){
-                        cheat_jump=!cheat_jump;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_J) {
+                        cheat_jump = !cheat_jump;
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_N){
-                        cheat_noclip=!cheat_noclip;
-                        IN_AIR=true;
-                        air_velocity=0;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_N) {
+                        cheat_noclip = !cheat_noclip;
+                        IN_AIR = true;
+                        air_velocity = 0;
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_E && game_mode==GAME_MODE_SP_ADVENTURE && !on_worldmap()){
-                        //Make sure these aren't 0, since if they were, the game would mistakenly think the player
-                        //beat the level without shooting or killing.
-                        special_count_shots_this_level=1;
-                        special_count_kills_this_level=1;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_E && game_mode == GAME_MODE_SP_ADVENTURE &&
+                        !on_worldmap()) {
+                        // Make sure these aren't 0, since if they were, the game would mistakenly think the player
+                        // beat the level without shooting or killing.
+                        special_count_shots_this_level = 1;
+                        special_count_kills_this_level = 1;
 
                         player.boss_end();
 
                         profile.save_level_data();
-                        previous_level=current_level;
-                        previous_sub_level=current_sub_level;
-                        current_level=current_worldmap;
-                        current_checkpoint=-1;
+                        previous_level = current_level;
+                        previous_sub_level = current_sub_level;
+                        current_level = current_worldmap;
+                        current_checkpoint = -1;
                         load_data();
                         level.load_level();
 
-                        //Skip the rest of this function, as we are now on a different level.
+                        // Skip the rest of this function, as we are now on a different level.
                         return;
                     }
 
-                    /**if(event.key.keysym.scancode==SDL_SCANCODE_R && game_mode==GAME_MODE_SP_ADVENTURE && on_worldmap()){
+                    /**if(event.key.keysym.scancode==SDL_SCANCODE_R && game_mode==GAME_MODE_SP_ADVENTURE &&
+                       on_worldmap()){
                         world_x[current_level]=x;
                         world_y[current_level]=y;
                         profile.save_level_data();
@@ -1846,40 +1979,42 @@ void Player::handle_input_events(){
 
                         //Skip the rest of this function, as we are now on a different level.
                         return;
-                    }*/
+                       }*/
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_D && !on_worldmap()){
-                        handle_death(x,y,w,h,true);
-                        for(int i=0;i<mp_players.size();i++){
-                            mp_players[i].handle_death(mp_players[i].x,mp_players[i].y,mp_players[i].w,mp_players[i].h,true);
+                    if (event.key.keysym.scancode == SDL_SCANCODE_D && !on_worldmap()) {
+                        handle_death(x, y, w, h, true);
+
+                        for (int i = 0; i < mp_players.size(); i++) {
+                            mp_players[i].handle_death(mp_players[i].x, mp_players[i].y, mp_players[i].w,
+                                                       mp_players[i].h, true);
                         }
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_K){
-                        for(int i=0;i<vector_npcs.size();i++){
+                    if (event.key.keysym.scancode == SDL_SCANCODE_K) {
+                        for (int i = 0; i < vector_npcs.size(); i++) {
                             vector_npcs[i].handle_death(true);
                         }
-                        for(int i=0;i<vector_traps.size();i++){
-                            vector_traps[i].active=false;
-                            vector_traps[i].dangerous=false;
+
+                        for (int i = 0; i < vector_traps.size(); i++) {
+                            vector_traps[i].active = false;
+                            vector_traps[i].dangerous = false;
                         }
 
                         return;
                     }
 
-                    if(event.key.keysym.scancode==SDL_SCANCODE_S){
-                        if(UPDATE_RATE==DEFAULT_UPDATE_RATE){
-                            UPDATE_RATE=DEFAULT_UPDATE_RATE/2.4;
+                    if (event.key.keysym.scancode == SDL_SCANCODE_S) {
+                        if (UPDATE_RATE == DEFAULT_UPDATE_RATE) {
+                            UPDATE_RATE = DEFAULT_UPDATE_RATE / 2.4;
+                        } else if (UPDATE_RATE == DEFAULT_UPDATE_RATE / 2.4) {
+                            UPDATE_RATE = DEFAULT_UPDATE_RATE / 4.0;
+                        } else {
+                            UPDATE_RATE = DEFAULT_UPDATE_RATE;
                         }
-                        else if(UPDATE_RATE==DEFAULT_UPDATE_RATE/2.4){
-                            UPDATE_RATE=DEFAULT_UPDATE_RATE/4.0;
-                        }
-                        else{
-                            UPDATE_RATE=DEFAULT_UPDATE_RATE;
-                        }
-                        SKIP_TICKS=1000.0/UPDATE_RATE;
+
+                        SKIP_TICKS = 1000.0 / UPDATE_RATE;
 
                         return;
                     }
@@ -1891,31 +2026,31 @@ void Player::handle_input_events(){
                         }
 
                         return;
-                    }
-                    else if(event.key.keysym.scancode==SDL_SCANCODE_LEFT && !on_worldmap()){
+                       }
+                       else if(event.key.keysym.scancode==SDL_SCANCODE_LEFT && !on_worldmap()){
                         x-=32.0;
                         for(int i=0;i<mp_players.size();i++){
                             mp_players[i].x-=32.0;
                         }
 
                         return;
-                    }
-                    else if(event.key.keysym.scancode==SDL_SCANCODE_UP && !on_worldmap()){
+                       }
+                       else if(event.key.keysym.scancode==SDL_SCANCODE_UP && !on_worldmap()){
                         y-=32.0;
                         for(int i=0;i<mp_players.size();i++){
                             mp_players[i].y-=32.0;
                         }
 
                         return;
-                    }
-                    else if(event.key.keysym.scancode==SDL_SCANCODE_DOWN && !on_worldmap()){
+                       }
+                       else if(event.key.keysym.scancode==SDL_SCANCODE_DOWN && !on_worldmap()){
                         y+=32.0;
                         for(int i=0;i<mp_players.size();i++){
                             mp_players[i].y+=32.0;
                         }
 
                         return;
-                    }*/
+                       }*/
                 }
 
                 ///*************************///

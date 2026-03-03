@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef npc_data_h
@@ -9,13 +9,14 @@
 #include <vector>
 #include <string>
 
-class new_npc_data{
+class new_npc_data {
     public:
-    double x;
-    double y;
-    short type;
-    new_npc_data(double get_x,double get_y,short get_type);
+        double x;
+        double y;
+        short type;
+        new_npc_data (double get_x, double get_y, short get_type);
 };
+
 extern std::vector<new_npc_data> new_npcs;
 
 std::string return_npc_name(int i);
@@ -24,10 +25,10 @@ std::string return_npc_description(int i);
 
 image_data* return_npc_image(int i);
 
-//NPC Types:
+// NPC Types:
 
-enum{
-    //0 is reserved for "no npc".
+enum {
+    // 0 is reserved for "no npc".
     NPC_RESERVED,
     NPC_SLIME,
     NPC_COW,
@@ -80,11 +81,11 @@ enum{
     NPC_END
 };
 
-//NPC Special Attacks:
+// NPC Special Attacks:
 
-const short SPECIAL_ATTACK_NONE=-1;
+const short SPECIAL_ATTACK_NONE = -1;
 
-enum{
+enum {
     SPECIAL_ATTACK_COW_MOO,
     SPECIAL_ATTACK_BEE_DIVEBOMB,
     SPECIAL_ATTACK_REPLICATE,
@@ -117,10 +118,9 @@ enum{
     SPECIAL_ATTACK_MUMMY_COW_MOO
 };
 
-//The speed applied by sucking things.
-const double SUCK_SPEED=2.5;
-
-struct npc_sprite_count_data{
+// The speed applied by sucking things.
+const double SUCK_SPEED = 2.5;
+struct npc_sprite_count_data {
     short walk_sprites;
     short jump_sprites;
     short swim_sprites;

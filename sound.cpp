@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "sound.h"
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Sound::load_sounds_global(){
+void Sound::load_sounds_global () {
     camera_unlock.load_sound("data/sounds/camera_unlock.wav");
     camera_lock.load_sound("data/sounds/camera_lock.wav");
     camera_move.load_sound("data/sounds/camera_move.wav");
@@ -151,29 +151,36 @@ void Sound::load_sounds_global(){
     character_penny_jump.load_sound("data/sounds/character_penny_jump.wav");
     character_penny_start_slide.load_sound("data/sounds/character_penny_start_slide.wav");
 
-    string holiday_name=return_holiday_name(holiday);
+    string holiday_name = return_holiday_name(holiday);
 
-    for(int i=0;i<12;i++){
+    for (int i = 0; i < 12; i++) {
         button_mouse_over.push_back(sound_data());
-        msg="data/sounds/buttons/";
-        msg+=holiday_name;
-        msg+="/mouse_over/";
-        ss.clear();ss.str("");ss<<i+1;msg+=ss.str();
-        msg+=".ogg";
+        msg = "data/sounds/buttons/";
+        msg += holiday_name;
+        msg += "/mouse_over/";
+        ss.clear();
+        ss.str("");
+        ss << i + 1;
+        msg += ss.str();
+        msg += ".ogg";
         button_mouse_over[i].load_sound(msg.c_str());
     }
-    for(int i=0;i<12;i++){
+
+    for (int i = 0; i < 12; i++) {
         button_event_fire.push_back(sound_data());
-        msg="data/sounds/buttons/";
-        msg+=holiday_name;
-        msg+="/event_fire/";
-        ss.clear();ss.str("");ss<<i+1;msg+=ss.str();
-        msg+=".ogg";
+        msg = "data/sounds/buttons/";
+        msg += holiday_name;
+        msg += "/event_fire/";
+        ss.clear();
+        ss.str("");
+        ss << i + 1;
+        msg += ss.str();
+        msg += ".ogg";
         button_event_fire[i].load_sound(msg.c_str());
     }
 }
 
-void Sound::unload_sounds_global(){
+void Sound::unload_sounds_global () {
     camera_unlock.unload_sound();
     camera_lock.unload_sound();
     camera_move.unload_sound();
@@ -317,10 +324,11 @@ void Sound::unload_sounds_global(){
     character_penny_jump.unload_sound();
     character_penny_start_slide.unload_sound();
 
-    for(int i=0;i<12;i++){
+    for (int i = 0; i < 12; i++) {
         button_mouse_over[i].unload_sound();
     }
-    for(int i=0;i<12;i++){
+
+    for (int i = 0; i < 12; i++) {
         button_event_fire[i].unload_sound();
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef effect_firework_h
@@ -8,69 +8,60 @@
 
 #include <vector>
 
-class Effect_Firework_Particle{
+class Effect_Firework_Particle {
     public:
-    //If true, the particle is flying outward.
-    //If false, the particle is now falling.
-    bool exploding;
+        // If true, the particle is flying outward.
+        // If false, the particle is now falling.
+        bool exploding;
+        color_data color;
+        bool fade_to_black;
+        double opacity;
+        double move_vector_x;
+        double move_vector_y;
+        double x, y;
+        bool exists;
+        double decel;
+        double fade;
+        double color_fade;
 
-    color_data color;
+        Effect_Firework_Particle (double get_x, double get_y, double get_vector_x, double get_vector_y,
+                                  short get_color);
 
-    bool fade_to_black;
+        void set_coords(double get_x, double get_y);
 
-    double opacity;
+        void stop_exploding();
 
-    double move_vector_x;
-    double move_vector_y;
+        void move();
 
-    double x,y;
-
-    bool exists;
-
-    double decel;
-    double fade;
-    double color_fade;
-
-    Effect_Firework_Particle(double get_x,double get_y,double get_vector_x,double get_vector_y,short get_color);
-
-    void set_coords(double get_x,double get_y);
-
-    void stop_exploding();
-
-    void move();
-
-    void render();
+        void render();
 };
 
-class Effect_Firework{
+class Effect_Firework {
     private:
     public:
-    bool exists;
+        bool exists;
 
-    //If true, the firework is exploding.
-    //If false, the firework is flying upwards.
-    bool exploding;
+        // If true, the firework is exploding.
+        // If false, the firework is flying upwards.
+        bool exploding;
+        double x, y;
+        double move_vector_x;
+        double move_vector_y;
+        color_data color;
+        double decel;
+        double light_fade;
 
-    double x,y;
+        std::vector<Effect_Firework_Particle> particles;
 
-    double move_vector_x;
-    double move_vector_y;
+        // The object's light source data.
+        Light_Source light_source;
 
-    color_data color;
+        Effect_Firework (double get_x, double get_y, int magnitude, short get_color, short shape, int thickness,
+                         double speed_x, double speed_y);
 
-    double decel;
-    double light_fade;
+        void move();
 
-    std::vector<Effect_Firework_Particle> particles;
-
-    //The object's light source data.
-    Light_Source light_source;
-
-    Effect_Firework(double get_x,double get_y,int magnitude,short get_color,short shape,int thickness,double speed_x,double speed_y);
-
-    void move();
-
-    void render();
+        void render();
 };
 
 #endif

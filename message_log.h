@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef message_log_h
@@ -6,8 +6,8 @@
 
 #include <string>
 
-void update_error_log(std::string message,bool allow_save=true);
+void update_error_log(std::string message, bool allow_save = true);
 
-void update_survival_log(std::string message,bool multiplayer);
+void update_survival_log(std::string message, bool multiplayer);
 
 #endif

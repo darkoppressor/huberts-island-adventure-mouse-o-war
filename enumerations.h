@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef enumerations_h
@@ -6,7 +6,7 @@
 
 // AI Decision Types
 
-enum{
+enum {
     AI_DECISION_NONE,
     AI_DECISION_FOLLOW,
     AI_DECISION_REVIVE,
@@ -14,11 +14,11 @@ enum{
     AI_DECISION_ITEM
 };
 
-//**************************//
+// **************************//
 // Tile Special Properties: //
-//**************************//
+// **************************//
 
-enum{
+enum {
     TILE_SPECIAL_NONE,
     TILE_SPECIAL_CLIMBABLE,
     TILE_SPECIAL_CLIMBABLE_TOP,
@@ -28,25 +28,25 @@ enum{
     TILE_SPECIAL_ITEM_HOLDER
 };
 
-//***************************//
+// ***************************//
 // Tile Solidity Properties: //
-//***************************//
+// ***************************//
 
-enum{
+enum {
     TILE_SOLIDITY_BEGIN,
-    TILE_SOLIDITY_PASSABLE=TILE_SOLIDITY_BEGIN,
+    TILE_SOLIDITY_PASSABLE = TILE_SOLIDITY_BEGIN,
     TILE_SOLIDITY_SOLID,
     TILE_SOLIDITY_CLOUD,
     TILE_SOLIDITY_END
 };
 
-//********//
+// ********//
 // Items: //
-//********//
+// ********//
 
-enum{
+enum {
     ITEM_BEGIN,
-    ITEM_NONE=ITEM_BEGIN,
+    ITEM_NONE = ITEM_BEGIN,
     ITEM_LEAF,
     ITEM_CHEESE,
     ITEM_AMMO,
@@ -79,41 +79,41 @@ enum{
     ITEM_END
 };
 
-//*************//
+// *************//
 // Door Types: //
-//*************//
+// *************//
 
-enum{
+enum {
     DOOR_TYPE_LOCAL,
     DOOR_TYPE_KEY,
     DOOR_TYPE_STANDARD
 };
 
-//*********************//
+// *********************//
 // Trigger User Types: //
-//*********************//
+// *********************//
 
-enum{
+enum {
     TRIGGER_USER_NO_NPC,
     TRIGGER_USER_ALL
 };
 
-//****************//
+// ****************//
 // Spawner Types: //
-//****************//
+// ****************//
 
-enum{
+enum {
     SPAWN_ITEM,
     SPAWN_NPC
 };
 
-//***************//
+// ***************//
 // Achievements: //
-//***************//
+// ***************//
 
-enum{
+enum {
     ACHIEVEMENT_BEGIN,
-    ACHIEVEMENT_COLLECT_ALL_LEAVES_IN_LEVEL=ACHIEVEMENT_BEGIN,
+    ACHIEVEMENT_COLLECT_ALL_LEAVES_IN_LEVEL = ACHIEVEMENT_BEGIN,
     ACHIEVEMENT_COLLECT_ALL_CHEESE_IN_LEVEL,
     ACHIEVEMENT_PLAY_LEVEL_30_MINUTES,
     ACHIEVEMENT_PLAY_LEVEL_1_HOUR,
@@ -224,14 +224,14 @@ enum{
     ACHIEVEMENT_END
 };
 
-//***************//
+// ***************//
 // Window names: //
-//***************//
+// ***************//
 
-//These need to be in the exact order that the windows are created. See create_windows() in world.cpp.
-enum{
+// These need to be in the exact order that the windows are created. See create_windows() in world.cpp.
+enum {
     WINDOW_BEGIN,
-    WINDOW_MAIN_MENU=WINDOW_BEGIN,
+    WINDOW_MAIN_MENU = WINDOW_BEGIN,
     WINDOW_CREATE_PROFILE,
     WINDOW_CHANGE_PROFILE,
     WINDOW_REWARDS,
@@ -268,11 +268,11 @@ enum{
     WINDOW_END
 };
 
-//******************************//
+// ******************************//
 // Special information strings: //
-//******************************//
+// ******************************//
 
-enum{
+enum {
     NO_SPECIAL_INFO,
     SPECIAL_INFO_CURRENT_PROFILE,
     SPECIAL_INFO_NO_PROFILE,
@@ -306,7 +306,6 @@ enum{
     SPECIAL_INFO_KEY_CHANGE_CHARACTER,
     SPECIAL_INFO_KEY_PAUSE,
     SPECIAL_INFO_KEY_CHANGE_SHOT,
-
     SPECIAL_INFO_KEY_1_LEFT,
     SPECIAL_INFO_KEY_1_UP,
     SPECIAL_INFO_KEY_1_RIGHT,
@@ -314,7 +313,6 @@ enum{
     SPECIAL_INFO_KEY_1_JUMP,
     SPECIAL_INFO_KEY_1_SHOOT,
     SPECIAL_INFO_KEY_1_CHANGE_SHOT,
-
     SPECIAL_INFO_KEY_2_LEFT,
     SPECIAL_INFO_KEY_2_UP,
     SPECIAL_INFO_KEY_2_RIGHT,
@@ -322,7 +320,6 @@ enum{
     SPECIAL_INFO_KEY_2_JUMP,
     SPECIAL_INFO_KEY_2_SHOOT,
     SPECIAL_INFO_KEY_2_CHANGE_SHOT,
-
     SPECIAL_INFO_KEY_3_LEFT,
     SPECIAL_INFO_KEY_3_UP,
     SPECIAL_INFO_KEY_3_RIGHT,
@@ -330,7 +327,6 @@ enum{
     SPECIAL_INFO_KEY_3_JUMP,
     SPECIAL_INFO_KEY_3_SHOOT,
     SPECIAL_INFO_KEY_3_CHANGE_SHOT,
-
     SPECIAL_INFO_PROFILE_1,
     SPECIAL_INFO_PROFILE_2,
     SPECIAL_INFO_PROFILE_3,
@@ -381,34 +377,29 @@ enum{
     SPECIAL_INFO_LEVEL_STAT_TOTAL_TIME,
     SPECIAL_INFO_LEVEL_STAT_BEST_TIME,
     SPECIAL_INFO_ACHIEVEMENT,
-    SPECIAL_INFO_CHECKBOX_ACHIEVEMENT=SPECIAL_INFO_ACHIEVEMENT+ACHIEVEMENT_END,
-    SPECIAL_INFO_SHOW_DATA_LOCATION=SPECIAL_INFO_CHECKBOX_ACHIEVEMENT+ACHIEVEMENT_END
+    SPECIAL_INFO_CHECKBOX_ACHIEVEMENT = SPECIAL_INFO_ACHIEVEMENT + ACHIEVEMENT_END,
+    SPECIAL_INFO_SHOW_DATA_LOCATION = SPECIAL_INFO_CHECKBOX_ACHIEVEMENT + ACHIEVEMENT_END
 };
 
-//****************//
+// ****************//
 // Special input: //
-//****************//
+// ****************//
 
-enum{
+enum {
     NO_SPECIAL_INPUT,
     SPECIAL_INPUT_CREATE_PROFILE
 };
 
-//*********//
+// *********//
 // Colors: //
-//*********//
+// *********//
 
-enum{
+enum {
     COLOR_RAINBOW,
-
     COLOR_BEGIN,
-
-    COLOR_BLACK=COLOR_BEGIN,
-
+    COLOR_BLACK = COLOR_BEGIN,
     COLOR_GRAY,
-
     COLOR_WHITE,
-
     COLOR_BROWN,
     COLOR_DARK_BROWN,
     COLOR_COPPER,
@@ -419,62 +410,54 @@ enum{
     COLOR_TAN,
     COLOR_PALE_BROWN,
     COLOR_CHAMPAGNE,
-
     COLOR_YELLOW,
     COLOR_SYSTEM,
     COLOR_GOLD,
     COLOR_YELLOW_PASTEL,
     COLOR_YELLOW_FULL,
-
     COLOR_ORANGE,
     COLOR_PUMPKIN,
     COLOR_ORANGE_PASTEL,
     COLOR_ORANGE_FULL,
-
     COLOR_RED,
     COLOR_DARK_RED,
     COLOR_FLAME,
     COLOR_WINE,
-
     COLOR_PINK,
     COLOR_ROSE,
     COLOR_SHOCKING_PINK,
-
     COLOR_PURPLE,
     COLOR_VIOLET,
     COLOR_INDIGO,
     COLOR_PURPLE_PASTEL,
     COLOR_PURPLE_FULL,
-
     COLOR_BLUE,
     COLOR_SKY_BLUE,
     COLOR_UN_BLUE,
     COLOR_BLUE_OCEAN,
-
     COLOR_GREEN,
     COLOR_JUNGLE,
     COLOR_SPRING,
     COLOR_DARK_GREEN,
     COLOR_GRASS_GREEN,
-
     COLOR_END
 };
 
-//**************//
+// **************//
 // Boss States: //
-//**************//
+// **************//
 
-enum{
+enum {
     BOSS_STATE_NOT_SPAWNED,
     BOSS_STATE_SPAWNED,
     BOSS_STATE_DEFEATED
 };
 
-//*************//
+// *************//
 // Game Modes: //
-//*************//
+// *************//
 
-enum{
+enum {
     GAME_MODE_SP_ADVENTURE,
     GAME_MODE_SP_SURVIVAL,
     GAME_MODE_MP_ADVENTURE,
@@ -482,23 +465,23 @@ enum{
     GAME_MODE_MP_VERSUS
 };
 
-//***************//
+// ***************//
 // Difficulties: //
-//***************//
+// ***************//
 
-enum{
+enum {
     DIFFICULTY_EASY,
     DIFFICULTY_NORMAL,
     DIFFICULTY_HARD
 };
 
-//**************//
+// **************//
 // Moon Phases: //
-//**************//
+// **************//
 
-enum{
+enum {
     MOON_PHASE_BEGIN,
-    MOON_PHASE_NEW=MOON_PHASE_BEGIN,
+    MOON_PHASE_NEW = MOON_PHASE_BEGIN,
     MOON_PHASE_WAXING_CRESCENT,
     MOON_PHASE_FIRST_QUARTER,
     MOON_PHASE_WAXING_GIBBOUS,
@@ -509,11 +492,11 @@ enum{
     MOON_PHASE_END
 };
 
-//***********//
+// ***********//
 // Holidays: //
-//***********//
+// ***********//
 
-enum{
+enum {
     HOLIDAY_NONE,
     HOLIDAY_NEW_YEARS_DAY,
     HOLIDAY_VALENTINES,
@@ -526,13 +509,13 @@ enum{
     HOLIDAY_NEW_YEARS_EVE
 };
 
-//********//
+// ********//
 // Music: //
-//********//
+// ********//
 
-enum{
+enum {
     MUSIC_BEGIN,
-    MUSIC_MENU=MUSIC_BEGIN,
+    MUSIC_MENU = MUSIC_BEGIN,
     MUSIC_ALARM,
     MUSIC_INTRO1,
     MUSIC_INTRO2,
@@ -554,11 +537,11 @@ enum{
     MUSIC_END
 };
 
-//*************************//
+// *************************//
 // Main World Map Regions: //
-//*************************//
+// *************************//
 
-enum{
+enum {
     WORLDMAP_REGION_NORMAL,
     WORLDMAP_REGION_VALLEY,
     WORLDMAP_REGION_CASTLE,
@@ -571,11 +554,11 @@ enum{
     WORLDMAP_REGION_LIGHTHOUSE
 };
 
-//***************//
+// ***************//
 // Which Window: //
-//***************//
+// ***************//
 
-enum{
+enum {
     WHICH_WINDOW_INVENTORY,
     WHICH_WINDOW_MAP,
     WHICH_WINDOW_MESSAGE,
@@ -583,25 +566,25 @@ enum{
     WHICH_WINDOW_SHOP,
     WHICH_WINDOW_UPGRADES,
     WHICH_WINDOW_LEVEL_INFO,
-    WHICH_WINDOW_OTHER=WHICH_WINDOW_LEVEL_INFO+16
+    WHICH_WINDOW_OTHER = WHICH_WINDOW_LEVEL_INFO + 16
 };
 
-//*****************//
+// *****************//
 // Save Locations: //
-//*****************//
+// *****************//
 
-enum{
+enum {
     SAVE_LOCATION_LOCAL,
     SAVE_LOCATION_HOME
 };
 
-//***********//
+// ***********//
 // Commands: //
-//***********//
+// ***********//
 
-enum{
+enum {
     COMMAND_BEGIN,
-    COMMAND_TOGGLE_MAIN_MENU=COMMAND_BEGIN,
+    COMMAND_TOGGLE_MAIN_MENU = COMMAND_BEGIN,
     COMMAND_TOGGLE_INVENTORY,
     COMMAND_TOGGLE_MAP,
     COMMAND_SCREENSHOT,
@@ -618,11 +601,11 @@ enum{
     COMMAND_END
 };
 
-//**************//
+// **************//
 // Input types: //
-//**************//
+// **************//
 
-enum{
+enum {
     INPUT_TYPE_KEYBOARD,
     INPUT_TYPE_JOYSTICK_BUTTON,
     INPUT_TYPE_JOYSTICK_AXIS,
@@ -630,20 +613,20 @@ enum{
     INPUT_TYPE_JOYSTICK_BALL
 };
 
-//**************************//
+// **************************//
 // Joystick neutral values: //
-//**************************//
+// **************************//
 
-enum{
-    JOYSTICK_NEUTRAL_NEGATIVE=-24000,
-    JOYSTICK_NEUTRAL_POSITIVE=24000
+enum {
+    JOYSTICK_NEUTRAL_NEGATIVE = -24000,
+    JOYSTICK_NEUTRAL_POSITIVE = 24000
 };
 
-//*************//
+// *************//
 // Directions: //
-//*************//
+// *************//
 
-enum{
+enum {
     NONE,
     LEFT,
     UP,
@@ -653,15 +636,15 @@ enum{
     RIGHT_UP,
     RIGHT_DOWN,
     LEFT_DOWN,
-    //This constant is used as a cam_state value, to tell the camera whether it is free or attached to a player.
+    // This constant is used as a cam_state value, to tell the camera whether it is free or attached to a player.
     CAM_STICKY
 };
 
-//*****************//
+// *****************//
 // Title Movement: //
-//*****************//
+// *****************//
 
-enum{
+enum {
     TITLE_BG_MOVING_IN,
     TITLE_BG_MOVING_OUT,
     TITLE_MOVING_IN,
@@ -671,37 +654,37 @@ enum{
     TITLE_NOT_MOVING
 };
 
-//*************//
+// *************//
 // Characters: //
-//*************//
+// *************//
 
-enum{
+enum {
     CHARACTER_BEGIN,
-    CHARACTER_HUBERT=CHARACTER_BEGIN,
+    CHARACTER_HUBERT = CHARACTER_BEGIN,
     CHARACTER_SLIME_O,
     CHARACTER_SKETCH,
     CHARACTER_PENNY,
     CHARACTER_END
 };
 
-//*********************//
+// *********************//
 // Fullscreen Options: //
-//*********************//
+// *********************//
 
-enum{
+enum {
     FULLSCREEN_MODE_STANDARD,
     FULLSCREEN_MODE_WINDOWED
 };
 
-//********************//
+// ********************//
 // Button Properties: //
-//********************//
+// ********************//
 
-enum{
+enum {
     BUTTON_VISIBLE,
     BUTTON_INVISIBLE
 };
-enum{
+enum {
     BUTTON_DISABLED,
     BUTTON_ENABLED
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef holidays_h
@@ -16,6 +16,6 @@ std::string return_holiday_name(short holiday_ident);
 
 void determine_holiday();
 
-short return_gui_color(short holiday_ident,short color_number);
+short return_gui_color(short holiday_ident, short color_number);
 
 #endif

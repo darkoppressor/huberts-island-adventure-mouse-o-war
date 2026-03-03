@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef devworld_h
@@ -6,7 +6,7 @@
 
 #include <vector>
 
-struct devworld_data{
+struct devworld_data {
     double scale_x;
     double scale_y;
 
@@ -14,17 +14,16 @@ struct devworld_data{
     bool scale_y_increasing;
 };
 
-class DevWorld{
+class DevWorld {
     private:
     public:
+        std::vector<std::vector<devworld_data>> tiles;
 
-    std::vector< std::vector<devworld_data> > tiles;
+        void clear_tiles();
 
-    void clear_tiles();
+        void setup(int level_x, int level_y);
 
-    void setup(int level_x,int level_y);
-
-    void process();
+        void process();
 };
 
 #endif

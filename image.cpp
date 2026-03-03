@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "image.h"
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void Image::load_images_global(){
+void Image::load_images_global () {
     sprite_sheet_player.load_image("data/images/sprite_sheet_player.png");
     sprite_sheet_player_worldmap.load_image("data/images/sprite_sheet_player_worldmap.png");
     sprite_sheet_character_slime_o.load_image("data/images/sprite_sheet_character_slime_o.png");
@@ -34,7 +34,7 @@ void Image::load_images_global(){
     level_title_background_0.load_image("data/images/level_title_background_0.png");
     level_title_background_1.load_image("data/images/level_title_background_1.png");
     level_title_background_2.load_image("data/images/level_title_background_2.png");
-    menu_background_0.load_image("data/images/menu_background/"+return_holiday_name(holiday)+"_0.png");
+    menu_background_0.load_image("data/images/menu_background/" + return_holiday_name(holiday) + "_0.png");
     checkbox_unchecked.load_image("data/images/checkbox_unchecked.png");
     checkbox_checked.load_image("data/images/checkbox_checked.png");
     ammo_box.load_image("data/images/ammo_box.png");
@@ -133,39 +133,52 @@ void Image::load_images_global(){
     touch_controller_shoulder_left.load_image("data/images/touch_controller_shoulder_left.png");
     touch_controller_shoulder_right.load_image("data/images/touch_controller_shoulder_right.png");
 
-    for(int i=0;i<player.menu_backgrounds.size();i++){
+    for (int i = 0; i < player.menu_backgrounds.size(); i++) {
         menu_background_images.push_back(image_data());
 
-        string holiday_name=return_holiday_name(holiday);
-        string file_name="";
-        file_name="data/images/menu_background/";
-        file_name+=holiday_name;
-        file_name+="_";
-        ss.clear();ss.str("");ss<<i+1;file_name+=ss.str();
-        file_name+=".png";
+        string holiday_name = return_holiday_name(holiday);
+        string file_name = "";
+
+        file_name = "data/images/menu_background/";
+        file_name += holiday_name;
+        file_name += "_";
+        ss.clear();
+        ss.str("");
+        ss << i + 1;
+        file_name += ss.str();
+        file_name += ".png";
 
         menu_background_images[i].load_image(file_name);
     }
 
-    for(int i=0;i<player.overlay_snow.size();i++){
+    for (int i = 0; i < player.overlay_snow.size(); i++) {
         overlay_snow_images.push_back(image_data());
 
-        string file_name="data/images/overlay_snow_";
-        ss.clear();ss.str("");ss<<i+1;file_name+=ss.str();
-        file_name+=".png";
+        string file_name = "data/images/overlay_snow_";
+
+        ss.clear();
+        ss.str("");
+        ss << i + 1;
+        file_name += ss.str();
+        file_name += ".png";
         overlay_snow_images[i].load_image(file_name);
     }
-    for(int i=0;i<player.overlay_rain.size();i++){
+
+    for (int i = 0; i < player.overlay_rain.size(); i++) {
         overlay_rain_images.push_back(image_data());
 
-        string file_name="data/images/overlay_rain_";
-        ss.clear();ss.str("");ss<<i+1;file_name+=ss.str();
-        file_name+=".png";
+        string file_name = "data/images/overlay_rain_";
+
+        ss.clear();
+        ss.str("");
+        ss << i + 1;
+        file_name += ss.str();
+        file_name += ".png";
         overlay_rain_images[i].load_image(file_name);
     }
 }
 
-void Image::unload_images_global(){
+void Image::unload_images_global () {
     sprite_sheet_player.unload_image();
     sprite_sheet_player_worldmap.unload_image();
     sprite_sheet_character_slime_o.unload_image();
@@ -290,79 +303,96 @@ void Image::unload_images_global(){
     touch_controller_shoulder_left.unload_image();
     touch_controller_shoulder_right.unload_image();
 
-    for(int i=0;i<menu_background_images.size();i++){
+    for (int i = 0; i < menu_background_images.size(); i++) {
         menu_background_images[i].unload_image();
     }
+
     menu_background_images.clear();
 
-    for(int i=0;i<overlay_snow_images.size();i++){
+    for (int i = 0; i < overlay_snow_images.size(); i++) {
         overlay_snow_images[i].unload_image();
     }
+
     overlay_snow_images.clear();
-    for(int i=0;i<overlay_rain_images.size();i++){
+
+    for (int i = 0; i < overlay_rain_images.size(); i++) {
         overlay_rain_images[i].unload_image();
     }
+
     overlay_rain_images.clear();
 }
 
-void Image::load_images_level(short level_to_load,short sub_level_to_load,string current_level){
-    if(player.game_mode==GAME_MODE_SP_ADVENTURE || player.game_mode==GAME_MODE_MP_ADVENTURE){
-        load_images_level_adventure(level_to_load,sub_level_to_load);
-    }
-    else if(player.game_mode==GAME_MODE_SP_SURVIVAL){
+void Image::load_images_level (short level_to_load, short sub_level_to_load, string current_level) {
+    if (player.game_mode == GAME_MODE_SP_ADVENTURE || player.game_mode == GAME_MODE_MP_ADVENTURE) {
+        load_images_level_adventure(level_to_load, sub_level_to_load);
+    } else if (player.game_mode == GAME_MODE_SP_SURVIVAL) {
         load_images_level_survival(current_level);
-    }
-    else if(player.game_mode==GAME_MODE_MP_SURVIVAL){
+    } else if (player.game_mode == GAME_MODE_MP_SURVIVAL) {
         load_images_level_survival(current_level);
     }
 }
 
-void Image::load_images_level_adventure(short level_to_load,short sub_level_to_load){
-    //Create a string to hold the current level number.
-    string current_level="";
-    ss.clear();ss.str("");ss<<level_to_load;current_level=ss.str();
+void Image::load_images_level_adventure (short level_to_load, short sub_level_to_load) {
+    // Create a string to hold the current level number.
+    string current_level = "";
 
-    //Create a string to hold the current sub level number.
-    string current_sub_level="";
-    ss.clear();ss.str("");ss<<sub_level_to_load;current_sub_level=ss.str();
+    ss.clear();
+    ss.str("");
+    ss << level_to_load;
+    current_level = ss.str();
 
-    string string_level_to_load="";
-    //If the current sub level is 0, meaning "load the main level."
-    if(sub_level_to_load==0){
-        string_level_to_load=current_level;
+    // Create a string to hold the current sub level number.
+    string current_sub_level = "";
+
+    ss.clear();
+    ss.str("");
+    ss << sub_level_to_load;
+    current_sub_level = ss.str();
+
+    string string_level_to_load = "";
+
+    // If the current sub level is 0, meaning "load the main level."
+    if (sub_level_to_load == 0) {
+        string_level_to_load = current_level;
     }
-    //If there is a current sub level to load instead of the main one.
-    else{
-        string_level_to_load=current_level+"/"+current_sub_level;
+    // If there is a current sub level to load instead of the main one.
+    else {
+        string_level_to_load = current_level + "/" + current_sub_level;
     }
 
-    //Load the level-specific images.
-    for(short i=0;i<level.background_layers.size();i++){
+    // Load the level-specific images.
+    for (short i = 0; i < level.background_layers.size(); i++) {
         background_layer_images.push_back(image_data());
 
-        string image_number="";
-        ss.clear();ss.str("");ss<<i;image_number=ss.str();
+        string image_number = "";
 
-        background_layer_images[i].load_image("data/levels/"+string_level_to_load+"/background_layer_"+image_number+".png");
+        ss.clear();
+        ss.str("");
+        ss << i;
+        image_number = ss.str();
+
+        background_layer_images[i].load_image("data/levels/" + string_level_to_load + "/background_layer_" +
+                                              image_number + ".png");
     }
 
-    background_static.load_image("data/levels/"+string_level_to_load+"/background_static.png");
+    background_static.load_image("data/levels/" + string_level_to_load + "/background_static.png");
 
-    tiles.load_image("data/levels/"+string_level_to_load+"/tiles.png");
+    tiles.load_image("data/levels/" + string_level_to_load + "/tiles.png");
 
-    water_tiles.load_image("data/levels/"+string_level_to_load+"/water_tiles.png");
+    water_tiles.load_image("data/levels/" + string_level_to_load + "/water_tiles.png");
 
-    //The world map does not use these, so they are not loaded if the current level is the world map.
-    if(!player.is_level_worldmap(level_to_load)){
-        tiles_background.load_image("data/levels/"+string_level_to_load+"/tiles_background.png");
+    // The world map does not use these, so they are not loaded if the current level is the world map.
+    if (!player.is_level_worldmap(level_to_load)) {
+        tiles_background.load_image("data/levels/" + string_level_to_load + "/tiles_background.png");
     }
 }
 
-void Image::unload_images_level(short level_to_unload){
-    //Free up the level-specific images.
-    for(short i=0;i<background_layer_images.size();i++){
+void Image::unload_images_level (short level_to_unload) {
+    // Free up the level-specific images.
+    for (short i = 0; i < background_layer_images.size(); i++) {
         background_layer_images[i].unload_image();
     }
+
     background_layer_images.clear();
 
     background_static.unload_image();
@@ -371,28 +401,33 @@ void Image::unload_images_level(short level_to_unload){
 
     water_tiles.unload_image();
 
-    //As long as we aren't unloading the world map, unload the non-world map images.
-    if(!player.is_level_worldmap(level_to_unload)){
+    // As long as we aren't unloading the world map, unload the non-world map images.
+    if (!player.is_level_worldmap(level_to_unload)) {
         tiles_background.unload_image();
     }
 }
 
-void Image::load_images_level_survival(std::string current_level){
-    //Load the level-specific images.
-    for(short i=0;i<level.background_layers.size();i++){
+void Image::load_images_level_survival (std::string current_level) {
+    // Load the level-specific images.
+    for (short i = 0; i < level.background_layers.size(); i++) {
         background_layer_images.push_back(image_data());
 
-        string image_number="";
-        ss.clear();ss.str("");ss<<i;image_number=ss.str();
+        string image_number = "";
 
-        background_layer_images[i].load_image("data/levels/survival/"+current_level+"/background_layer_"+image_number+".png");
+        ss.clear();
+        ss.str("");
+        ss << i;
+        image_number = ss.str();
+
+        background_layer_images[i].load_image("data/levels/survival/" + current_level + "/background_layer_" +
+                                              image_number + ".png");
     }
 
-    background_static.load_image("data/levels/survival/"+current_level+"/background_static.png");
+    background_static.load_image("data/levels/survival/" + current_level + "/background_static.png");
 
-    tiles.load_image("data/levels/survival/"+current_level+"/tiles.png");
+    tiles.load_image("data/levels/survival/" + current_level + "/tiles.png");
 
-    water_tiles.load_image("data/levels/survival/"+current_level+"/water_tiles.png");
+    water_tiles.load_image("data/levels/survival/" + current_level + "/water_tiles.png");
 
-    tiles_background.load_image("data/levels/survival/"+current_level+"/tiles_background.png");
+    tiles_background.load_image("data/levels/survival/" + current_level + "/tiles_background.png");
 }

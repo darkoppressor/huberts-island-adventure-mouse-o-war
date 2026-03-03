@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "main.h"
@@ -27,29 +27,30 @@
 using namespace std;
 
 #ifdef GAME_OS_ANDROID
-    //This block of code was taken from SDL_android_main.c
-    //I was having trouble compiling that file along with the game code to create the library for Android
-    //In SDL2 2.0.3, simply copying that code here seemed to fix things...
-    //In SDL2 2.0.4, copying the same relevant code was a disaster, so I created this amalgam of the two
-    extern "C"{
+    // This block of code was taken from SDL_android_main.c
+    // I was having trouble compiling that file along with the game code to create the library for Android
+    // In SDL2 2.0.3, simply copying that code here seemed to fix things...
+    // In SDL2 2.0.4, copying the same relevant code was a disaster, so I created this amalgam of the two
+    extern "C" {
         /* Called before SDL_main() to initialize JNI bindings in SDL library */
         extern void SDL_Android_Init(JNIEnv* env, jclass cls);
 
         /* Start up the SDL app */
-        JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* env, jclass cls, jobject obj)
-        {
+        JNIEXPORT int JNICALL Java_org_libsdl_app_SDLActivity_nativeInit (JNIEnv* env, jclass cls, jobject obj) {
             /* This interface could expand with ABI negotiation, calbacks, etc. */
             SDL_Android_Init(env, cls);
 
             SDL_SetMainReady();
 
             /* Run the application code! */
-            char *argv[2];
+            char* argv[2];
+
             /* Use the name "app_process" so PHYSFS_platformCalcBaseDir() works.
                https://bitbucket.org/MartinFelis/love-android-sdl2/issue/23/release-build-crash-on-start
              */
             argv[0] = SDL_strdup("app_process");
             argv[1] = NULL;
+
             int status = SDL_main(1, argv);
 
             /* Release the argument. */
@@ -63,59 +64,59 @@ using namespace std;
     }
 #endif
 
-void game_loop(){
-    int things_loaded=0;
-    int things_to_load=12;
+void game_loop () {
+    int things_loaded = 0;
+    int things_to_load = 12;
 
     load_world();
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
     music.prepare_tracks();
 
     music.reinitialize_menu_track();
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/alarm.ogg",MUSIC_ALARM);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/alarm.ogg", MUSIC_ALARM);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/valley.ogg",MUSIC_WORLDMAP_VALLEY);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/valley.ogg", MUSIC_WORLDMAP_VALLEY);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/castle.ogg",MUSIC_WORLDMAP_CASTLE);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/castle.ogg", MUSIC_WORLDMAP_CASTLE);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/haunted.ogg",MUSIC_WORLDMAP_HAUNTED);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/haunted.ogg", MUSIC_WORLDMAP_HAUNTED);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/mountain.ogg",MUSIC_WORLDMAP_MOUNTAIN);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/mountain.ogg", MUSIC_WORLDMAP_MOUNTAIN);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/volcano.ogg",MUSIC_WORLDMAP_VOLCANO);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/volcano.ogg", MUSIC_WORLDMAP_VOLCANO);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/desert.ogg",MUSIC_WORLDMAP_DESERT);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/desert.ogg", MUSIC_WORLDMAP_DESERT);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/ocean.ogg",MUSIC_WORLDMAP_OCEAN);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/ocean.ogg", MUSIC_WORLDMAP_OCEAN);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/mountain_peak.ogg",MUSIC_WORLDMAP_MOUNTAIN_PEAK);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/mountain_peak.ogg", MUSIC_WORLDMAP_MOUNTAIN_PEAK);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
-    music.load_track("data/music/lighthouse.ogg",MUSIC_WORLDMAP_LIGHTHOUSE);
-    render_loading_screen((double)++things_loaded/(double)things_to_load);
+    music.load_track("data/music/lighthouse.ogg", MUSIC_WORLDMAP_LIGHTHOUSE);
+    render_loading_screen((double) ++things_loaded / (double) things_to_load);
 
     music.restart_track(MUSIC_MENU);
-    music.play_track(MUSIC_MENU,1.0);
+    music.play_track(MUSIC_MENU, 1.0);
 
     player.load_data();
 
-    //If no profile exists.
-    if(player.name=="\x1F"){
-        button_event_open_window_create_profile(NULL,0);
+    // If no profile exists.
+    if (player.name == "\x1F") {
+        button_event_open_window_create_profile(NULL, 0);
     }
-    //If a profile already exists.
-    else{
+    // If a profile already exists.
+    else {
         profile.load_profile_global_data();
         vector_windows[WINDOW_MAIN_MENU].turn_on();
 
@@ -126,247 +127,266 @@ void game_loop(){
 
     player.set_firework_rate();
 
-    //The maximum number of frames to be skipped.
-    const double MAX_FRAMESKIP=5.0;
+    // The maximum number of frames to be skipped.
+    const double MAX_FRAMESKIP = 5.0;
 
-    //In our logic update while() loop, we consume SKIP_TICKS sized chunks of time, which are added to next_game_tick.
-    Uint32 next_game_tick=SDL_GetTicks();
+    // In our logic update while() loop, we consume SKIP_TICKS sized chunks of time, which are added to next_game_tick.
+    Uint32 next_game_tick = SDL_GetTicks();
 
-    //The number of logic updates that have occured since the last render.
-    int number_of_updates=0;
+    // The number of logic updates that have occured since the last render.
+    int number_of_updates = 0;
 
-    //Declare and start the frame rate timer. This keeps track of the frame rate, as well as milliseconds spent per frame.
-    //See the explanation at the beginning of the game loop for more details.
+    // Declare and start the frame rate timer. This keeps track of the frame rate, as well as milliseconds spent per
+    // frame.
+    // See the explanation at the beginning of the game loop for more details.
     Timer timer_frame_rate;
+
     timer_frame_rate.start();
 
-    //The following three variables are used for displaying the FPS to the player.
-    //This integer keeps track of the number of frame each second. Every time a second has passed, frame_count's value is given to frame_rate, and frame_count is reset to 0.
-    int frame_count=0;
+    // The following three variables are used for displaying the FPS to the player.
+    // This integer keeps track of the number of frame each second. Every time a second has passed, frame_count's value
+    // is given to frame_rate, and frame_count is reset to 0.
+    int frame_count = 0;
 
-    //At any given time (after the first second of runtime), frame_rate represents the number of frames that were rendered in the past second.
-    int frame_rate=0;
+    // At any given time (after the first second of runtime), frame_rate represents the number of frames that were
+    // rendered in the past second.
+    int frame_rate = 0;
 
-    //For added performance information, ms_per_frame takes the FPS value each second and converts it to the number of milliseconds spent on each frame in the past second.
-    double ms_per_frame=0;
+    // For added performance information, ms_per_frame takes the FPS value each second and converts it to the number of
+    // milliseconds spent on each frame in the past second.
+    double ms_per_frame = 0;
 
-    //Keeps track of the logic frames each second.
-    int logic_frame_count=0;
-    ////At any given time (after the first second of runtime), logic_frame_rate represents the number of logic frames that were processed in the past second.
-    int logic_frame_rate=0;
+    // Keeps track of the logic frames each second.
+    int logic_frame_count = 0;
+    ////At any given time (after the first second of runtime), logic_frame_rate represents the number of logic frames
+    // that were processed in the past second.
+    int logic_frame_rate = 0;
 
-    //Here we have the game loop.
-    while(true){
-        //If at least a second(preferably exactly one second) has passed since the last restart of the frame rate timer, we do several things.
-        //First, we set the frame rate to the current frame count, which has been counting up since the last timer restart.
-        //Second, we reset the frame count to 0, to count the number of frames succesfully completed in the next second.
-        //Third, we set the milliseconds per frame to 1000/our current frame rate. Since our frame rate is in seconds, this gives us the number of milliseconds being spent on
-        //each frame. Finally, we restart the frame rate timer.
-        if(timer_frame_rate.get_ticks()>=1000){
-            logic_frame_rate=logic_frame_count;
-            logic_frame_count=0;
+    // Here we have the game loop.
+    while (true) {
+        // If at least a second(preferably exactly one second) has passed since the last restart of the frame rate
+        // timer, we do several things.
+        // First, we set the frame rate to the current frame count, which has been counting up since the last timer
+        // restart.
+        // Second, we reset the frame count to 0, to count the number of frames succesfully completed in the next
+        // second.
+        // Third, we set the milliseconds per frame to 1000/our current frame rate. Since our frame rate is in seconds,
+        // this gives us the number of milliseconds being spent on
+        // each frame. Finally, we restart the frame rate timer.
+        if (timer_frame_rate.get_ticks() >= 1000) {
+            logic_frame_rate = logic_frame_count;
+            logic_frame_count = 0;
 
-            frame_rate=frame_count;
-            frame_count=0;
-            ms_per_frame=1000.0/frame_rate;
+            frame_rate = frame_count;
+            frame_count = 0;
+            ms_per_frame = 1000.0 / frame_rate;
             timer_frame_rate.start();
         }
 
-        //Here we are just incrementing the frame counter, which gives us the frames per second in the above if() statement.
+        // Here we are just incrementing the frame counter, which gives us the frames per second in the above if()
+        // statement.
         frame_count++;
 
-        //For our game loop, we first update game logic, and then render. The two are kept separate and independent.
+        // For our game loop, we first update game logic, and then render. The two are kept separate and independent.
 
-        //First we reset our updates counter to 0.
-        number_of_updates=0;
+        // First we reset our updates counter to 0.
+        number_of_updates = 0;
 
-        //We consume SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic UPDATE_LIMIT times a second.
-        //We also check to see if we've updated logic MAX_FRAMESKIP times without rendering, at which point we render.
-        while(SDL_GetTicks()>next_game_tick && number_of_updates<MAX_FRAMESKIP){
-            //We are doing another game logic update.
-            //If this reaches MAX_FRAMESKIP, we will render.
+        // We consume SKIP_TICKS sized chunks of time, which ultimately translates to updating the logic UPDATE_LIMIT
+        // times a second.
+        // We also check to see if we've updated logic MAX_FRAMESKIP times without rendering, at which point we render.
+        while (SDL_GetTicks() > next_game_tick && number_of_updates < MAX_FRAMESKIP) {
+            // We are doing another game logic update.
+            // If this reaches MAX_FRAMESKIP, we will render.
             number_of_updates++;
 
-            //Increment the logic frame counter.
+            // Increment the logic frame counter.
             logic_frame_count++;
 
-            //Clamp the time step to something reasonable.
-            if(fabs(SDL_GetTicks()-next_game_tick)>SKIP_TICKS*2){
-                next_game_tick=SDL_GetTicks()-SKIP_TICKS*2;
+            // Clamp the time step to something reasonable.
+            if (fabs(SDL_GetTicks() - next_game_tick) > SKIP_TICKS * 2) {
+                next_game_tick = SDL_GetTicks() - SKIP_TICKS * 2;
             }
 
-            //Consume another SKIP_TICKS sized chunk of time.
-            next_game_tick+=SKIP_TICKS;
+            // Consume another SKIP_TICKS sized chunk of time.
+            next_game_tick += SKIP_TICKS;
 
-            //Now we update the game logic:
+            // Now we update the game logic:
 
-            if(player.need_to_reinit){
-                player.need_to_reinit=false;
+            if (player.need_to_reinit) {
+                player.need_to_reinit = false;
                 main_window.reload();
             }
 
-            //First, we check for input from the player.
+            // First, we check for input from the player.
             input();
 
-            //Then, we move all of the objects.
+            // Then, we move all of the objects.
             movement();
 
-            //Once everything has had its chance to move, we handle events (collision detection).
+            // Once everything has had its chance to move, we handle events (collision detection).
             events();
 
-            //Handle camera movement.
-            camera(frame_rate,ms_per_frame,logic_frame_rate);
+            // Handle camera movement.
+            camera(frame_rate, ms_per_frame, logic_frame_rate);
 
-            //Animate everything. This entails first making sure that the appropriate animation state is being displayed, and then incrementing the frame for each sprite.
+            // Animate everything. This entails first making sure that the appropriate animation state is being
+            // displayed, and then incrementing the frame for each sprite.
             animation();
         }
 
-        //Now that we've handled logic updates, we do our rendering.
+        // Now that we've handled logic updates, we do our rendering.
 
-        //Finally, we render everything that is currently within the camera bounds to the screen.
-        //We pass frame_rate and ms_per_frame so they can be displayed onscreen.
-        render(frame_rate,ms_per_frame,logic_frame_rate);
+        // Finally, we render everything that is currently within the camera bounds to the screen.
+        // We pass frame_rate and ms_per_frame so they can be displayed onscreen.
+        render(frame_rate, ms_per_frame, logic_frame_rate);
     }
 }
 
 /**
  * Function called by libfov to apply light to a cell.
  *
- * \param map Pointer to map data structure passed to function such as
- *            fov_circle.
+ * \param map Pointer to map data structure passed to function such as fov_circle.
  * \param x   Absolute x-axis position of cell.
  * \param y   Absolute x-axis position of cell.
  * \param dx  Offset of cell from source cell on x-axis.
  * \param dy  Offset of cell from source cell on y-axis.
- * \param src Pointer to source data structure passed to function such
- *            as fov_circle.
+ * \param src Pointer to source data structure passed to function such as fov_circle.
  */
-void apply_map(void *level,int x,int y,int dx,int dy,void *src){
-	if(((Level *)level)->onMap_map(x,y)){
-		((Level *)level)->setSeen_map(x,y);
-	}
+void apply_map (void* level, int x, int y, int dx, int dy, void* src) {
+    if (((Level*) level)->onMap_map(x, y)) {
+        ((Level*) level)->setSeen_map(x, y);
+    }
 }
-void apply_lighting(void *level,int x,int y,int dx,int dy,void *src){
-	if(((Level *)level)->onMap_lighting(x,y)){
-		((Level *)level)->setSeen_lighting(x,y,(Light_Source*)src);
-	}
-}
-
-/**
- * Function called by libfov to determine whether light can pass
- * through a cell. Return zero if light can pass though the cell at
- * (x,y), non-zero if it cannot.
- *
- * \param map Pointer to map data structure passed to function such as
- *            fov_circle.
- * \param x   Absolute x-axis position of cell.
- * \param y   Absolute x-axis position of cell.
- */
-bool opaque_map(void *level,int x,int y){
-	return ((Level *)level)->blockLOS_map(x,y);
-}
-bool opaque_lighting(void *level,int x,int y){
-	return ((Level *)level)->blockLOS_lighting(x,y);
-}
-
-int handle_app_events(void* userdata,SDL_Event* event_storage){
-    switch(event_storage->type){
-    case SDL_APP_TERMINATING:
-        update_error_log("The OS is terminating this application, shutting down...");
-
-        quit_game();
-        return 0;
-    default:
-        return 1;
+void apply_lighting (void* level, int x, int y, int dx, int dy, void* src) {
+    if (((Level*) level)->onMap_lighting(x, y)) {
+        ((Level*) level)->setSeen_lighting(x, y, (Light_Source*) src);
     }
 }
 
-//Apparently, SDL likes main() to take these arguments, so that is what we will do.
-int main(int argc,char* args[]){
+/**
+ * Function called by libfov to determine whether light can pass through a cell. Return zero if light can pass though
+ *the cell at (x,y), non-zero if it cannot.
+ *
+ * \param map Pointer to map data structure passed to function such as fov_circle.
+ * \param x   Absolute x-axis position of cell.
+ * \param y   Absolute x-axis position of cell.
+ */
+bool opaque_map (void* level, int x, int y) {
+    return ((Level*) level)->blockLOS_map(x, y);
+}
+bool opaque_lighting (void* level, int x, int y) {
+    return ((Level*) level)->blockLOS_lighting(x, y);
+}
+
+int handle_app_events (void* userdata, SDL_Event* event_storage) {
+    switch (event_storage->type) {
+        case SDL_APP_TERMINATING:
+            update_error_log("The OS is terminating this application, shutting down...");
+
+            quit_game();
+
+            return 0;
+        default:
+            return 1;
+    }
+}
+
+// Apparently, SDL likes main() to take these arguments, so that is what we will do.
+int main (int argc, char* args[]) {
     #ifdef GAME_OS_OSX
-        //Set the working directory to the Resources directory of our bundle.
+        // Set the working directory to the Resources directory of our bundle.
         char path[PATH_MAX];
-        CFURLRef url=CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-        CFURLGetFileSystemRepresentation(url,true,(uint8_t*)path,PATH_MAX);
+        CFURLRef url = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+
+        CFURLGetFileSystemRepresentation(url, true, (uint8_t*) path, PATH_MAX);
         CFRelease(url);
         chdir(path);
     #endif
 
     #ifdef GAME_DEMO
-        demo_mode=true;
+        demo_mode = true;
     #endif
 
-    if(!main_window.pre_initialize()){
+    if (!main_window.pre_initialize()) {
         return 1;
     }
 
     #ifdef GAME_OS_ANDROID
         Android::initialize();
+
     #endif
 
     time_t seconds;
-    uint32_t random_seed=(uint32_t)time(&seconds);
+    uint32_t random_seed = (uint32_t) time(&seconds);
+
     rng.mrand_main.seed(random_seed);
     rng.mrand_render.seed(random_seed);
 
     determine_holiday();
 
-    if(!save_location_load()){
+    if (!save_location_load()) {
         return 1;
     }
 
-    if(!profile.make_directories()){
+    if (!profile.make_directories()) {
         return 1;
     }
 
-    //If there is no player name, create a default profile
-    //I added this to basically remove the profile system from the game
+    // If there is no player name, create a default profile
+    // I added this to basically remove the profile system from the game
     load_current_profile();
-    if(player.name=="\x1F"){
-        creating_profile="default";
+
+    if (player.name == "\x1F") {
+        creating_profile = "default";
 
         profile.create_profile(true);
     }
 
-    if(load_current_profile()){
-        if(!options_load()){
-            profile.version_mismatch=true;
+    if (load_current_profile()) {
+        if (!options_load()) {
+            profile.version_mismatch = true;
             player.reset();
         }
-        if(!profile.load_profile_list()){
+
+        if (!profile.load_profile_list()) {
             return 1;
         }
     }
 
-    if(!global_options_load()){
+    if (!global_options_load()) {
         return 1;
     }
 
-    //Initialize the various subsystems.
-    if(!main_window.init()){
+    // Initialize the various subsystems.
+    if (!main_window.init()) {
         update_error_log("Failed to initialize the window.");
+
         return 1;
     }
 
     fov_settings_init(&profile.fov_settings_map);
-    fov_settings_set_opacity_test_function(&profile.fov_settings_map,opaque_map);
-    fov_settings_set_apply_lighting_function(&profile.fov_settings_map,apply_map);
+    fov_settings_set_opacity_test_function(&profile.fov_settings_map, opaque_map);
+    fov_settings_set_apply_lighting_function(&profile.fov_settings_map, apply_map);
 
     fov_settings_init(&player.fov_settings_lighting);
-    fov_settings_set_opacity_test_function(&player.fov_settings_lighting,opaque_lighting);
-    fov_settings_set_apply_lighting_function(&player.fov_settings_lighting,apply_lighting);
+    fov_settings_set_opacity_test_function(&player.fov_settings_lighting, opaque_lighting);
+    fov_settings_set_apply_lighting_function(&player.fov_settings_lighting, apply_lighting);
 
     prepare_scores();
     set_achievement_tooltips();
 
-    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,10.0,10.0));
-    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,8.0,8.0));
-    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,6.0,6.0));
+    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH, main_window.SCREEN_HEIGHT, 10.0, 10.0));
+    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH, main_window.SCREEN_HEIGHT, 8.0, 8.0));
+    player.menu_backgrounds.push_back(Menu_Background(main_window.SCREEN_WIDTH, main_window.SCREEN_HEIGHT, 6.0, 6.0));
 
-    player.overlay_snow.push_back(Overlay(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,2.0,2.0,&image.overlay_snow_images));
-    player.overlay_rain.push_back(Overlay(main_window.SCREEN_WIDTH,main_window.SCREEN_HEIGHT,2.0,2.0,&image.overlay_rain_images));
+    player.overlay_snow.push_back(Overlay(main_window.SCREEN_WIDTH, main_window.SCREEN_HEIGHT, 2.0, 2.0,
+                                          &image.overlay_snow_images));
+    player.overlay_rain.push_back(Overlay(main_window.SCREEN_WIDTH, main_window.SCREEN_HEIGHT, 2.0, 2.0,
+                                          &image.overlay_rain_images));
 
-    //Begin the game by entering the game loop.
+    // Begin the game by entering the game loop.
     game_loop();
+
     return 0;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef sound_data_h
@@ -8,16 +8,16 @@
 
 #include <SDL_mixer.h>
 
-class sound_data{
+class sound_data {
     private:
     public:
-    Mix_Chunk* chunk;
+        Mix_Chunk* chunk;
 
-    sound_data();
+        sound_data ();
 
-    void load_sound(std::string filename);
+        void load_sound(std::string filename);
 
-    void unload_sound();
+        void unload_sound();
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef player_mp_h
@@ -14,195 +14,191 @@
 #include <vector>
 
 /*
-This is the special player object for multiplayer.
+   This is the special player object for multiplayer.
 
-Player 1 is always the Player object.
-Any subsequent players will be Player_Mp objects in a vector of Player_Mp objects.
-*/
+   Player 1 is always the Player object. Any subsequent players will be Player_Mp objects in a vector of Player_Mp
+      objects.
+ */
 
-class Player_Mp: public Actor{
-private:
-    bool crouching_at_frame_start;
+class Player_Mp: public Actor {
+    private:
+        bool crouching_at_frame_start;
 
-    //Is the player sliding down a slope by crouching?
-    bool SLIDING;
+        // Is the player sliding down a slope by crouching?
+        bool SLIDING;
+        double worldmap_run_speed;
 
-    double worldmap_run_speed;
+    public:
+        // Is the player crouching?
+        bool CROUCHING;
 
-public:
-    //Is the player crouching?
-    bool CROUCHING;
+        // Animation frames and frame counters.
+        short frame_powerup;
+        short frame_counter_powerup;
+        bool balloon_scale_direction_x;
+        double balloon_scale_x;
+        bool balloon_scale_direction_y;
+        double balloon_scale_y;
 
-    //Animation frames and frame counters.
-    short frame_powerup;
-    short frame_counter_powerup;
+        // The currently selected shot type.
+        short current_shot;
 
-    bool balloon_scale_direction_x;
-    double balloon_scale_x;
-    bool balloon_scale_direction_y;
-    double balloon_scale_y;
+        // Options:
+        short option_character;
 
-    //The currently selected shot type.
-    short current_shot;
+        // Inputs.
+        std::vector<Input_Data> keys;
 
-    //Options:
-    short option_character;
+        // The player's current number of shots.
+        uint64_t ammo;
 
-    //Inputs.
-    std::vector<Input_Data> keys;
+        // The direction on the x-axis the player moves when dying.
+        bool death_direction;
 
-    //The player's current number of shots.
-    uint64_t ammo;
+        // The speed the player moves on the x-axis when dying.
+        double death_speed;
+        short death_bounces;
 
-    //The direction on the x-axis the player moves when dying.
-    bool death_direction;
+        // Resets every time the player enters the air.
+        // Counts down to 0.
+        // When non-zero, the player can still jump.
+        short counter_jump_mercy;
 
-    //The speed the player moves on the x-axis when dying.
-    double death_speed;
+        // When non-zero, the player can jump infinitely.
+        // Works exactly like cheat_jump, except is not a cheat. Is activated by grabbing a J-Balloon.
+        short counter_jump_mode;
 
-    short death_bounces;
+        // The player's light source data.
+        Light_Source light_source;
 
-    //Resets every time the player enters the air.
-    //Counts down to 0.
-    //When non-zero, the player can still jump.
-    short counter_jump_mercy;
+        // Pointer to the current character image.
+        image_data* ptr_player_image;
 
-    //When non-zero, the player can jump infinitely.
-    //Works exactly like cheat_jump, except is not a cheat. Is activated by grabbing a J-Balloon.
-    short counter_jump_mode;
+        // Pointer to the current character worldmap image.
+        image_data* ptr_player_worldmap_image;
 
-    //The player's light source data.
-    Light_Source light_source;
+        // Pointers to the current character sounds.
+        sound_data* ptr_player_footstep;
+        sound_data* ptr_player_footstep2;
+        sound_data* ptr_player_jump;
+        sound_data* ptr_player_start_slide;
+        sound_data* ptr_player_worldmap_footstep;
+        sound_data* ptr_player_worldmap_footstep2;
 
-    //Pointer to the current character image.
-    image_data* ptr_player_image;
+        // If true, the player is in bubble mode.
+        bool bubble_mode;
 
-    //Pointer to the current character worldmap image.
-    image_data* ptr_player_worldmap_image;
+        // Movement speed in bubble mode.
+        double bubble_move_x;
+        double bubble_move_y;
 
-    //Pointers to the current character sounds.
-    sound_data* ptr_player_footstep;
-    sound_data* ptr_player_footstep2;
-    sound_data* ptr_player_jump;
-    sound_data* ptr_player_start_slide;
-    sound_data* ptr_player_worldmap_footstep;
-    sound_data* ptr_player_worldmap_footstep2;
+        // Virtual AI "keystates".
+        bool ai_keystates[256];
+        std::vector<short> ai_key_events;
 
-    //If true, the player is in bubble mode.
-    bool bubble_mode;
+        // If true, this player is AI controlled.
+        bool ai_controlled;
+        Coords decision_target;
+        short decision_type;
+        short counter_decision_cooldown_revive;
+        short counter_path_far;
+        short counter_path_medium;
+        short counter_path_update;
+        short counter_path_giveup;
 
-    //Movement speed in bubble mode.
-    double bubble_move_x;
-    double bubble_move_y;
+        std::vector<Path> path;
 
-    //Virtual AI "keystates".
-    bool ai_keystates[256];
-    std::vector<short> ai_key_events;
+        Player_Mp (std::vector<Input_Data> get_keys, int get_which_mp_player, bool get_ai_controlled);
 
-    //If true, this player is AI controlled.
-    bool ai_controlled;
+        void reset();
 
-    Coords decision_target;
-    short decision_type;
-    short counter_decision_cooldown_revive;
+        void load_data();
 
-    short counter_path_far;
-    short counter_path_medium;
+        void check_special_items();
 
-    short counter_path_update;
-    short counter_path_giveup;
+        void set_physics();
 
-    std::vector<Path> path;
+        void update_character();
 
-    Player_Mp(std::vector<Input_Data> get_keys,int get_which_mp_player,bool get_ai_controlled);
+        // Start or stop crouching.
+        void crouch_start();
+        void crouch_stop();
 
-    void reset();
+        void put_in_bubble();
 
-    void load_data();
+        // Move the player.
+        void move();
 
-    void check_special_items();
+        void handle_tiles(int check_x_start, int check_x_end, int check_y_start, int check_y_end);
 
-    void set_physics();
+        void handle_tile_hazard(int int_x, int int_y);
 
-    void update_character();
+        // Handle events, such as collision checks.
+        void handle_events(bool being_pushed_up = false);
 
-    //Start or stop crouching.
-    void crouch_start();
-    void crouch_stop();
+        // Handle the player dying.
+        void handle_death(double death_x, double death_y, double death_w, double death_h,
+                          bool override_invulnerability = false);
 
-    void put_in_bubble();
+        // Animate the sprite.
+        void animate();
 
-    //Move the player.
-    void move();
+        // Render the sprite.
+        void render(bool mirrored = false);
 
-    void handle_tiles(int check_x_start,int check_x_end,int check_y_start,int check_y_end);
+        void render_path();
 
-    void handle_tile_hazard(int int_x,int int_y);
+        std::string get_decision_type();
 
-    //Handle events, such as collision checks.
-    void handle_events(bool being_pushed_up=false);
+        image_data* return_character_image();
+        image_data* return_character_worldmap_image();
 
-    //Handle the player dying.
-    void handle_death(double death_x,double death_y,double death_w,double death_h,bool override_invulnerability=false);
+        sound_data* return_character_sound_footstep();
+        sound_data* return_character_sound_footstep2();
+        sound_data* return_character_sound_jump();
+        sound_data* return_character_sound_start_slide();
 
-    //Animate the sprite.
-    void animate();
+        void ai(int our_index);
 
-    //Render the sprite.
-    void render(bool mirrored=false);
+        void prepare_for_input();
 
-    void render_path();
+        void handle_input_states();
 
-    std::string get_decision_type();
+        void handle_input_events();
 
-    image_data* return_character_image();
-    image_data* return_character_worldmap_image();
+        void handle_command_event(short command);
 
-    sound_data* return_character_sound_footstep();
-    sound_data* return_character_sound_footstep2();
-    sound_data* return_character_sound_jump();
-    sound_data* return_character_sound_start_slide();
+        bool command_state(short command);
 
-    void ai(int our_index);
+        void mp_reset(double new_x, double new_y);
 
-    void prepare_for_input();
+        void ai_decision(int our_index);
+        void ai_update_path();
 
-    void handle_input_states();
+        bool ai_tile_is_air(Tile* tile);
 
-    void handle_input_events();
+        int ai_tile_on_list(std::vector<Path_Calc>* path_list, int tile_x, int tile_y);
+        bool ai_tile_valid(int int_x, int int_y, int target_x, int target_y);
+        int ai_get_gravity_cost(int int_x, int int_y);
+        int ai_get_tile_cost(int int_x, int int_y);
+        void ai_add_open_tiles(Path_Calc* parent, int target_x, int target_y, std::vector<Path_Calc>* open_list,
+                               std::vector<Path_Calc>* closed_list, std::vector<Path_Calc>* new_open_tiles);
+        void ai_path_to_target(int target_x, int target_y);
 
-    void handle_command_event(short command);
+        // Move to the next node on the path.
+        void ai_move_to_path();
 
-    bool command_state(short command);
+        void ai_jump();
+        void ai_shoot();
 
-    void mp_reset(double new_x,double new_y);
-
-    void ai_decision(int our_index);
-    void ai_update_path();
-
-    bool ai_tile_is_air(Tile* tile);
-
-    int ai_tile_on_list(std::vector<Path_Calc>* path_list,int tile_x,int tile_y);
-    bool ai_tile_valid(int int_x,int int_y,int target_x,int target_y);
-    int ai_get_gravity_cost(int int_x,int int_y);
-    int ai_get_tile_cost(int int_x,int int_y);
-    void ai_add_open_tiles(Path_Calc* parent,int target_x,int target_y,std::vector<Path_Calc>* open_list,std::vector<Path_Calc>* closed_list,std::vector<Path_Calc>* new_open_tiles);
-    void ai_path_to_target(int target_x,int target_y);
-
-    //Move to the next node on the path.
-    void ai_move_to_path();
-
-    void ai_jump();
-    void ai_shoot();
-
-    void worldmap_ai();
-    void worldmap_ai_follow_player(int player_index);
-    void worldmap_ai_move_to_target(double target_x,double target_y,double target_w,double target_h);
-    void worldmap_handle_input_states();
-    void worldmap_move();
-    void worldmap_handle_events();
-    void worldmap_animate();
-    void worldmap_render();
+        void worldmap_ai();
+        void worldmap_ai_follow_player(int player_index);
+        void worldmap_ai_move_to_target(double target_x, double target_y, double target_w, double target_h);
+        void worldmap_handle_input_states();
+        void worldmap_move();
+        void worldmap_handle_events();
+        void worldmap_animate();
+        void worldmap_render();
 };
 
 #endif

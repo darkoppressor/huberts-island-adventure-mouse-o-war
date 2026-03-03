@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef main_h
@@ -6,11 +6,11 @@
 
 #include <SDL.h>
 
-//The main game loop.
+// The main game loop.
 void game_loop();
 
-//Handle Android/iOS events
-int handle_app_events(void* userdata,SDL_Event* event_storage);
+// Handle Android/iOS events
+int handle_app_events(void* userdata, SDL_Event* event_storage);
 
 int main(int argc, char* args[]);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef effect_water_splash_h
@@ -8,33 +8,33 @@
 
 #include <SDL.h>
 
-class Effect_Water_Splash{
+class Effect_Water_Splash {
     private:
-    //Current frame of animation.
-    short frame;
-    short frame_counter;
+        // Current frame of animation.
+        short frame;
+        short frame_counter;
 
     public:
-    //The constructor takes starting coordinates.
-    Effect_Water_Splash(double get_x,double get_y);
+        // The constructor takes starting coordinates.
+        Effect_Water_Splash (double get_x, double get_y);
 
-    //Animate the sprite.
-    void animate();
+        // Animate the sprite.
+        void animate();
 
-    //Render the sprite.
-    void render(bool mirrored=false);
+        // Render the sprite.
+        void render(bool mirrored = false);
 
-    //The current coordinates of the player.
-    double x,y;
+        // The current coordinates of the player.
+        double x, y;
 
-    //The dimensions of the player. This is used for collision detection.
-    double w,h;
+        // The dimensions of the player. This is used for collision detection.
+        double w, h;
 
-    //
-    bool exists;
+        //
+        bool exists;
 
-    //
-    bool dissipate;
+        //
+        bool dissipate;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "quit.h"
@@ -11,8 +11,8 @@
 
 using namespace std;
 
-void quit_game(){
-    if(!demo_mode){
+void quit_game () {
+    if (!demo_mode) {
         profile.save_level_data();
 
         profile.save_profile_global_data();
@@ -27,7 +27,7 @@ void quit_game(){
 
         fov_settings_free(&player.fov_settings_lighting);
 
-        //This function frees any dynamically allocated memory that was loaded in load_world().
+        // This function frees any dynamically allocated memory that was loaded in load_world().
         unload_world();
         image.unload_images_level(player.current_level);
 
@@ -35,10 +35,9 @@ void quit_game(){
 
         main_window.deinitialize();
 
-        //Tell the program to exit successfully.
+        // Tell the program to exit successfully.
         exit(EXIT_SUCCESS);
-    }
-    else{
-        button_event_open_window_demo(NULL,0);
+    } else {
+        button_event_open_window_demo(NULL, 0);
     }
 }

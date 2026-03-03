@@ -1,8 +1,8 @@
-Hubert's Island Adventure: Mouse o' War Copyright (C) 2012-2013 Cheese and Bacon Games, LLC
+Hubert's Island Adventure: Mouse o' War Copyright (c) Cheese and Bacon Games
 All rights reserved.
 
 All data files related to this software program
-are the copyrighted work of Cheese and Bacon Games, LLC.
+are the copyrighted work of Cheese and Bacon Games.
 
 The remainder of this document basically just says "if the game explodes, we are not responsible."
 It applies solely to the game's data files. For information about the source code, see COPYING.txt

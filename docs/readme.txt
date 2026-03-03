@@ -3,7 +3,7 @@ You hold in your hands (or on your hard drive) a fresh, delicious copy of
 
 							   Version: 1.5.3
 
-To ensure you have the latest version of the game, see this link: http://cheeseandbacon.org/huberts-island/updates.php
+To ensure you have the latest version of the game, see this link: https://cheeseandbacon.org/huberts-island/updates.php
 
 For Windows, simply run the .exe file.
 
@@ -33,7 +33,7 @@ There are a few other settings in global_options.cfg that you might want to look
 Comments in the file should explain what each setting does.
 
 If all else fails, you can contact us for support.
-The best way is the forums, which are located at: http://cheeseandbacon.org/forum/viewforum.php?f=9
+The best way is the forums, which are located at: https://cheeseandbacon.org/forum/viewforum.php?f=9
 If you would prefer to email us, you can ask for help here: support@cheeseandbacon.org
 
 						Tips for playing the game:

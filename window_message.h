@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef window_message_h
@@ -8,21 +8,19 @@
 
 #include <string>
 
-class Window_Message: public Window{
+class Window_Message: public Window {
     private:
-
     public:
+        Window_Message ();
 
-    Window_Message();
+        // Sets the 'on' state of the window to false.
+        void turn_off();
 
-    //Sets the 'on' state of the window to false.
-    void turn_off();
+        void set_dimensions(std::string message, short font_type);
 
-    void set_dimensions(std::string message,short font_type);
+        void set_message(std::string get_title, std::string message, short font_type = 0);
 
-    void set_message(std::string get_title,std::string message,short font_type=0);
-
-    void handle_input_states();
+        void handle_input_states();
 };
 
 #endif

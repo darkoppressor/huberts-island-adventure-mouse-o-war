@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef world_h
@@ -81,11 +81,10 @@ extern Tooltip tooltip_levelname;
 extern Tooltip tooltip_hint;
 
 extern SDL_Event event;
-
-struct joy_stick{
+struct joy_stick {
     SDL_Joystick* joy;
 };
-//Vector containing all of the joysticks.
+// Vector containing all of the joysticks.
 extern std::vector<joy_stick> joystick;
 
 extern BitmapFont font;
@@ -97,47 +96,47 @@ extern Random_Number_Generator rng;
 
 extern short option_save_location;
 
-const double DEFAULT_UPDATE_RATE=60.0;
+const double DEFAULT_UPDATE_RATE = 60.0;
 
-const int PROCESS_RANGE=2400;
-const int BOSS_ACTIVATE_RANGE=500;
-const int BOSS_DEACTIVATE_RANGE=2000;
-const int CANDY_VACUUM_RANGE=128;
-const double CANDY_VACUUM_SPEED=6.0;
-const int SPAWN_RANGE=800;
+const int PROCESS_RANGE = 2400;
+const int BOSS_ACTIVATE_RANGE = 500;
+const int BOSS_DEACTIVATE_RANGE = 2000;
+const int CANDY_VACUUM_RANGE = 128;
+const double CANDY_VACUUM_SPEED = 6.0;
+const int SPAWN_RANGE = 800;
 
-const short AI_NPC_TARGET_COOLDOWN=90;
-const short AI_PATH_UPDATE_RATE=30;
-const short AI_PATH_GIVEUP=120;
-const short AI_DECISION_COOLDOWN_REVIVE=360;
-const short AI_PATH_COOLDOWN_FAR=240;
-const short AI_PATH_COOLDOWN_MEDIUM=120;
+const short AI_NPC_TARGET_COOLDOWN = 90;
+const short AI_PATH_UPDATE_RATE = 30;
+const short AI_PATH_GIVEUP = 120;
+const short AI_DECISION_COOLDOWN_REVIVE = 360;
+const short AI_PATH_COOLDOWN_FAR = 240;
+const short AI_PATH_COOLDOWN_MEDIUM = 120;
 
-const int AI_PATH_RANGE_SHORT=256;
-const int AI_PATH_RANGE_MEDIUM=384;
-const int AI_PATH_RANGE_FAR=512;
+const int AI_PATH_RANGE_SHORT = 256;
+const int AI_PATH_RANGE_MEDIUM = 384;
+const int AI_PATH_RANGE_FAR = 512;
 
-const int AI_PATH_COST_ORTH=10;
-const int AI_PATH_COST_DIAG=14;
-const int AI_PATH_COST_SLOPE=6;
+const int AI_PATH_COST_ORTH = 10;
+const int AI_PATH_COST_DIAG = 14;
+const int AI_PATH_COST_SLOPE = 6;
 
-const int AI_PATH_COST_TILE_WATER=1;
-const int AI_PATH_COST_TILE_ROPE=3;
-const int AI_PATH_COST_TILE_NORMAL=9;
+const int AI_PATH_COST_TILE_WATER = 1;
+const int AI_PATH_COST_TILE_ROPE = 3;
+const int AI_PATH_COST_TILE_NORMAL = 9;
 
-const uint64_t STARTING_AMMO=5;
+const uint64_t STARTING_AMMO = 5;
 
-//The number of pixels an object can move before it needs to run handle_events() to avoid clipping through stuff.
-const double pixel_safety_x=2.0;
-const double pixel_safety_y=2.0;
+// The number of pixels an object can move before it needs to run handle_events() to avoid clipping through stuff.
+const double pixel_safety_x = 2.0;
+const double pixel_safety_y = 2.0;
 
-const int LAST_LEVEL=27;
+const int LAST_LEVEL = 27;
 
 extern int LIGHTING_TILE_SIZE;
 
 extern short holiday;
 
-//If true, quit_game() does not actually quit, but instead loads the nag screen.
+// If true, quit_game() does not actually quit, but instead loads the nag screen.
 extern bool demo_mode;
 
 extern double UPDATE_RATE;

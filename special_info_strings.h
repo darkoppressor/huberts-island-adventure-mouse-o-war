@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef special_info_strings_h
@@ -6,7 +6,7 @@
 
 #include <string>
 
-struct special_info_return_data{
+struct special_info_return_data {
     std::string text;
     short command;
 };

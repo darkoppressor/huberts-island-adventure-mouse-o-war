@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #ifndef tooltip_h
@@ -8,24 +8,22 @@
 
 #include <string>
 
-class Tooltip{
+class Tooltip {
     private:
     public:
-    Tooltip();
+        Tooltip ();
 
-    void setup(std::string get_message,int mouse_x,int mouse_y);
+        void setup(std::string get_message, int mouse_x, int mouse_y);
 
-    void set_dimensions();
+        void set_dimensions();
 
-    void render();
+        void render();
 
-    bool on;
+        bool on;
 
-    std::string message;
-
-    short x,y;
-
-    short w,h;
+        std::string message;
+        short x, y;
+        short w, h;
 };
 
 #endif

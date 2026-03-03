@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2013 Cheese and Bacon Games, LLC */
+/* Copyright (c) Cheese and Bacon Games */
 /* See the file docs/COPYING.txt for copying permission. */
 
 #include "image_data.h"
@@ -7,22 +7,22 @@
 
 using namespace std;
 
-image_data::image_data(){
-    texture=0;
-    w=0;
-    h=0;
+image_data::image_data () {
+    texture = 0;
+    w = 0;
+    h = 0;
 }
 
-void image_data::load_image(string filename){
-    texture=load_texture(filename,this);
+void image_data::load_image (string filename) {
+    texture = load_texture(filename, this);
 
-    SDL_SetTextureBlendMode(texture,SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 }
 
-void image_data::unload_image(){
+void image_data::unload_image () {
     SDL_DestroyTexture(texture);
 
-    texture=0;
-    w=0.0;
-    h=0.0;
+    texture = 0;
+    w = 0.0;
+    h = 0.0;
 }
